@@ -29,6 +29,7 @@ export const BikeForm: React.FC<BikeFormProps> = ({
   const CUSTOM_CATALOG_KEY = 'fleet_custom_vehicle_catalog_v1';
   type CustomCatalog = Record<VehicleCategory, { makes: string[]; models: Record<string, string[]> }>;
 
+
   const [customCatalog, setCustomCatalog] = useState<CustomCatalog>(() => {
     try {
       const raw = localStorage.getItem(CUSTOM_CATALOG_KEY);
@@ -311,9 +312,10 @@ export const BikeForm: React.FC<BikeFormProps> = ({
   };
 
   const steps = [
-    { num: 1, title: 'Basic', icon: '🏍️' },
-    { num: 2, title: 'Documents', icon: '📄' },
-    { num: 3, title: 'Service', icon: '🔧' },
+    { num: 1, title: 'Select', icon: '✨' },
+    { num: 2, title: 'Basic', icon: '🚘' },
+    { num: 3, title: 'Documents', icon: '📄' },
+    { num: 4, title: 'Service', icon: '🔧' },
   ];
 
   return (
@@ -357,23 +359,26 @@ export const BikeForm: React.FC<BikeFormProps> = ({
         {/* Form Content */}
         <div className="flex-1 overflow-y-auto p-4">
           
-          {/* Step 1: Basic Info */}
+          {/* Step 1: Select (Bike / Car) */}
           {currentStep === 1 && (
             <div className="space-y-4">
+              <div
+                className="rounded-xl p-4"
+                style={{
+                  backgroundColor: "rgba(212,175,55,0.10)",
+                  border: "1px solid rgba(212,175,55,0.22)",
+                }}
+              >
+                <p className="text-gray-900 font-semibold">Select Vehicle Category</p>
+                <p className="text-sm text-gray-700 mt-1">
+                  Choose whether you are adding a <strong>Bike</strong> or a <strong>Car</strong>. The next step will show the full form.
+                </p>
+              </div>
 
               {/* Vehicle Category (Bike / Car) */}
               <div className="bg-gray-50 rounded-xl p-4">
                 <label className="block text-sm font-semibold text-gray-800 mb-3">
-                  <span className="inline-flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M7 17h10" />
-                        <path d="M7 17a2 2 0 01-2-2V9a2 2 0 012-2h10a2 2 0 012 2v6a2 2 0 01-2 2" />
-                        <path d="M6 12h12" />
-                      </svg>
-                    </span>
-                    Vehicle Category <span className="text-red-500">*</span>
-                  </span>
+                  Vehicle Category <span className="text-red-500">*</span>
                 </label>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -382,12 +387,12 @@ export const BikeForm: React.FC<BikeFormProps> = ({
                     onClick={() => handleCategoryChange('bike')}
                     className={`px-4 py-3 rounded-xl border-2 font-semibold transition-colors ${
                       formData.vehicleCategory === 'bike'
-                        ? 'bg-blue-600 border-blue-600 text-white'
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300'
+                        ? 'bg-gray-900 border-gray-900 text-amber-200'
+                        : 'bg-white border-gray-200 text-gray-700 hover:border-amber-300'
                     }`}
                   >
                     🏍️ Bike
-                    <div className={`text-xs mt-1 ${formData.vehicleCategory === 'bike' ? 'text-blue-100' : 'text-gray-500'}`}>
+                    <div className={`text-xs mt-1 ${formData.vehicleCategory === 'bike' ? 'text-amber-200/80' : 'text-gray-500'}`}>
                       Two-wheeler
                     </div>
                   </button>
@@ -397,21 +402,27 @@ export const BikeForm: React.FC<BikeFormProps> = ({
                     onClick={() => handleCategoryChange('car')}
                     className={`px-4 py-3 rounded-xl border-2 font-semibold transition-colors ${
                       formData.vehicleCategory === 'car'
-                        ? 'bg-blue-600 border-blue-600 text-white'
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300'
+                        ? 'bg-gray-900 border-gray-900 text-amber-200'
+                        : 'bg-white border-gray-200 text-gray-700 hover:border-amber-300'
                     }`}
                   >
                     🚗 Car
-                    <div className={`text-xs mt-1 ${formData.vehicleCategory === 'car' ? 'text-blue-100' : 'text-gray-500'}`}>
+                    <div className={`text-xs mt-1 ${formData.vehicleCategory === 'car' ? 'text-amber-200/80' : 'text-gray-500'}`}>
                       Four-wheeler
                     </div>
                   </button>
                 </div>
 
-                <p className="text-xs text-gray-500 mt-2">
-                  Tip: This controls which India brands/models are shown in Make/Model.
+                <p className="text-xs text-gray-500 mt-3">
+                  Note: Private/Commercial selection is available in the <strong>Documents</strong> step.
                 </p>
               </div>
+            </div>
+          )}
+
+          {/* Step 2: Basic Info */}
+          {currentStep === 2 && (
+            <div className="space-y-4">
 
               {/* Make */}
               <div className="bg-gray-50 rounded-xl p-4">
@@ -628,27 +639,20 @@ export const BikeForm: React.FC<BikeFormProps> = ({
             </div>
           )}
 
-          {/* Step 2: Documents */}
-          {currentStep === 2 && (
+          {/* Step 3: Documents */}
+          {currentStep === 3 && (
             <div className="space-y-4">
               <div className="bg-blue-50 rounded-xl p-4 mb-4">
                 <p className="text-blue-800 font-medium">📄 Enter document validity dates to get renewal reminders</p>
-                <p className="text-blue-700 text-sm mt-1">Choose vehicle type first (Private / Commercial) to show the correct document list.</p>
+                <p className="text-blue-700 text-sm mt-1">
+                  Choose whether the vehicle is <strong>Private</strong> or <strong>Commercial</strong> to see the correct document list.
+                </p>
               </div>
 
-              {/* Vehicle Type */}
+              {/* Vehicle Type (Private / Commercial) */}
               <div className="bg-gray-50 rounded-xl p-4">
                 <label className="block text-sm font-semibold text-gray-800 mb-3">
-                  <span className="inline-flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
-                      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M3 7h18" />
-                        <path d="M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7" />
-                        <path d="M9 11h6" />
-                      </svg>
-                    </span>
-                    Vehicle Type
-                  </span>
+                  Vehicle Type
                 </label>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -657,13 +661,13 @@ export const BikeForm: React.FC<BikeFormProps> = ({
                     onClick={() => handleChange('vehicleType', 'private')}
                     className={`px-4 py-3 rounded-xl border-2 font-semibold transition-colors ${
                       formData.vehicleType === 'private'
-                        ? 'bg-blue-600 border-blue-600 text-white'
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300'
+                        ? 'bg-gray-900 border-gray-900 text-amber-200'
+                        : 'bg-white border-gray-200 text-gray-700 hover:border-amber-300'
                     }`}
                   >
                     Private
-                    <div className={`text-xs mt-1 ${formData.vehicleType === 'private' ? 'text-blue-100' : 'text-gray-500'}`}>
-                      Personal / Non-commercial
+                    <div className={`text-xs mt-1 ${formData.vehicleType === 'private' ? 'text-amber-200/80' : 'text-gray-500'}`}>
+                      Registration Validity + Insurance + Pollution
                     </div>
                   </button>
 
@@ -672,16 +676,20 @@ export const BikeForm: React.FC<BikeFormProps> = ({
                     onClick={() => handleChange('vehicleType', 'commercial')}
                     className={`px-4 py-3 rounded-xl border-2 font-semibold transition-colors ${
                       formData.vehicleType === 'commercial'
-                        ? 'bg-blue-600 border-blue-600 text-white'
-                        : 'bg-white border-gray-200 text-gray-700 hover:border-blue-300'
+                        ? 'bg-gray-900 border-gray-900 text-amber-200'
+                        : 'bg-white border-gray-200 text-gray-700 hover:border-amber-300'
                     }`}
                   >
                     Commercial
-                    <div className={`text-xs mt-1 ${formData.vehicleType === 'commercial' ? 'text-blue-100' : 'text-gray-500'}`}>
-                      Taxi / Rental / Business
+                    <div className={`text-xs mt-1 ${formData.vehicleType === 'commercial' ? 'text-amber-200/80' : 'text-gray-500'}`}>
+                      Insurance + Pollution + Fitness + Road Tax
                     </div>
                   </button>
                 </div>
+
+                <p className="text-xs text-gray-500 mt-2">
+                  Private vehicles usually don’t require Fitness/Road Tax tracking. Commercial fleets typically do.
+                </p>
               </div>
 
               {/* Private Documents */}
@@ -788,8 +796,8 @@ export const BikeForm: React.FC<BikeFormProps> = ({
             </div>
           )}
 
-          {/* Step 3: Service */}
-          {currentStep === 3 && (
+          {/* Step 4: Service */}
+          {currentStep === 4 && (
             <div className="space-y-4">
               <div className="bg-amber-50 rounded-xl p-4 mb-4">
                 <p className="text-amber-800 font-medium">🔧 Set service intervals to get maintenance reminders</p>
@@ -897,11 +905,11 @@ export const BikeForm: React.FC<BikeFormProps> = ({
                 </button>
               )}
               
-              {currentStep < 3 ? (
+              {currentStep < 4 ? (
                 <button
                   type="button"
                   onClick={() => setCurrentStep(currentStep + 1)}
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl"
+                  className="px-6 py-2.5 bg-gray-900 hover:bg-black text-amber-200 font-semibold rounded-xl"
                 >
                   Next →
                 </button>
@@ -909,9 +917,9 @@ export const BikeForm: React.FC<BikeFormProps> = ({
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl"
+                  className="px-6 py-2.5 bg-gray-900 hover:bg-black text-amber-200 font-semibold rounded-xl"
                 >
-                  ✓ Save Motorcycle
+                  ✓ Save Vehicle
                 </button>
               )}
             </div>
