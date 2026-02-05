@@ -97,17 +97,54 @@ function App() {
 
   // Restore session on mount.
   useEffect(() => {
-    try {
-      const savedUser = localStorage.getItem("fleet_current_user");
-      if (savedUser) {
-        const user = JSON.parse(savedUser) as User;
-        setCurrentUser(user);
-        setIsAuthenticated(true);
+    let cancelled = false;
+
+    (async () => {
+      try {
+        // 1) Local session (fast path)
+        const savedUser = localStorage.getItem("fleet_current_user");
+        if (savedUser) {
+          const user = JSON.parse(savedUser) as User;
+          if (!cancelled) {
+            setCurrentUser(user);
+            setIsAuthenticated(true);
+          }
+          return;
+        }
+
+        // 2) Supabase session (if configured)
+        if (isSupabaseConfigured() && supabase) {
+          const { data: sessData, error } = await supabase.auth.getSession();
+          if (error) throw error;
+
+          const u = sessData.session?.user;
+          if (u) {
+            const restored: User = {
+              id: u.id,
+              username: (u.email || "user").split("@")[0],
+              email: u.email || "",
+              companyName: (u.user_metadata as any)?.companyName || "",
+              phone: (u.user_metadata as any)?.phone || "",
+            };
+
+            localStorage.setItem("fleet_current_user", JSON.stringify(restored));
+
+            if (!cancelled) {
+              setCurrentUser(restored);
+              setIsAuthenticated(true);
+            }
+          }
+        }
+      } catch (e) {
+        console.error("Error restoring session:", e);
+      } finally {
+        if (!cancelled) setIsBootLoading(false);
       }
-    } catch (e) {
-      console.error("Error loading user session:", e);
-    }
-    setIsBootLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleLogin = (user: User) => {

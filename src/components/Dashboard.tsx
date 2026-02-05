@@ -383,7 +383,7 @@ export function Dashboard({ motorcycles, makes, models, onUpdateBike, onAddBike,
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-3xl">⚠️</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Motorcycle?</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Vehicle?</h3>
                 <p className="text-gray-500 mb-6">
                   Are you sure you want to delete <strong>{bike.make} {bike.model}</strong>? 
                   This action cannot be undone.
@@ -417,7 +417,7 @@ export function Dashboard({ motorcycles, makes, models, onUpdateBike, onAddBike,
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Fleet Dashboard</h1>
-          <p className="text-gray-500">Manage your motorcycle rental fleet</p>
+          <p className="text-gray-500">Manage your vehicle fleet (bikes & cars)</p>
         </div>
         <button
           onClick={() => {
@@ -429,7 +429,7 @@ export function Dashboard({ motorcycles, makes, models, onUpdateBike, onAddBike,
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
-          Add Motorcycle
+          Add Vehicle
         </button>
       </div>
 
@@ -519,13 +519,13 @@ export function Dashboard({ motorcycles, makes, models, onUpdateBike, onAddBike,
                 <span className="text-sm font-normal text-gray-500">({alerts.length} items)</span>
               </h2>
               <div className="flex items-center gap-3">
-                <label className="text-sm text-gray-500">Filter by bike:</label>
+                <label className="text-sm text-gray-500">Filter by vehicle:</label>
                 <select
                   value={alertFilterBike}
                   onChange={(e) => setAlertFilterBike(e.target.value)}
                   className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="all">All Motorcycles</option>
+                  <option value="all">All Vehicles</option>
                   {motorcycles.map(bike => (
                     <option key={bike.id} value={bike.id}>
                       {bike.make} {bike.model} ({bike.registrationNumber})
@@ -541,7 +541,7 @@ export function Dashboard({ motorcycles, makes, models, onUpdateBike, onAddBike,
                 <svg className="w-12 h-12 mx-auto mb-3 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="font-medium text-green-600">All clear for this motorcycle!</p>
+                <p className="font-medium text-green-600">All clear for this vehicle!</p>
                 <p className="text-sm">No pending alerts or reminders.</p>
               </div>
             ) : (
@@ -647,22 +647,22 @@ export function Dashboard({ motorcycles, makes, models, onUpdateBike, onAddBike,
             <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No motorcycles yet</h3>
-            <p>Add your first motorcycle to get started with fleet management.</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No vehicles yet</h3>
+            <p>Add your first vehicle to get started with fleet management.</p>
           </div>
         ) : filteredMotorcycles.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
             <svg className="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <p>No bikes match your search criteria.</p>
+            <p>No vehicles match your search criteria.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Motorcycle</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Current KM</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service Status</th>
@@ -872,9 +872,9 @@ export function Dashboard({ motorcycles, makes, models, onUpdateBike, onAddBike,
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">⚠️</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Motorcycle?</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Vehicle?</h3>
               <p className="text-gray-500 mb-6">
-                Are you sure you want to delete this motorcycle? This action cannot be undone.
+                Are you sure you want to delete this vehicle? This action cannot be undone.
               </p>
               <div className="flex gap-3">
                 <button

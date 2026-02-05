@@ -20,6 +20,16 @@ interface AuthScreenProps {
   };
 }
 
+const DEMO_ADMIN: User = {
+  id: "demo-admin",
+  username: "admin",
+  email: "admin@demo.local",
+  password: "",
+  companyName: "Admin Demo",
+  phone: "",
+  createdAt: new Date().toISOString(),
+};
+
 const USERS_KEY = "fleet_users";
 const SESSION_KEY = "fleet_current_user";
 
@@ -58,6 +68,13 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
   const [signupCompany, setSignupCompany] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
+
+  const handleDemoAdminLogin = () => {
+    setError("");
+    setSuccess("");
+    localStorage.setItem(SESSION_KEY, JSON.stringify(DEMO_ADMIN));
+    onLogin(DEMO_ADMIN);
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -379,6 +396,27 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
                 >
                   {loading ? "Signing in..." : "Login"}
                 </button>
+
+                {/* Demo admin quick login (local-only) */}
+                {!isSupabaseConfigured() && (
+                  <div className="pt-3">
+                    <div className="flex items-center gap-3 my-3">
+                      <div className="h-px bg-gray-200 flex-1" />
+                      <span className="text-xs text-gray-400">or</span>
+                      <div className="h-px bg-gray-200 flex-1" />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleDemoAdminLogin}
+                      className="w-full py-3 rounded-xl font-semibold transition-colors bg-amber-50 text-gray-900 border border-amber-200 hover:bg-amber-100"
+                    >
+                      Continue as Admin (Demo)
+                    </button>
+                    <p className="text-[11px] text-gray-500 mt-2">
+                      Demo mode stores data only in this browser (localStorage).
+                    </p>
+                  </div>
+                )}
 
                 {/* Email verification helpers (Supabase) */}
                 {isSupabaseConfigured() && pendingVerificationEmail && (
