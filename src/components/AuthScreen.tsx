@@ -1,5 +1,10 @@
-import React, { useState } from "react";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  getSupabaseDiagnostics,
+  isSupabaseConfigured,
+  supabase,
+  supabaseHealthCheck,
+} from "@/lib/supabase";
 
 interface User {
   id: string;
@@ -42,6 +47,34 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [showSupabaseDebug, setShowSupabaseDebug] = useState(false);
+  const [supabaseHealth, setSupabaseHealth] = useState<{
+    ok: boolean;
+    status?: number;
+    body?: string;
+    error?: string;
+  } | null>(null);
+  const [lastSupabaseAuthError, setLastSupabaseAuthError] = useState<string | null>(null);
+
+  const supabaseDiag = useMemo(() => getSupabaseDiagnostics(), []);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!isSupabaseConfigured()) {
+      setSupabaseHealth(null);
+      return;
+    }
+
+    supabaseHealthCheck().then((res) => {
+      if (cancelled) return;
+      setSupabaseHealth(res);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Login form
   const [loginId, setLoginId] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -69,8 +102,12 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
 
       // Supabase mode (preferred when configured)
       if (isSupabaseConfigured() && supabase) {
+        setLastSupabaseAuthError(null);
+
         if (!idRaw.includes("@")) {
-          throw new Error("Please login using your email address (Supabase Auth uses email/password). ");
+          throw new Error(
+            "Please login using your email address (Supabase Auth uses email/password)."
+          );
         }
 
         const { data, error: authErr } = await supabase.auth.signInWithPassword({
@@ -78,7 +115,10 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
           password: pass,
         });
 
-        if (authErr) throw new Error(authErr.message);
+        if (authErr) {
+          setLastSupabaseAuthError(authErr.message);
+          throw new Error(authErr.message);
+        }
         if (!data.user) throw new Error("Login failed: no user returned");
 
         const u: User = {
@@ -98,22 +138,6 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
       }
 
       // Local mode (fallback)
-      // Default admin
-      if ((id === "admin" || id === "admin@admin.com") && pass === "admin123") {
-        const adminUser: User = {
-          id: "admin",
-          username: "admin",
-          email: "admin@admin.com",
-          password: "admin123",
-          companyName: "Administrator",
-          phone: "",
-          createdAt: new Date().toISOString(),
-        };
-        localStorage.setItem(SESSION_KEY, JSON.stringify(adminUser));
-        onLogin(adminUser);
-        return;
-      }
-
       const users = getUsers();
       const user = users.find(
         (u) =>
@@ -297,16 +321,24 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
               <form onSubmit={handleLogin} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email or Username
+                    {isSupabaseConfigured() ? "Email" : "Email or Username"}
                   </label>
                   <input
-                    type="text"
+                    type={isSupabaseConfigured() ? "email" : "text"}
                     value={loginId}
                     onChange={(e) => setLoginId(e.target.value)}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-400 focus:outline-none"
-                    placeholder="admin (or email)"
+                    placeholder={isSupabaseConfigured() ? "you@example.com" : "Email or username"}
                     required
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                   />
+                  {isSupabaseConfigured() && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      Use the same email you used during Sign Up.
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -331,15 +363,68 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
                   {loading ? "Signing in..." : "Login"}
                 </button>
 
-                <div className="text-center text-xs text-gray-500 mt-3 p-3 bg-gray-50 rounded-lg">
-                  <p className="font-medium">Default Admin:</p>
-                  <p>
-                    Username: <code className="bg-white px-2 py-0.5 rounded">admin</code>
-                  </p>
-                  <p>
-                    Password: <code className="bg-white px-2 py-0.5 rounded">admin123</code>
-                  </p>
-                </div>
+                {isSupabaseConfigured() && (
+                  <div className="mt-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowSupabaseDebug((v) => !v)}
+                      className="w-full text-xs font-medium text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200"
+                    >
+                      {showSupabaseDebug ? "Hide" : "Show"} Supabase Diagnostics
+                    </button>
+
+                    {showSupabaseDebug && (
+                      <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3 text-xs text-gray-700 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold">Configured</span>
+                          <span className={supabaseDiag.configured ? "text-green-700" : "text-red-700"}>
+                            {supabaseDiag.configured ? "YES" : "NO"}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold">Project host</span>
+                          <span className="font-mono">{supabaseDiag.host || "(invalid url)"}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold">Anon key</span>
+                          <span className="font-mono">{supabaseDiag.maskedKey}</span>
+                        </div>
+
+                        <div className="rounded-lg bg-gray-50 border border-gray-200 p-2">
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold">Auth health</span>
+                            <span>
+                              {supabaseHealth
+                                ? supabaseHealth.ok
+                                  ? `OK (${supabaseHealth.status})`
+                                  : `FAIL (${supabaseHealth.status ?? ""})`
+                                : "Checking..."}
+                            </span>
+                          </div>
+                          {supabaseHealth?.error && (
+                            <div className="mt-1 text-red-700">{supabaseHealth.error}</div>
+                          )}
+                          {!supabaseHealth?.ok && supabaseHealth?.body && (
+                            <pre className="mt-2 whitespace-pre-wrap text-[11px] text-gray-600">
+{supabaseHealth.body}
+                            </pre>
+                          )}
+                        </div>
+
+                        {lastSupabaseAuthError && (
+                          <div className="rounded-lg bg-red-50 border border-red-200 p-2 text-red-800">
+                            <div className="font-semibold">Last auth error</div>
+                            <div className="mt-1">{lastSupabaseAuthError}</div>
+                          </div>
+                        )}
+
+                        <div className="text-[11px] text-gray-500">
+                          If you just added env vars in Vercel, you must redeploy. Also ensure Supabase → Authentication → Providers → Email is enabled.
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </form>
             ) : (
               <form onSubmit={handleSignup} className="space-y-4">
