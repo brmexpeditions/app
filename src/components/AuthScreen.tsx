@@ -1,10 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  getSupabaseDiagnostics,
-  isSupabaseConfigured,
-  supabase,
-  supabaseHealthCheck,
-} from "@/lib/supabase";
+import React, { useState } from "react";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 interface User {
   id: string;
@@ -47,33 +42,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const [showSupabaseDebug, setShowSupabaseDebug] = useState(false);
-  const [supabaseHealth, setSupabaseHealth] = useState<{
-    ok: boolean;
-    status?: number;
-    body?: string;
-    error?: string;
-  } | null>(null);
-  const [lastSupabaseAuthError, setLastSupabaseAuthError] = useState<string | null>(null);
 
-  const supabaseDiag = useMemo(() => getSupabaseDiagnostics(), []);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!isSupabaseConfigured()) {
-      setSupabaseHealth(null);
-      return;
-    }
-
-    supabaseHealthCheck().then((res) => {
-      if (cancelled) return;
-      setSupabaseHealth(res);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // Login form
   const [loginId, setLoginId] = useState("");
@@ -106,7 +75,6 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
 
       // Supabase mode (preferred when configured)
       if (isSupabaseConfigured() && supabase) {
-        setLastSupabaseAuthError(null);
 
         if (!idRaw.includes("@")) {
           throw new Error(
@@ -125,7 +93,6 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
           // - "Invalid login credentials"
           // Some browsers only show a 400 in console; show a helpful UI.
           const msg = authErr.message || "Login failed";
-          setLastSupabaseAuthError(msg);
 
           if (/confirm|confirmed|verification/i.test(msg)) {
             setPendingVerificationEmail(idRaw);
@@ -435,68 +402,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
                   </div>
                 )}
 
-                {isSupabaseConfigured() && (
-                  <div className="mt-3">
-                    <button
-                      type="button"
-                      onClick={() => setShowSupabaseDebug((v) => !v)}
-                      className="w-full text-xs font-medium text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200"
-                    >
-                      {showSupabaseDebug ? "Hide" : "Show"} Supabase Diagnostics
-                    </button>
 
-                    {showSupabaseDebug && (
-                      <div className="mt-3 rounded-xl border border-gray-200 bg-white p-3 text-xs text-gray-700 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold">Configured</span>
-                          <span className={supabaseDiag.configured ? "text-green-700" : "text-red-700"}>
-                            {supabaseDiag.configured ? "YES" : "NO"}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold">Project host</span>
-                          <span className="font-mono">{supabaseDiag.host || "(invalid url)"}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="font-semibold">Anon key</span>
-                          <span className="font-mono">{supabaseDiag.maskedKey}</span>
-                        </div>
-
-                        <div className="rounded-lg bg-gray-50 border border-gray-200 p-2">
-                          <div className="flex items-center justify-between">
-                            <span className="font-semibold">Auth health</span>
-                            <span>
-                              {supabaseHealth
-                                ? supabaseHealth.ok
-                                  ? `OK (${supabaseHealth.status})`
-                                  : `FAIL (${supabaseHealth.status ?? ""})`
-                                : "Checking..."}
-                            </span>
-                          </div>
-                          {supabaseHealth?.error && (
-                            <div className="mt-1 text-red-700">{supabaseHealth.error}</div>
-                          )}
-                          {!supabaseHealth?.ok && supabaseHealth?.body && (
-                            <pre className="mt-2 whitespace-pre-wrap text-[11px] text-gray-600">
-{supabaseHealth.body}
-                            </pre>
-                          )}
-                        </div>
-
-                        {lastSupabaseAuthError && (
-                          <div className="rounded-lg bg-red-50 border border-red-200 p-2 text-red-800">
-                            <div className="font-semibold">Last auth error</div>
-                            <div className="mt-1">{lastSupabaseAuthError}</div>
-                          </div>
-                        )}
-
-                        <div className="text-[11px] text-gray-500">
-                          If you just added env vars in Vercel, you must redeploy. Also ensure Supabase → Authentication → Providers → Email is enabled.
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
               </form>
             ) : (
               <form onSubmit={handleSignup} className="space-y-4">
