@@ -78,6 +78,9 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
   // Login form
   const [loginId, setLoginId] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
+
 
   // Signup form
   const [signupName, setSignupName] = useState("");
@@ -92,6 +95,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
     setError("");
     setSuccess("");
     setLoading(true);
+    setPendingVerificationEmail(null);
 
     try {
       await new Promise((r) => setTimeout(r, 150));
@@ -116,8 +120,21 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
         });
 
         if (authErr) {
-          setLastSupabaseAuthError(authErr.message);
-          throw new Error(authErr.message);
+          // Common cases:
+          // - "Email not confirmed"
+          // - "Invalid login credentials"
+          // Some browsers only show a 400 in console; show a helpful UI.
+          const msg = authErr.message || "Login failed";
+          setLastSupabaseAuthError(msg);
+
+          if (/confirm|confirmed|verification/i.test(msg)) {
+            setPendingVerificationEmail(idRaw);
+            throw new Error(
+              "Email not confirmed. Please verify your email. If you didn't receive it, use 'Resend verification email'."
+            );
+          }
+
+          throw new Error(msg);
         }
         if (!data.user) throw new Error("Login failed: no user returned");
 
@@ -156,6 +173,34 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
     }
   };
 
+  const resendVerificationEmail = async (email: string) => {
+    if (!isSupabaseConfigured() || !supabase) return;
+
+    setResendLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const { error: resendErr } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
+      });
+
+      if (resendErr) throw new Error(resendErr.message);
+
+      setSuccess(
+        `Verification email resent to ${email}. Check your inbox/spam. If you still don't receive it, disable "Confirm email" in Supabase Auth settings or configure SMTP.`
+      );
+    } catch (e: any) {
+      setError(e?.message || "Failed to resend verification email");
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -182,6 +227,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
           email: signupEmail.trim(),
           password: signupPassword,
           options: {
+            emailRedirectTo: window.location.origin,
             data: {
               fullName: signupName.trim(),
               companyName: signupCompany.trim(),
@@ -193,10 +239,14 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
         if (authErr) throw new Error(authErr.message);
 
         // If email confirmations are ON, user may need to verify before login.
+        if (!data.session) {
+          setPendingVerificationEmail(signupEmail.trim());
+        }
+
         setSuccess(
           data.session
             ? "Account created! You are logged in."
-            : "Account created! Please verify your email (check inbox) and then login."
+            : "Account created! Please verify your email (check inbox/spam) and then login."
         );
         setIsLogin(true);
         setLoginId(signupEmail.trim());
@@ -362,6 +412,28 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
                 >
                   {loading ? "Signing in..." : "Login"}
                 </button>
+
+                {/* Email verification helpers (Supabase) */}
+                {isSupabaseConfigured() && pendingVerificationEmail && (
+                  <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                    <p className="font-medium">Email verification required</p>
+                    <p className="text-xs mt-1">
+                      We sent a verification email to <span className="font-mono">{pendingVerificationEmail}</span>.
+                      Check spam/junk too.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => resendVerificationEmail(pendingVerificationEmail)}
+                      disabled={resendLoading}
+                      className="mt-3 w-full px-3 py-2 rounded-lg bg-gray-900 text-amber-200 font-semibold hover:bg-black disabled:opacity-50"
+                    >
+                      {resendLoading ? "Resending..." : "Resend verification email"}
+                    </button>
+                    <p className="text-[11px] text-amber-800 mt-2">
+                      If you still don’t receive it, in Supabase go to Authentication → Providers → Email and either configure SMTP or turn off “Confirm email”.
+                    </p>
+                  </div>
+                )}
 
                 {isSupabaseConfigured() && (
                   <div className="mt-3">
