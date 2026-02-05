@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Motorcycle, VehicleCategory, VehicleType } from '../types';
 import { getServiceStatus, getValidityStatus, formatDate, SERVICE_INTERVAL_OPTIONS } from '../utils/helpers';
 import { cn } from '../utils/cn';
@@ -30,6 +30,31 @@ export function Dashboard({ motorcycles, makes, models, onUpdateBike, onAddBike,
   const [editingBike, setEditingBike] = useState<Motorcycle | null>(null);
   const [selectedBike, setSelectedBike] = useState<Motorcycle | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+
+  // Allow other tabs (Analytics) to open a vehicle directly inside the Fleet tab
+  useEffect(() => {
+    const handler = (evt: Event) => {
+      const e = evt as CustomEvent<{ vehicleId?: string }>;
+      const vehicleId = e.detail?.vehicleId;
+      if (!vehicleId) return;
+
+      const bike = (Array.isArray(motorcycles) ? motorcycles : []).find((b) => b.id === vehicleId);
+      if (bike) {
+        setSelectedBike(bike);
+        setShowBikeForm(false);
+        setEditingBike(null);
+        setShowDeleteConfirm(null);
+        try {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch {
+          window.scrollTo(0, 0);
+        }
+      }
+    };
+
+    window.addEventListener("fleet:openVehicle", handler as EventListener);
+    return () => window.removeEventListener("fleet:openVehicle", handler as EventListener);
+  }, [motorcycles]);
 
   const handleSaveBike = (bike: Motorcycle, newMake?: string, newModel?: string) => {
     const existingBike = motorcycles.find(m => m.id === bike.id);

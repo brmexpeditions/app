@@ -5,6 +5,7 @@ import Analytics from "./components/Analytics";
 import CompanySettings from "./components/CompanySettings";
 import AuthScreen from "./components/AuthScreen";
 import HelpCenter from "./components/HelpCenter";
+import ExcelImportExport from "./components/ExcelImportExport";
 import {
   IconChart,
   IconFleet,
@@ -266,6 +267,125 @@ function App() {
     }));
   };
 
+  const handleApplyExcelImport = (
+    payload: { vehicles: Motorcycle[]; serviceRecords: ServiceRecord[] },
+    mode: "merge" | "replace"
+  ) => {
+    setData((prev) => {
+      const prevVehicles = Array.isArray(prev.motorcycles) ? prev.motorcycles : [];
+      const prevServices = Array.isArray(prev.serviceRecords) ? prev.serviceRecords : [];
+
+      const importedVehicles = Array.isArray(payload.vehicles) ? payload.vehicles : [];
+      const importedServices = Array.isArray(payload.serviceRecords)
+        ? payload.serviceRecords
+        : [];
+
+      // Build maps for matching
+      const prevById = new Map(prevVehicles.map((v) => [v.id, v] as const));
+      const prevByReg = new Map(
+        prevVehicles.map((v) => [v.registrationNumber.toUpperCase(), v] as const)
+      );
+
+      const nextVehicles: Motorcycle[] = [];
+
+      if (mode === "replace") {
+        nextVehicles.push(...importedVehicles);
+      } else {
+        // merge: update existing by id or registrationNumber, else add
+        const usedPrevIds = new Set<string>();
+
+        for (const imp of importedVehicles) {
+          const reg = imp.registrationNumber.toUpperCase();
+          const existing = prevById.get(imp.id) || prevByReg.get(reg);
+
+          if (existing) {
+            usedPrevIds.add(existing.id);
+            nextVehicles.push({
+              ...existing,
+              ...imp,
+              id: existing.id,
+              createdAt: existing.createdAt || imp.createdAt,
+              kmReadings: Array.isArray(imp.kmReadings) && imp.kmReadings.length > 0
+                ? imp.kmReadings
+                : (Array.isArray(existing.kmReadings) ? existing.kmReadings : []),
+            });
+          } else {
+            nextVehicles.push(imp);
+          }
+        }
+
+        // keep vehicles not mentioned in import
+        for (const v of prevVehicles) {
+          if (!usedPrevIds.has(v.id) && !importedVehicles.some((iv) => iv.id === v.id || iv.registrationNumber.toUpperCase() === v.registrationNumber.toUpperCase())) {
+            nextVehicles.push(v);
+          }
+        }
+      }
+
+      const nextVehicleIds = new Set(nextVehicles.map((v) => v.id));
+      const nextRegToId = new Map(nextVehicles.map((v) => [v.registrationNumber.toUpperCase(), v.id] as const));
+
+      const normalizeServiceVehicleId = (raw: string) => {
+        const key = raw.toUpperCase();
+        return nextVehicleIds.has(raw) ? raw : (nextRegToId.get(key) || raw);
+      };
+
+      const normalizedImportedServices = importedServices.map((s) => ({
+        ...s,
+        motorcycleId: normalizeServiceVehicleId(s.motorcycleId),
+      }));
+
+      let nextServices: ServiceRecord[] = [];
+      if (mode === "replace") {
+        nextServices = normalizedImportedServices;
+      } else {
+        const prevSvcById = new Map(prevServices.map((s) => [s.id, s] as const));
+        const merged: ServiceRecord[] = [];
+
+        for (const imp of normalizedImportedServices) {
+          const existing = prevSvcById.get(imp.id);
+          if (existing) merged.push({ ...existing, ...imp, id: existing.id });
+          else merged.push(imp);
+        }
+
+        // keep old records not updated
+        for (const s of prevServices) {
+          if (!merged.some((m) => m.id === s.id)) merged.push(s);
+        }
+
+        nextServices = merged;
+      }
+
+      // Update saved make/model lists from vehicles
+      const makes = Array.isArray(prev.savedMakes) ? prev.savedMakes : [];
+      const models = prev.savedModels || {};
+
+      const nextMakes = new Set(makes);
+      const nextModels: Record<string, string[]> = { ...models };
+
+      for (const v of nextVehicles) {
+        if (v.make) nextMakes.add(v.make);
+        if (v.make && v.model) {
+          const list = nextModels[v.make] || [];
+          if (!list.includes(v.model)) nextModels[v.make] = [...list, v.model];
+        }
+      }
+
+      return {
+        ...prev,
+        motorcycles: nextVehicles,
+        serviceRecords: nextServices,
+        savedMakes: Array.from(nextMakes).sort((a, b) => a.localeCompare(b)),
+        savedModels: Object.fromEntries(
+          Object.entries(nextModels).map(([mk, list]) => [
+            mk,
+            Array.from(new Set(list)).sort((a, b) => a.localeCompare(b)),
+          ])
+        ),
+      };
+    });
+  };
+
   if (isBootLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">
@@ -422,6 +542,15 @@ function App() {
             motorcycles={data.motorcycles}
             serviceRecords={data.serviceRecords}
             companySettings={data.companySettings}
+            onOpenVehicle={(vehicleId) => {
+              setActiveTab("fleet");
+              // Let Dashboard open the vehicle detail view
+              window.dispatchEvent(
+                new CustomEvent("fleet:openVehicle", {
+                  detail: { vehicleId },
+                })
+              );
+            }}
           />
         )}
 
@@ -430,6 +559,12 @@ function App() {
         {activeTab === "settings" && (
           <div className="space-y-6">
             <CompanySettings settings={data.companySettings} onUpdate={handleUpdateSettings} />
+
+            <ExcelImportExport
+              existingVehicles={data.motorcycles}
+              existingServiceRecords={data.serviceRecords}
+              onApplyImport={handleApplyExcelImport}
+            />
 
             {/* Data Backup Section */}
             <div className="bg-white rounded-xl shadow-lg p-6">
