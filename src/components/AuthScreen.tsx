@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 interface User {
   id: string;
@@ -60,11 +61,43 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
     setLoading(true);
 
     try {
-      await new Promise((r) => setTimeout(r, 250));
+      await new Promise((r) => setTimeout(r, 150));
 
-      const id = loginId.trim().toLowerCase();
+      const idRaw = loginId.trim();
+      const id = idRaw.toLowerCase();
       const pass = loginPassword;
 
+      // Supabase mode (preferred when configured)
+      if (isSupabaseConfigured() && supabase) {
+        if (!idRaw.includes("@")) {
+          throw new Error("Please login using your email address (Supabase Auth uses email/password). ");
+        }
+
+        const { data, error: authErr } = await supabase.auth.signInWithPassword({
+          email: idRaw,
+          password: pass,
+        });
+
+        if (authErr) throw new Error(authErr.message);
+        if (!data.user) throw new Error("Login failed: no user returned");
+
+        const u: User = {
+          id: data.user.id,
+          username: (data.user.email || idRaw).split("@")[0],
+          email: data.user.email || idRaw,
+          password: "",
+          companyName: (data.user.user_metadata as any)?.companyName || "",
+          phone: (data.user.user_metadata as any)?.phone || "",
+          createdAt: data.user.created_at || new Date().toISOString(),
+        };
+
+        // Keep a small local session for UI display; Supabase holds the real session.
+        localStorage.setItem(SESSION_KEY, JSON.stringify(u));
+        onLogin(u);
+        return;
+      }
+
+      // Local mode (fallback)
       // Default admin
       if ((id === "admin" || id === "admin@admin.com") && pass === "admin123") {
         const adminUser: User = {
@@ -106,7 +139,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
     setLoading(true);
 
     try {
-      await new Promise((r) => setTimeout(r, 250));
+      await new Promise((r) => setTimeout(r, 150));
 
       if (!signupName.trim()) throw new Error("Please enter your full name");
       if (!signupEmail.trim() || !signupEmail.includes("@")) {
@@ -119,6 +152,42 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
         throw new Error("Passwords do not match");
       }
 
+      // Supabase mode
+      if (isSupabaseConfigured() && supabase) {
+        const { data, error: authErr } = await supabase.auth.signUp({
+          email: signupEmail.trim(),
+          password: signupPassword,
+          options: {
+            data: {
+              fullName: signupName.trim(),
+              companyName: signupCompany.trim(),
+              phone: signupPhone.trim(),
+            },
+          },
+        });
+
+        if (authErr) throw new Error(authErr.message);
+
+        // If email confirmations are ON, user may need to verify before login.
+        setSuccess(
+          data.session
+            ? "Account created! You are logged in."
+            : "Account created! Please verify your email (check inbox) and then login."
+        );
+        setIsLogin(true);
+        setLoginId(signupEmail.trim());
+        setLoginPassword("");
+
+        setSignupName("");
+        setSignupEmail("");
+        setSignupPhone("");
+        setSignupCompany("");
+        setSignupPassword("");
+        setSignupConfirmPassword("");
+        return;
+      }
+
+      // Local mode (fallback)
       const users = getUsers();
       const emailLower = signupEmail.trim().toLowerCase();
       if (users.some((u) => u.email.toLowerCase() === emailLower)) {
@@ -366,7 +435,9 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
                 </button>
 
                 <p className="text-center text-xs text-gray-500">
-                  Accounts are stored locally in this browser until you add a cloud database.
+                  {isSupabaseConfigured()
+                    ? "Accounts are managed by Supabase Auth."
+                    : "Accounts are stored locally in this browser until you add a cloud database."}
                 </p>
               </form>
             )}

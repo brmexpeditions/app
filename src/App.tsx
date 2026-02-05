@@ -18,7 +18,8 @@ import type {
   Motorcycle,
   ServiceRecord,
 } from "./types";
-import { useLocalStorage } from "./hooks/useLocalStorage";
+import { useSupabaseFleet } from "@/hooks/useSupabaseFleet";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 interface User {
   id: string;
@@ -82,11 +83,10 @@ const defaultData: AppData = {
 };
 
 function App() {
-  // Local-only data store (no cloud DB configured)
-  const [data, setData] = useLocalStorage<AppData>(
-    "motorcycle_fleet_data",
-    defaultData
-  );
+  // Data store (Supabase + local cache fallback)
+  // If Supabase env vars are configured, data is stored per-user in Supabase table: fleet_store
+  // Otherwise, the hook falls back to localStorage on this device.
+  const { data, setData } = useSupabaseFleet(defaultData);
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -115,7 +115,14 @@ function App() {
     setIsAuthenticated(true);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      if (isSupabaseConfigured() && supabase) {
+        await supabase.auth.signOut();
+      }
+    } catch {
+      // ignore
+    }
     localStorage.removeItem("fleet_current_user");
     setCurrentUser(null);
     setIsAuthenticated(false);
@@ -471,13 +478,23 @@ function App() {
                 </p>
               )}
 
-              <div className="mt-6 p-4 rounded-xl"
-                style={{ backgroundColor: "rgba(212,175,55,0.10)", border: "1px solid rgba(212,175,55,0.22)" }}>
+              <div
+                className="mt-6 p-4 rounded-xl"
+                style={{
+                  backgroundColor: "rgba(212,175,55,0.10)",
+                  border: "1px solid rgba(212,175,55,0.22)",
+                }}
+              >
                 <p className="text-sm text-gray-800">
-                  <strong>Storage mode:</strong> Local (on this device/browser). No cloud database is enabled.
+                  <strong>Storage mode:</strong>{" "}
+                  {isSupabaseConfigured()
+                    ? "Supabase Cloud (per-user) + local cache"
+                    : "Local only (on this device/browser)"}
                 </p>
                 <p className="text-xs text-gray-600 mt-1">
-                  To keep data safe, download backups regularly.
+                  {isSupabaseConfigured()
+                    ? "If you face issues, confirm your Supabase table (fleet_store) and RLS policies are set." 
+                    : "To keep data safe, download backups regularly."}
                 </p>
               </div>
             </div>
