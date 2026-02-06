@@ -1,0 +1,705 @@
+import { useEffect, useMemo, useState } from "react";
+import type { Motorcycle, VehicleCategory } from "../types";
+import { VEHICLE_CATALOG } from "../data/vehicleCatalog";
+
+const uniq = (arr: string[]) => Array.from(new Set(arr)).filter(Boolean);
+const sortAZ = (arr: string[]) => [...arr].sort((a, b) => a.localeCompare(b));
+
+interface BikeFormProps {
+  bike?: Motorcycle | null;
+  onSave: (bike: Motorcycle, newMake?: string, newModel?: string) => void;
+  onCancel: () => void;
+  makes: string[];
+  models: Record<string, string[]>;
+}
+
+type VehicleTypeLocal = "private" | "commercial";
+
+type CustomCatalog = Record<VehicleCategory, { makes: string[]; models: Record<string, string[]> }>;
+
+const CUSTOM_CATALOG_KEY = "fleet_custom_vehicle_catalog_v1";
+
+function makeId(): string {
+  // randomUUID not available in some mobile webviews
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const c: any = globalThis.crypto;
+  if (c?.randomUUID) return c.randomUUID();
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
+
+function todayISO(): string {
+  return new Date().toISOString().split("T")[0];
+}
+
+export function BikeForm({ bike, onSave, onCancel, makes: legacyMakes, models: legacyModels }: BikeFormProps) {
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [showNewMake, setShowNewMake] = useState(false);
+  const [showNewModel, setShowNewModel] = useState(false);
+
+  const [customCatalog, setCustomCatalog] = useState<CustomCatalog>(() => {
+    try {
+      const raw = localStorage.getItem(CUSTOM_CATALOG_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<CustomCatalog>;
+        return {
+          bike: {
+            makes: Array.isArray(parsed.bike?.makes) ? parsed.bike!.makes : [],
+            models: parsed.bike?.models && typeof parsed.bike.models === "object" ? parsed.bike.models : {},
+          },
+          car: {
+            makes: Array.isArray(parsed.car?.makes) ? parsed.car!.makes : [],
+            models: parsed.car?.models && typeof parsed.car.models === "object" ? parsed.car.models : {},
+          },
+        };
+      }
+    } catch {
+      // ignore
+    }
+    return { bike: { makes: [], models: {} }, car: { makes: [], models: {} } };
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CUSTOM_CATALOG_KEY, JSON.stringify(customCatalog));
+    } catch {
+      // ignore
+    }
+  }, [customCatalog]);
+
+  const [form, setForm] = useState({
+    vehicleCategory: "bike" as VehicleCategory,
+
+    make: "",
+    newMake: "",
+    model: "",
+    newModel: "",
+
+    ownerName: "",
+    registrationNumber: "",
+    chassisNumber: "",
+    engineNumber: "",
+
+    currentOdometer: "",
+
+    vehicleType: "commercial" as VehicleTypeLocal,
+
+    registrationValidity: "",
+    insuranceValidity: "",
+    pollutionValidity: "",
+    fitnessValidity: "",
+    roadTaxValidity: "",
+
+    serviceIntervalMonths: 5,
+    serviceIntervalKms: 5000,
+    lastServiceDate: "",
+    lastServiceKm: "",
+  });
+
+  // Load bike into form when editing
+  useEffect(() => {
+    if (!bike) return;
+
+    const kmReadings = Array.isArray(bike.kmReadings) ? bike.kmReadings : [];
+    const latest = [...kmReadings].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+    setForm({
+      vehicleCategory: bike.vehicleCategory || "bike",
+
+      make: bike.make || "",
+      newMake: "",
+      model: bike.model || "",
+      newModel: "",
+
+      ownerName: bike.ownerName || "",
+      registrationNumber: bike.registrationNumber || "",
+      chassisNumber: bike.chassisNumber || "",
+      engineNumber: bike.engineNumber || "",
+
+      currentOdometer: String(latest?.kilometers ?? bike.currentOdometer ?? 0),
+
+      vehicleType: (bike.vehicleType as VehicleTypeLocal) || "commercial",
+
+      registrationValidity: bike.registrationValidity || "",
+      insuranceValidity: bike.insuranceValidity || "",
+      pollutionValidity: bike.pollutionValidity || "",
+      fitnessValidity: bike.fitnessValidity || "",
+      roadTaxValidity: bike.roadTaxValidity || "",
+
+      serviceIntervalMonths: bike.serviceIntervalMonths || 5,
+      serviceIntervalKms: bike.serviceIntervalKms || 5000,
+      lastServiceDate: bike.lastServiceDate || "",
+      lastServiceKm: bike.lastServiceKm ? String(bike.lastServiceKm) : "",
+    });
+
+    setStep(1);
+    setShowNewMake(false);
+    setShowNewModel(false);
+  }, [bike]);
+
+  const setField = (key: keyof typeof form, value: string | number) => {
+    setForm((p) => ({ ...p, [key]: value }));
+  };
+
+  const handleCategoryChange = (cat: VehicleCategory) => {
+    setForm((p) => ({
+      ...p,
+      vehicleCategory: cat,
+      make: "",
+      model: "",
+      newMake: "",
+      newModel: "",
+    }));
+    setShowNewMake(false);
+    setShowNewModel(false);
+  };
+
+  const availableMakes = useMemo(() => {
+    const cat = form.vehicleCategory;
+    const base = VEHICLE_CATALOG[cat]?.makes || [];
+    const custom = customCatalog[cat]?.makes || [];
+    // legacy saved makes are treated as bike makes (back-compat)
+    const legacy = cat === "bike" ? legacyMakes || [] : [];
+    return sortAZ(uniq([...base, ...custom, ...legacy]));
+  }, [customCatalog, form.vehicleCategory, legacyMakes]);
+
+  const currentMake = (showNewMake ? form.newMake : form.make).trim();
+
+  const availableModels = useMemo(() => {
+    const cat = form.vehicleCategory;
+    if (!currentMake) return [];
+    const base = VEHICLE_CATALOG[cat]?.models?.[currentMake] || [];
+    const custom = customCatalog[cat]?.models?.[currentMake] || [];
+    const legacy = cat === "bike" ? legacyModels?.[currentMake] || [] : [];
+    return sortAZ(uniq([...base, ...custom, ...legacy]));
+  }, [customCatalog, form.vehicleCategory, currentMake, legacyModels]);
+
+  const persistCustomMake = (cat: VehicleCategory, mk: string) => {
+    const makeTrim = mk.trim();
+    if (!makeTrim) return;
+    setCustomCatalog((prev) => {
+      const existing = prev[cat]?.makes || [];
+      if (existing.includes(makeTrim)) return prev;
+      return {
+        ...prev,
+        [cat]: {
+          ...prev[cat],
+          makes: sortAZ(uniq([...existing, makeTrim])),
+          models: prev[cat]?.models || {},
+        },
+      };
+    });
+  };
+
+  const persistCustomModel = (cat: VehicleCategory, mk: string, md: string) => {
+    const makeTrim = mk.trim();
+    const modelTrim = md.trim();
+    if (!makeTrim || !modelTrim) return;
+    setCustomCatalog((prev) => {
+      const list = prev[cat]?.models?.[makeTrim] || [];
+      if (list.includes(modelTrim)) return prev;
+      return {
+        ...prev,
+        [cat]: {
+          ...prev[cat],
+          makes: prev[cat]?.makes || [],
+          models: {
+            ...(prev[cat]?.models || {}),
+            [makeTrim]: sortAZ(uniq([...list, modelTrim])),
+          },
+        },
+      };
+    });
+  };
+
+  const handleMakeSelect = (value: string) => {
+    if (value === "__new__") {
+      setShowNewMake(true);
+      setForm((p) => ({ ...p, make: "", model: "" }));
+      return;
+    }
+
+    setShowNewMake(false);
+    setForm((p) => ({ ...p, make: value, newMake: "", model: "", newModel: "" }));
+    setShowNewModel(false);
+  };
+
+  const handleModelSelect = (value: string) => {
+    if (value === "__new__") {
+      setShowNewModel(true);
+      setForm((p) => ({ ...p, model: "" }));
+      return;
+    }
+
+    setShowNewModel(false);
+    setForm((p) => ({ ...p, model: value, newModel: "" }));
+  };
+
+  // Form UI (restored to the previous larger layout)
+  const inputClass =
+    "w-full px-4 py-3 text-lg border-2 border-gray-200 rounded-xl bg-white focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100";
+  const cardClass = "bg-gray-50 rounded-xl p-4";
+  const labelClass = "block text-sm font-semibold text-gray-700 mb-2";
+
+  const save = () => {
+    const finalMake = (showNewMake ? form.newMake : form.make).trim();
+    const finalModel = (showNewModel ? form.newModel : form.model).trim();
+
+    if (!finalMake || !finalModel || !form.registrationNumber.trim() || !String(form.currentOdometer).trim()) {
+      alert("Please fill required fields: Make, Model, Registration, Current Odometer");
+      return;
+    }
+
+    const currentKm = parseInt(String(form.currentOdometer), 10) || 0;
+    const lsKm = parseInt(String(form.lastServiceKm), 10) || 0;
+
+    const baseReadings = Array.isArray(bike?.kmReadings) ? bike!.kmReadings : [];
+    const d = todayISO();
+
+    const next: Motorcycle = {
+      id: bike?.id || makeId(),
+      vehicleCategory: form.vehicleCategory,
+      make: finalMake,
+      model: finalModel,
+
+      ownerName: form.ownerName.trim() || undefined,
+      registrationNumber: form.registrationNumber.trim().toUpperCase(),
+      chassisNumber: form.chassisNumber.trim().toUpperCase(),
+      engineNumber: form.engineNumber.trim().toUpperCase() || undefined,
+
+      vehicleType: form.vehicleType,
+
+      registrationValidity: form.registrationValidity || undefined,
+      insuranceValidity: form.insuranceValidity || "",
+      pollutionValidity: form.pollutionValidity || "",
+      fitnessValidity: form.fitnessValidity || "",
+      roadTaxValidity: form.roadTaxValidity || "",
+
+      serviceIntervalMonths: form.serviceIntervalMonths,
+      serviceIntervalKms: form.serviceIntervalKms,
+      lastServiceDate: form.lastServiceDate,
+      lastServiceKm: lsKm,
+
+      kmReadings: baseReadings.length > 0 ? [...baseReadings] : [{ id: makeId(), date: d, kilometers: currentKm }],
+      currentOdometer: currentKm,
+
+      createdAt: bike?.createdAt || new Date().toISOString(),
+    };
+
+    // update km readings for current odometer
+    const latest = [...next.kmReadings].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+    if (!latest || latest.kilometers !== currentKm) {
+      const todayIdx = next.kmReadings.findIndex((r) => r.date === d);
+      if (todayIdx >= 0) next.kmReadings[todayIdx].kilometers = currentKm;
+      else next.kmReadings.push({ id: makeId(), date: d, kilometers: currentKm });
+    }
+
+    if (showNewMake) persistCustomMake(form.vehicleCategory, finalMake);
+    if (showNewModel) persistCustomModel(form.vehicleCategory, finalMake, finalModel);
+
+    onSave(next, showNewMake ? form.newMake : undefined, showNewModel ? form.newModel : undefined);
+  };
+
+  const canNext = () => {
+    if (step === 1) return true;
+    if (step === 2) {
+      const finalMake = (showNewMake ? form.newMake : form.make).trim();
+      const finalModel = (showNewModel ? form.newModel : form.model).trim();
+      return Boolean(finalMake && finalModel && form.registrationNumber.trim() && String(form.currentOdometer).trim());
+    }
+    return true;
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-white w-full max-w-2xl max-h-[95vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+        {/* Header */}
+        <div
+          className="text-white px-4 py-4"
+          style={{
+            background: "linear-gradient(90deg, #0B0B0B 0%, #111827 60%, #0B0B0B 100%)",
+            borderBottom: "1px solid rgba(212,175,55,0.25)",
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold tracking-wide">
+              {bike ? "Edit Vehicle" : "Add Vehicle"}
+            </h2>
+            <button onClick={onCancel} className="text-white/80 hover:text-white text-2xl leading-none">
+              ✕
+            </button>
+          </div>
+
+          {/* Step pills */}
+          <div className="mt-4 flex items-center gap-2">
+            {([
+              { n: 1, t: "Select" },
+              { n: 2, t: "Basic" },
+              { n: 3, t: "Docs" },
+              { n: 4, t: "Service" },
+            ] as const).map((s) => (
+              <button
+                key={s.n}
+                type="button"
+                onClick={() => setStep(s.n)}
+                className={
+                  "px-3 py-1.5 rounded-full text-sm font-medium transition-colors border " +
+                  (step === s.n
+                    ? "bg-amber-200 text-gray-900 border-amber-200"
+                    : "bg-white/10 text-white border-white/10 hover:bg-white/15")
+                }
+              >
+                {s.t}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* Step 1: Select */}
+          {step === 1 && (
+            <div className="space-y-4">
+              <div
+                className="rounded-lg p-3 text-sm"
+                style={{ backgroundColor: "rgba(212,175,55,0.10)", border: "1px solid rgba(212,175,55,0.22)" }}
+              >
+                Choose <strong>Bike</strong> or <strong>Car</strong>.
+              </div>
+
+              <div className={cardClass}>
+                <div className={labelClass}>Vehicle Category *</div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleCategoryChange("bike")}
+                    className={
+                      "px-3 py-2 rounded-lg border text-sm font-medium transition-colors " +
+                      (form.vehicleCategory === "bike"
+                        ? "bg-gray-900 border-gray-900 text-amber-200"
+                        : "bg-white border-gray-200 text-gray-700 hover:border-amber-300")
+                    }
+                  >
+                    Bike
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleCategoryChange("car")}
+                    className={
+                      "px-3 py-2 rounded-lg border text-sm font-medium transition-colors " +
+                      (form.vehicleCategory === "car"
+                        ? "bg-gray-900 border-gray-900 text-amber-200"
+                        : "bg-white border-gray-200 text-gray-700 hover:border-amber-300")
+                    }
+                  >
+                    Car
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Basic */}
+          {step === 2 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className={cardClass}>
+                <label className={labelClass}>Make / Brand *</label>
+                {!showNewMake ? (
+                  <select className={inputClass} value={form.make} onChange={(e) => handleMakeSelect(e.target.value)}>
+                    <option value="">Select make</option>
+                    {availableMakes.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                    <option value="__new__">Add new make…</option>
+                  </select>
+                ) : (
+                  <div className="space-y-2">
+                    <input
+                      className={inputClass}
+                      value={form.newMake}
+                      onChange={(e) => setField("newMake", e.target.value)}
+                      placeholder="New make"
+                      autoFocus
+                    />
+                    <button type="button" className="text-xs text-gray-500 hover:text-gray-700" onClick={() => setShowNewMake(false)}>
+                      ← Back
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className={cardClass}>
+                <label className={labelClass}>Model *</label>
+                {!showNewModel ? (
+                  <select
+                    className={inputClass}
+                    value={form.model}
+                    onChange={(e) => handleModelSelect(e.target.value)}
+                    disabled={!currentMake}
+                  >
+                    <option value="">Select model</option>
+                    {availableModels.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                    <option value="__new__">Add new model…</option>
+                  </select>
+                ) : (
+                  <div className="space-y-2">
+                    <input
+                      className={inputClass}
+                      value={form.newModel}
+                      onChange={(e) => setField("newModel", e.target.value)}
+                      placeholder="New model"
+                      autoFocus
+                    />
+                    <button type="button" className="text-xs text-gray-500 hover:text-gray-700" onClick={() => setShowNewModel(false)}>
+                      ← Back
+                    </button>
+                  </div>
+                )}
+                {!currentMake && <div className="text-[11px] text-amber-700 mt-2">Select Make first.</div>}
+              </div>
+
+              <div className={cardClass}>
+                <label className={labelClass}>Owner Name</label>
+                <input className={inputClass} value={form.ownerName} onChange={(e) => setField("ownerName", e.target.value)} placeholder="Owner name" />
+              </div>
+
+              <div className={cardClass}>
+                <label className={labelClass}>Registration Number *</label>
+                <input
+                  className={inputClass + " font-mono uppercase"}
+                  value={form.registrationNumber}
+                  onChange={(e) => setField("registrationNumber", e.target.value.toUpperCase())}
+                  placeholder="MH01AB1234"
+                />
+              </div>
+
+              <div className={cardClass}>
+                <label className={labelClass}>Chassis Number</label>
+                <input
+                  className={inputClass + " font-mono uppercase"}
+                  value={form.chassisNumber}
+                  onChange={(e) => setField("chassisNumber", e.target.value.toUpperCase())}
+                  placeholder="Chassis"
+                />
+              </div>
+
+              <div className={cardClass}>
+                <label className={labelClass}>Engine Number</label>
+                <input
+                  className={inputClass + " font-mono uppercase"}
+                  value={form.engineNumber}
+                  onChange={(e) => setField("engineNumber", e.target.value.toUpperCase())}
+                  placeholder="Engine"
+                />
+              </div>
+
+              <div className={cardClass + " sm:col-span-2"}>
+                <label className={labelClass}>Current Odometer (KM) *</label>
+                <input
+                  className={inputClass}
+                  type="number"
+                  min={0}
+                  value={form.currentOdometer}
+                  onChange={(e) => setField("currentOdometer", e.target.value)}
+                  placeholder="15000"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: Documents */}
+          {step === 3 && (
+            <div className="space-y-4">
+              <div className={cardClass}>
+                <div className={labelClass}>Vehicle Type</div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setField("vehicleType", "private")}
+                    className={
+                      "px-3 py-2 rounded-lg border text-sm font-medium transition-colors " +
+                      (form.vehicleType === "private"
+                        ? "bg-gray-900 border-gray-900 text-amber-200"
+                        : "bg-white border-gray-200 text-gray-700 hover:border-amber-300")
+                    }
+                  >
+                    Private
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setField("vehicleType", "commercial")}
+                    className={
+                      "px-3 py-2 rounded-lg border text-sm font-medium transition-colors " +
+                      (form.vehicleType === "commercial"
+                        ? "bg-gray-900 border-gray-900 text-amber-200"
+                        : "bg-white border-gray-200 text-gray-700 hover:border-amber-300")
+                    }
+                  >
+                    Commercial
+                  </button>
+                </div>
+                <div className="text-[11px] text-gray-500 mt-2">
+                  Private: Registration + Insurance + Pollution. Commercial: Insurance + Pollution + Fitness + Road Tax.
+                </div>
+              </div>
+
+              {form.vehicleType === "private" && (
+                <>
+                  <div className={cardClass}>
+                    <label className={labelClass}>Registration Valid Till</label>
+                    <input className={inputClass} type="date" value={form.registrationValidity} onChange={(e) => setField("registrationValidity", e.target.value)} />
+                  </div>
+                  <div className={cardClass}>
+                    <label className={labelClass}>Insurance Valid Till</label>
+                    <input className={inputClass} type="date" value={form.insuranceValidity} onChange={(e) => setField("insuranceValidity", e.target.value)} />
+                  </div>
+                  <div className={cardClass}>
+                    <label className={labelClass}>Pollution Valid Till</label>
+                    <input className={inputClass} type="date" value={form.pollutionValidity} onChange={(e) => setField("pollutionValidity", e.target.value)} />
+                  </div>
+                </>
+              )}
+
+              {form.vehicleType === "commercial" && (
+                <>
+                  <div className={cardClass}>
+                    <label className={labelClass}>Insurance Valid Till</label>
+                    <input className={inputClass} type="date" value={form.insuranceValidity} onChange={(e) => setField("insuranceValidity", e.target.value)} />
+                  </div>
+                  <div className={cardClass}>
+                    <label className={labelClass}>Pollution Valid Till</label>
+                    <input className={inputClass} type="date" value={form.pollutionValidity} onChange={(e) => setField("pollutionValidity", e.target.value)} />
+                  </div>
+                  <div className={cardClass}>
+                    <label className={labelClass}>Fitness Valid Till</label>
+                    <input className={inputClass} type="date" value={form.fitnessValidity} onChange={(e) => setField("fitnessValidity", e.target.value)} />
+                  </div>
+                  <div className={cardClass}>
+                    <label className={labelClass}>Road Tax Valid Till</label>
+                    <input className={inputClass} type="date" value={form.roadTaxValidity} onChange={(e) => setField("roadTaxValidity", e.target.value)} />
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Step 4: Service */}
+          {step === 4 && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className={cardClass}>
+                  <label className={labelClass}>Service Interval (Months)</label>
+                  <select
+                    className={inputClass}
+                    value={form.serviceIntervalMonths}
+                    onChange={(e) => setField("serviceIntervalMonths", parseInt(e.target.value, 10))}
+                  >
+                    {[3, 4, 5, 6, 9, 12].map((m) => (
+                      <option key={m} value={m}>
+                        {m} months
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className={cardClass}>
+                  <label className={labelClass}>Service Interval (KM)</label>
+                  <select
+                    className={inputClass}
+                    value={form.serviceIntervalKms}
+                    onChange={(e) => setField("serviceIntervalKms", parseInt(e.target.value, 10))}
+                  >
+                    {[3000, 4000, 5000, 6000, 8000, 10000].map((km) => (
+                      <option key={km} value={km}>
+                        {km.toLocaleString()} km
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className={cardClass}>
+                  <label className={labelClass}>Last Service Date</label>
+                  <input className={inputClass} type="date" value={form.lastServiceDate} onChange={(e) => setField("lastServiceDate", e.target.value)} />
+                </div>
+                <div className={cardClass}>
+                  <label className={labelClass}>Last Service Odometer (KM)</label>
+                  <input
+                    className={inputClass}
+                    type="number"
+                    min={0}
+                    value={form.lastServiceKm}
+                    onChange={(e) => setField("lastServiceKm", e.target.value)}
+                    placeholder="e.g., 12000"
+                  />
+                </div>
+              </div>
+
+              {String(form.currentOdometer).trim() && (
+                <div
+                  className="rounded-xl p-4 text-sm"
+                  style={{ backgroundColor: "rgba(212,175,55,0.10)", border: "1px solid rgba(212,175,55,0.22)" }}
+                >
+                  <div className="font-semibold text-gray-900">Quick summary</div>
+                  <div className="text-gray-700 mt-1">
+                    Current odometer: <strong>{(parseInt(String(form.currentOdometer), 10) || 0).toLocaleString()} km</strong>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="border-t bg-gray-50 p-4">
+          <div className="flex items-center justify-between gap-2">
+            <button type="button" onClick={onCancel} className="px-4 py-2.5 text-gray-600 hover:text-gray-900 font-medium">
+              Cancel
+            </button>
+
+            <div className="flex items-center gap-2">
+              {step > 1 && (
+                <button
+                  type="button"
+                  onClick={() => setStep((s) => (s - 1) as any)}
+                  className="px-4 py-2.5 rounded-xl text-sm font-medium bg-gray-200 hover:bg-gray-300 text-gray-800"
+                >
+                  ← Prev
+                </button>
+              )}
+
+              {step < 4 ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!canNext()) {
+                      alert("Please complete required fields in this step.");
+                      return;
+                    }
+                    setStep((s) => (s + 1) as any);
+                  }}
+                  className={
+                    "px-6 py-2.5 rounded-xl text-sm font-semibold " +
+                    (canNext() ? "bg-gray-900 hover:bg-black text-amber-200" : "bg-gray-300 text-gray-600 cursor-not-allowed")
+                  }
+                >
+                  Next →
+                </button>
+              ) : (
+                <button type="button" onClick={save} className="px-6 py-2.5 rounded-xl text-sm font-bold bg-gray-900 hover:bg-black text-amber-200">
+                  Save Vehicle
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
