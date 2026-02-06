@@ -4,6 +4,7 @@ import { ServiceHistory } from "./components/ServiceHistory";
 import Analytics from "./components/Analytics";
 import CompanySettings from "./components/CompanySettings";
 import AuthScreen from "./components/AuthScreen";
+import HomePage from "./components/HomePage";
 import HelpCenter from "./components/HelpCenter";
 import ExcelImportExport from "./components/ExcelImportExport";
 import {
@@ -94,6 +95,10 @@ function App() {
   const [activeTab, setActiveTab] = useState<
     "fleet" | "service" | "analytics" | "settings" | "help"
   >("fleet");
+
+  // Entry pages before auth
+  const [entryScreen, setEntryScreen] = useState<"home" | "auth">("home");
+
   const [isBootLoading, setIsBootLoading] = useState(true);
 
   // Restore session on mount.
@@ -109,6 +114,7 @@ function App() {
           if (!cancelled) {
             setCurrentUser(user);
             setIsAuthenticated(true);
+            setEntryScreen("auth");
           }
           return;
         }
@@ -133,6 +139,7 @@ function App() {
             if (!cancelled) {
               setCurrentUser(restored);
               setIsAuthenticated(true);
+              setEntryScreen("auth");
             }
           }
         }
@@ -151,6 +158,8 @@ function App() {
   const handleLogin = (user: User) => {
     setCurrentUser(user);
     setIsAuthenticated(true);
+    setActiveTab("fleet");
+    setEntryScreen("auth");
   };
 
   const handleLogout = async () => {
@@ -164,6 +173,8 @@ function App() {
     localStorage.removeItem("fleet_current_user");
     setCurrentUser(null);
     setIsAuthenticated(false);
+    setActiveTab("fleet");
+    setEntryScreen("home");
   };
 
   // --------------------
@@ -389,16 +400,25 @@ function App() {
   if (isBootLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-600 to-indigo-800 flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="text-6xl mb-4 animate-bounce">🏍️</div>
-          <p className="text-xl">Loading Fleet Manager...</p>
+                  <div className="text-center text-white">
+          <div className="text-6xl mb-4 animate-bounce">🛡️</div>
+          <p className="text-xl">Loading Fleet Guard...</p>
         </div>
       </div>
     );
   }
 
-  // Auth gate
+  // Pre-auth entry flow
   if (!isAuthenticated) {
+    if (entryScreen === "home") {
+      return (
+        <HomePage
+          companySettings={data.companySettings}
+          onGetStarted={() => setEntryScreen("auth")}
+        />
+      );
+    }
+
     return <AuthScreen onLogin={handleLogin} companySettings={data.companySettings} />;
   }
 
@@ -422,17 +442,17 @@ function App() {
                   className="w-10 h-10 rounded-full bg-white p-1"
                 />
               ) : (
-                <span className="text-3xl">🏍️</span>
+                <span className="text-3xl">🛡️</span>
               )}
               <div>
-                <h1 className="text-xl font-bold">
-                  {data.companySettings.companyName || "Fleet Manager"}
-                </h1>
+                <h1 className="text-xl font-bold">Fleet Guard</h1>
                 <p
                   className="text-xs hidden sm:block"
                   style={{ color: "rgba(253, 230, 138, 0.85)" }}
                 >
-                  {data.companySettings.tagline || "Vehicle Fleet Management"}
+                  {data.companySettings.companyName
+                    ? `${data.companySettings.companyName} • ${data.companySettings.tagline || "Vehicle Fleet Management"}`
+                    : data.companySettings.tagline || "Vehicle Fleet Management"}
                 </p>
               </div>
             </div>
@@ -708,7 +728,7 @@ function App() {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-4 mt-8" style={{ borderTop: "1px solid rgba(212,175,55,0.20)" }}>
         <div className="max-w-7xl mx-auto px-4 text-center text-sm">
-          <p>© 2026 {data.companySettings.companyName || "Fleet Manager"}. All rights reserved.</p>
+          <p>© 2026 Fleet Guard. All rights reserved.</p>
         </div>
       </footer>
     </div>

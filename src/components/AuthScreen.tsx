@@ -263,8 +263,12 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
               <span className="text-5xl">🏍️</span>
             </div>
           )}
-          <h1 className="text-3xl font-bold text-white mb-2">{companySettings.companyName || "Fleet Manager"}</h1>
-          <p className="text-amber-200/80">Vehicle Fleet Management System</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Fleet Guard</h1>
+          <p className="text-amber-200/80">
+            {companySettings.companyName?.trim()
+              ? `${companySettings.companyName} • Vehicle Fleet Management`
+              : "Vehicle Fleet Management System"}
+          </p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
@@ -324,7 +328,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings }) => 
           </div>
         </div>
 
-        <p className="text-center text-white/50 mt-6 text-sm">© 2024 Fleet Manager</p>
+        <p className="text-center text-white/50 mt-6 text-sm">© 2026 Fleet Guard</p>
       </div>
     </div>
   );
