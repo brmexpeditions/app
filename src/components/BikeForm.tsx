@@ -1,1080 +1,716 @@
-import { useEffect, useMemo, useState, type ComponentType } from "react";
-import type { Motorcycle, VehicleCategory } from "../types";
-import { VEHICLE_CATALOG } from "../data/vehicleCatalog";
-import {
-  IconBike,
-  IconCar,
-  IconCheckBadge,
-  IconDocument,
-  IconFleet,
-  IconGauge,
-  IconRoad,
-  IconShield,
-  IconSmoke,
-  IconWrench,
-} from "./ui/Icons";
-
-const uniq = (arr: string[]) => Array.from(new Set(arr)).filter(Boolean);
-const sortAZ = (arr: string[]) => [...arr].sort((a, b) => a.localeCompare(b));
+import React, { useState, useEffect } from 'react';
+import { Motorcycle } from '../types';
 
 interface BikeFormProps {
   bike?: Motorcycle | null;
-  onSave: (bike: Motorcycle, newMake?: string, newModel?: string) => void;
-  onCancel: () => void;
   makes: string[];
   models: Record<string, string[]>;
+  onSave: (bike: Motorcycle) => void;
+  onCancel: () => void;
+  onAddMake: (make: string) => void;
+  onAddModel: (make: string, model: string) => void;
 }
 
-type VehicleTypeLocal = "private" | "commercial";
+// Indian Bike Brands and Models
+const indianBikeBrands: Record<string, string[]> = {
+  'Honda': ['Activa 6G', 'Shine', 'Unicorn', 'SP 125', 'Dio', 'Hornet 2.0', 'CB350', 'Livo', 'Dream'],
+  'Hero': ['Splendor Plus', 'HF Deluxe', 'Passion Pro', 'Glamour', 'Xtreme 160R', 'XPulse 200', 'Destini 125', 'Pleasure Plus'],
+  'Bajaj': ['Pulsar 150', 'Pulsar NS200', 'Pulsar RS200', 'Platina', 'CT 100', 'Dominar 400', 'Avenger', 'Chetak'],
+  'TVS': ['Apache RTR 160', 'Apache RTR 200', 'Jupiter', 'Ntorq 125', 'Raider', 'Sport', 'XL100', 'iQube'],
+  'Royal Enfield': ['Classic 350', 'Bullet 350', 'Meteor 350', 'Hunter 350', 'Himalayan', 'Continental GT', 'Interceptor 650'],
+  'Yamaha': ['FZ-S', 'MT-15', 'R15 V4', 'Fascino', 'Ray ZR', 'FZ-X', 'Aerox 155'],
+  'KTM': ['Duke 125', 'Duke 200', 'Duke 390', 'RC 125', 'RC 200', 'RC 390', 'Adventure 250', 'Adventure 390'],
+  'Suzuki': ['Access 125', 'Burgman Street', 'Gixxer', 'Gixxer SF', 'Hayabusa', 'V-Strom'],
+  'Jawa': ['Jawa 42', 'Jawa Classic', 'Perak', 'Yezdi Adventure', 'Yezdi Roadster'],
+  'Ola Electric': ['S1 Pro', 'S1 Air', 'S1 X'],
+};
 
-type CustomCatalog = Record<
-  VehicleCategory,
-  { makes: string[]; models: Record<string, string[]> }
->;
+// Indian Car Brands and Models
+const indianCarBrands: Record<string, string[]> = {
+  'Maruti Suzuki': ['Alto K10', 'Swift', 'Baleno', 'Dzire', 'Ertiga', 'Brezza', 'Grand Vitara', 'Wagon R', 'Celerio', 'Ignis', 'XL6', 'Ciaz', 'Fronx', 'Jimny', 'Invicto'],
+  'Hyundai': ['i10 Nios', 'i20', 'Venue', 'Creta', 'Verna', 'Alcazar', 'Tucson', 'Exter', 'Aura', 'Kona EV', 'Ioniq 5'],
+  'Tata': ['Punch', 'Nexon', 'Harrier', 'Safari', 'Altroz', 'Tiago', 'Tigor', 'Nexon EV', 'Tiago EV', 'Curvv'],
+  'Mahindra': ['Thar', 'Scorpio N', 'XUV700', 'XUV400', 'Bolero', 'XUV300', 'Marazzo', 'BE 6e'],
+  'Kia': ['Seltos', 'Sonet', 'Carens', 'EV6', 'Carnival'],
+  'Toyota': ['Innova Crysta', 'Innova Hycross', 'Fortuner', 'Glanza', 'Urban Cruiser Hyryder', 'Camry', 'Vellfire', 'Land Cruiser'],
+  'Honda': ['City', 'Amaze', 'Elevate', 'City Hybrid'],
+  'MG Motor': ['Hector', 'Astor', 'ZS EV', 'Gloster', 'Comet EV'],
+  'Renault': ['Kwid', 'Triber', 'Kiger'],
+  'Volkswagen': ['Polo', 'Virtus', 'Taigun', 'Tiguan'],
+  'Skoda': ['Slavia', 'Kushaq', 'Superb', 'Kodiaq'],
+};
 
-const CUSTOM_CATALOG_KEY = "fleet_custom_vehicle_catalog_v1";
+const generateId = () => {
+  return 'v_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+};
 
-type StepId = 1 | 2 | 3 | 4;
-
-const STEP_DEFS: Array<{
-  n: StepId;
-  label: string;
-  title: string;
-  subtitle: string;
-  Icon: ComponentType<{ className?: string }>;
-}> = [
-  {
-    n: 1,
-    label: "Select",
-    title: "Select vehicle category",
-    subtitle: "Choose whether this is a bike or a car",
-    Icon: IconFleet,
-  },
-  {
-    n: 2,
-    label: "Basic",
-    title: "Basic details",
-    subtitle: "Make, model, owner, registration and odometer",
-    Icon: IconGauge,
-  },
-  {
-    n: 3,
-    label: "Docs",
-    title: "Documents",
-    subtitle: "Validity dates for reminders",
-    Icon: IconDocument,
-  },
-  {
-    n: 4,
-    label: "Service",
-    title: "Service setup",
-    subtitle: "Intervals and last service info",
-    Icon: IconWrench,
-  },
-];
-
-function makeId(): string {
-  // randomUUID not available in some mobile webviews
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const c: any = globalThis.crypto;
-  if (c?.randomUUID) return c.randomUUID();
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
-}
-
-function todayISO(): string {
-  return new Date().toISOString().split("T")[0];
-}
-
-function clampToNumber(value: string): number {
-  const n = parseInt(String(value || "").trim(), 10);
-  return Number.isFinite(n) ? n : 0;
-}
-
-function IconUserMini({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-      />
-      <path
-        d="M4.5 21a7.5 7.5 0 0 1 15 0"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function IconChipMini({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M9 9h6v6H9V9Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M7 4v2M11 4v2M13 4v2M17 4v2"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path
-        d="M7 18v2M11 18v2M13 18v2M17 18v2"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path
-        d="M4 7h2M4 11h2M4 13h2M4 17h2"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path
-        d="M18 7h2M18 11h2M18 13h2M18 17h2"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function FieldLabel(props: {
-  icon?: ComponentType<{ className?: string }>;
-  required?: boolean;
-  children: string;
-}) {
-  const Icon = props.icon;
-  return (
-    <label className="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-2">
-      {Icon ? (
-        <span
-          className="inline-flex items-center justify-center w-8 h-8 rounded-xl"
-          style={{
-            backgroundColor: "rgba(212,175,55,0.10)",
-            border: "1px solid rgba(212,175,55,0.22)",
-            color: "#7C5E00",
-          }}
-        >
-          <Icon className="w-4 h-4" />
-        </span>
-      ) : null}
-      <span>
-        {props.children}
-        {props.required ? <span className="text-red-500"> *</span> : null}
-      </span>
-    </label>
-  );
-}
-
-export function BikeForm({
-  bike,
-  onSave,
-  onCancel,
-  makes: legacyMakes,
-  models: legacyModels,
-}: BikeFormProps) {
-  const [step, setStep] = useState<StepId>(1);
-  const [showNewMake, setShowNewMake] = useState(false);
-  const [showNewModel, setShowNewModel] = useState(false);
-
-  const [customCatalog, setCustomCatalog] = useState<CustomCatalog>(() => {
-    try {
-      const raw = localStorage.getItem(CUSTOM_CATALOG_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<CustomCatalog>;
-        return {
-          bike: {
-            makes: Array.isArray(parsed.bike?.makes) ? parsed.bike!.makes : [],
-            models:
-              parsed.bike?.models && typeof parsed.bike.models === "object"
-                ? parsed.bike.models
-                : {},
-          },
-          car: {
-            makes: Array.isArray(parsed.car?.makes) ? parsed.car!.makes : [],
-            models:
-              parsed.car?.models && typeof parsed.car.models === "object"
-                ? parsed.car.models
-                : {},
-          },
-        };
-      }
-    } catch {
-      // ignore
-    }
-    return { bike: { makes: [], models: {} }, car: { makes: [], models: {} } };
+export function BikeForm({ bike, makes, models, onSave, onCancel, onAddMake, onAddModel }: BikeFormProps) {
+  const [step, setStep] = useState(bike ? 2 : 1);
+  const [vehicleType, setVehicleType] = useState<'Bike' | 'Car'>(bike?.vehicleType || 'Bike');
+  const [formData, setFormData] = useState({
+    make: '',
+    model: '',
+    ownerName: '',
+    registrationNumber: '',
+    chassisNumber: '',
+    engineNumber: '',
+    currentOdometer: '',
+    vehicleUsage: 'Private' as 'Private' | 'Commercial',
+    insuranceValidity: '',
+    pollutionValidity: '',
+    fitnessValidity: '',
+    roadTaxValidity: '',
+    registrationValidity: '',
+    permitValidity: '',
+    serviceIntervalMonths: '5',
+    serviceIntervalKms: '5000',
+    lastServiceDate: '',
+    lastServiceKm: '',
   });
+  const [isAddingMake, setIsAddingMake] = useState(false);
+  const [isAddingModel, setIsAddingModel] = useState(false);
+  const [newMake, setNewMake] = useState('');
+  const [newModel, setNewModel] = useState('');
 
   useEffect(() => {
-    try {
-      localStorage.setItem(CUSTOM_CATALOG_KEY, JSON.stringify(customCatalog));
-    } catch {
-      // ignore
+    if (bike) {
+      setVehicleType(bike.vehicleType || 'Bike');
+      setFormData({
+        make: bike.make || '',
+        model: bike.model || '',
+        ownerName: bike.ownerName || '',
+        registrationNumber: bike.registrationNumber || '',
+        chassisNumber: bike.chassisNumber || '',
+        engineNumber: bike.engineNumber || '',
+        currentOdometer: bike.currentOdometer?.toString() || '',
+        vehicleUsage: bike.vehicleUsage || 'Private',
+        insuranceValidity: bike.insuranceValidity || '',
+        pollutionValidity: bike.pollutionValidity || '',
+        fitnessValidity: bike.fitnessValidity || '',
+        roadTaxValidity: bike.roadTaxValidity || '',
+        registrationValidity: bike.registrationValidity || '',
+        permitValidity: bike.permitValidity || '',
+        serviceIntervalMonths: bike.serviceIntervalMonths?.toString() || '5',
+        serviceIntervalKms: bike.serviceIntervalKms?.toString() || '5000',
+        lastServiceDate: bike.lastServiceDate || '',
+        lastServiceKm: bike.lastServiceKm?.toString() || '',
+      });
     }
-  }, [customCatalog]);
-
-  const [form, setForm] = useState({
-    vehicleCategory: "bike" as VehicleCategory,
-
-    make: "",
-    newMake: "",
-    model: "",
-    newModel: "",
-
-    ownerName: "",
-    registrationNumber: "",
-    chassisNumber: "",
-    engineNumber: "",
-
-    currentOdometer: "",
-
-    vehicleType: "commercial" as VehicleTypeLocal,
-
-    registrationValidity: "",
-    insuranceValidity: "",
-    pollutionValidity: "",
-    fitnessValidity: "",
-    roadTaxValidity: "",
-
-    serviceIntervalMonths: 5,
-    serviceIntervalKms: 5000,
-    lastServiceDate: "",
-    lastServiceKm: "",
-  });
-
-  // Load bike into form when editing
-  useEffect(() => {
-    if (!bike) return;
-
-    const kmReadings = Array.isArray(bike.kmReadings) ? bike.kmReadings : [];
-    const latest = [...kmReadings].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    )[0];
-
-    setForm({
-      vehicleCategory: bike.vehicleCategory || "bike",
-
-      make: bike.make || "",
-      newMake: "",
-      model: bike.model || "",
-      newModel: "",
-
-      ownerName: bike.ownerName || "",
-      registrationNumber: bike.registrationNumber || "",
-      chassisNumber: bike.chassisNumber || "",
-      engineNumber: bike.engineNumber || "",
-
-      currentOdometer: String(latest?.kilometers ?? bike.currentOdometer ?? 0),
-
-      vehicleType: (bike.vehicleType as VehicleTypeLocal) || "commercial",
-
-      registrationValidity: bike.registrationValidity || "",
-      insuranceValidity: bike.insuranceValidity || "",
-      pollutionValidity: bike.pollutionValidity || "",
-      fitnessValidity: bike.fitnessValidity || "",
-      roadTaxValidity: bike.roadTaxValidity || "",
-
-      serviceIntervalMonths: bike.serviceIntervalMonths || 5,
-      serviceIntervalKms: bike.serviceIntervalKms || 5000,
-      lastServiceDate: bike.lastServiceDate || "",
-      lastServiceKm: bike.lastServiceKm ? String(bike.lastServiceKm) : "",
-    });
-
-    setStep(1);
-    setShowNewMake(false);
-    setShowNewModel(false);
   }, [bike]);
 
-  const setField = (key: keyof typeof form, value: string | number) => {
-    setForm((p) => ({ ...p, [key]: value }));
+  const handleVehicleTypeSelect = (type: 'Bike' | 'Car') => {
+    setVehicleType(type);
+    setFormData(prev => ({ ...prev, make: '', model: '' }));
+    setStep(2);
   };
 
-  const handleCategoryChange = (cat: VehicleCategory) => {
-    setForm((p) => ({
-      ...p,
-      vehicleCategory: cat,
-      make: "",
-      model: "",
-      newMake: "",
-      newModel: "",
-    }));
-    setShowNewMake(false);
-    setShowNewModel(false);
+  const getBrandsForVehicle = () => {
+    const predefined = vehicleType === 'Bike' ? Object.keys(indianBikeBrands) : Object.keys(indianCarBrands);
+    const userMakes = makes.filter(m => !predefined.includes(m));
+    return [...predefined, ...userMakes];
   };
 
-  const availableMakes = useMemo(() => {
-    const cat = form.vehicleCategory;
-    const base = VEHICLE_CATALOG[cat]?.makes || [];
-    const custom = customCatalog[cat]?.makes || [];
-    // legacy saved makes are treated as bike makes (back-compat)
-    const legacy = cat === "bike" ? legacyMakes || [] : [];
-    return sortAZ(uniq([...base, ...custom, ...legacy]));
-  }, [customCatalog, form.vehicleCategory, legacyMakes]);
-
-  const currentMake = (showNewMake ? form.newMake : form.make).trim();
-
-  const availableModels = useMemo(() => {
-    const cat = form.vehicleCategory;
-    if (!currentMake) return [];
-    const base = VEHICLE_CATALOG[cat]?.models?.[currentMake] || [];
-    const custom = customCatalog[cat]?.models?.[currentMake] || [];
-    const legacy = cat === "bike" ? legacyModels?.[currentMake] || [] : [];
-    return sortAZ(uniq([...base, ...custom, ...legacy]));
-  }, [customCatalog, form.vehicleCategory, currentMake, legacyModels]);
-
-  const persistCustomMake = (cat: VehicleCategory, mk: string) => {
-    const makeTrim = mk.trim();
-    if (!makeTrim) return;
-    setCustomCatalog((prev) => {
-      const existing = prev[cat]?.makes || [];
-      if (existing.includes(makeTrim)) return prev;
-      return {
-        ...prev,
-        [cat]: {
-          ...prev[cat],
-          makes: sortAZ(uniq([...existing, makeTrim])),
-          models: prev[cat]?.models || {},
-        },
-      };
-    });
+  const getModelsForMake = () => {
+    const predefinedBrands = vehicleType === 'Bike' ? indianBikeBrands : indianCarBrands;
+    const predefinedModels = predefinedBrands[formData.make] || [];
+    const userModels = models[formData.make] || [];
+    return [...new Set([...predefinedModels, ...userModels])];
   };
 
-  const persistCustomModel = (cat: VehicleCategory, mk: string, md: string) => {
-    const makeTrim = mk.trim();
-    const modelTrim = md.trim();
-    if (!makeTrim || !modelTrim) return;
-    setCustomCatalog((prev) => {
-      const list = prev[cat]?.models?.[makeTrim] || [];
-      if (list.includes(modelTrim)) return prev;
-      return {
-        ...prev,
-        [cat]: {
-          ...prev[cat],
-          makes: prev[cat]?.makes || [],
-          models: {
-            ...(prev[cat]?.models || {}),
-            [makeTrim]: sortAZ(uniq([...list, modelTrim])),
-          },
-        },
-      };
-    });
-  };
-
-  const handleMakeSelect = (value: string) => {
-    if (value === "__new__") {
-      setShowNewMake(true);
-      setForm((p) => ({ ...p, make: "", model: "" }));
-      return;
+  const handleAddNewMake = () => {
+    if (newMake.trim()) {
+      onAddMake(newMake.trim());
+      setFormData(prev => ({ ...prev, make: newMake.trim(), model: '' }));
+      setNewMake('');
+      setIsAddingMake(false);
     }
-
-    setShowNewMake(false);
-    setForm((p) => ({ ...p, make: value, newMake: "", model: "", newModel: "" }));
-    setShowNewModel(false);
   };
 
-  const handleModelSelect = (value: string) => {
-    if (value === "__new__") {
-      setShowNewModel(true);
-      setForm((p) => ({ ...p, model: "" }));
-      return;
+  const handleAddNewModel = () => {
+    if (newModel.trim() && formData.make) {
+      onAddModel(formData.make, newModel.trim());
+      setFormData(prev => ({ ...prev, model: newModel.trim() }));
+      setNewModel('');
+      setIsAddingModel(false);
     }
-
-    setShowNewModel(false);
-    setForm((p) => ({ ...p, model: value, newModel: "" }));
   };
 
-  const inputClass =
-    "w-full px-4 py-3 text-lg border-2 border-gray-200 rounded-xl bg-white shadow-sm focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-100 placeholder:text-gray-400";
-  const cardClass =
-    "rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-colors focus-within:border-amber-300";
-
-  const stepMeta = STEP_DEFS.find((s) => s.n === step)!;
-  const progress = Math.round(((step - 1) / (STEP_DEFS.length - 1)) * 100);
-
-  const save = () => {
-    const finalMake = (showNewMake ? form.newMake : form.make).trim();
-    const finalModel = (showNewModel ? form.newModel : form.model).trim();
-
-    if (
-      !finalMake ||
-      !finalModel ||
-      !form.registrationNumber.trim() ||
-      !String(form.currentOdometer).trim()
-    ) {
-      alert("Please fill required fields: Make, Model, Registration, Current Odometer");
-      return;
-    }
-
-    const currentKm = clampToNumber(String(form.currentOdometer));
-    const lsKm = clampToNumber(String(form.lastServiceKm));
-
-    const baseReadings = Array.isArray(bike?.kmReadings) ? bike!.kmReadings : [];
-    const d = todayISO();
-
-    const next: Motorcycle = {
-      id: bike?.id || makeId(),
-      vehicleCategory: form.vehicleCategory,
-      make: finalMake,
-      model: finalModel,
-
-      ownerName: form.ownerName.trim() || undefined,
-      registrationNumber: form.registrationNumber.trim().toUpperCase(),
-      chassisNumber: form.chassisNumber.trim().toUpperCase(),
-      engineNumber: form.engineNumber.trim().toUpperCase() || undefined,
-
-      vehicleType: form.vehicleType,
-
-      registrationValidity: form.registrationValidity || undefined,
-      insuranceValidity: form.insuranceValidity || "",
-      pollutionValidity: form.pollutionValidity || "",
-      fitnessValidity: form.fitnessValidity || "",
-      roadTaxValidity: form.roadTaxValidity || "",
-
-      serviceIntervalMonths: form.serviceIntervalMonths,
-      serviceIntervalKms: form.serviceIntervalKms,
-      lastServiceDate: form.lastServiceDate,
-      lastServiceKm: lsKm,
-
-      kmReadings:
-        baseReadings.length > 0
-          ? [...baseReadings]
-          : [{ id: makeId(), date: d, kilometers: currentKm }],
-      currentOdometer: currentKm,
-
+  const handleSubmit = () => {
+    const newBike: Motorcycle = {
+      id: bike?.id || generateId(),
+      
+      vehicleType: vehicleType,
+      make: formData.make,
+      model: formData.model,
+      ownerName: formData.ownerName,
+      registrationNumber: formData.registrationNumber,
+      chassisNumber: formData.chassisNumber,
+      engineNumber: formData.engineNumber,
+      currentOdometer: parseInt(formData.currentOdometer) || 0,
+      
+      vehicleUsage: formData.vehicleUsage,
+      insuranceValidity: formData.insuranceValidity,
+      pollutionValidity: formData.pollutionValidity,
+      fitnessValidity: formData.vehicleUsage === 'Commercial' ? formData.fitnessValidity : undefined,
+      roadTaxValidity: formData.vehicleUsage === 'Commercial' ? formData.roadTaxValidity : undefined,
+      permitValidity: formData.vehicleUsage === 'Commercial' ? formData.permitValidity : undefined,
+      registrationValidity: formData.vehicleUsage === 'Private' ? formData.registrationValidity : undefined,
+      
+      serviceIntervalMonths: parseInt(formData.serviceIntervalMonths) || 5,
+      serviceIntervalKms: parseInt(formData.serviceIntervalKms) || 5000,
+      lastServiceDate: formData.lastServiceDate,
+      lastServiceKm: parseInt(formData.lastServiceKm) || 0,
+      
+      kmReadings: bike?.kmReadings || [{
+        id: generateId(),
+        date: new Date().toISOString().split('T')[0],
+        kilometers: parseInt(formData.currentOdometer) || 0
+      }],
+      
       createdAt: bike?.createdAt || new Date().toISOString(),
     };
-
-    // update km readings for current odometer
-    const latest = [...next.kmReadings].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    )[0];
-    if (!latest || latest.kilometers !== currentKm) {
-      const todayIdx = next.kmReadings.findIndex((r) => r.date === d);
-      if (todayIdx >= 0) next.kmReadings[todayIdx].kilometers = currentKm;
-      else next.kmReadings.push({ id: makeId(), date: d, kilometers: currentKm });
-    }
-
-    if (showNewMake) persistCustomMake(form.vehicleCategory, finalMake);
-    if (showNewModel) persistCustomModel(form.vehicleCategory, finalMake, finalModel);
-
-    onSave(
-      next,
-      showNewMake ? form.newMake : undefined,
-      showNewModel ? form.newModel : undefined
-    );
+    
+    onSave(newBike);
   };
 
-  const canNext = () => {
-    if (step === 1) return true;
-    if (step === 2) {
-      const finalMake = (showNewMake ? form.newMake : form.make).trim();
-      const finalModel = (showNewModel ? form.newModel : form.model).trim();
-      return Boolean(
-        finalMake &&
-          finalModel &&
-          form.registrationNumber.trim() &&
-          String(form.currentOdometer).trim()
-      );
-    }
+  const canProceed = () => {
+    if (step === 2) return formData.make && formData.model && formData.registrationNumber;
+    if (step === 3) return formData.insuranceValidity && formData.pollutionValidity;
     return true;
   };
 
+  const steps = [
+    { num: 1, label: 'Type', icon: '🚗' },
+    { num: 2, label: 'Details', icon: '📋' },
+    { num: 3, label: 'Documents', icon: '📄' },
+    { num: 4, label: 'Service', icon: '🔧' }
+  ];
+
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-2 sm:p-4 backdrop-blur-[1px]">
-      <div className="bg-white w-full max-w-2xl max-h-[95vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col ring-1 ring-black/5">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl w-full max-w-lg max-h-[95vh] overflow-hidden shadow-2xl border border-amber-500/20">
+        
         {/* Header */}
-        <div
-          className="text-white px-4 py-4"
-          style={{
-            background:
-              "linear-gradient(90deg, #0B0B0B 0%, #111827 60%, #0B0B0B 100%)",
-            borderBottom: "1px solid rgba(212,175,55,0.25)",
-          }}
-        >
-          <div className="flex items-start justify-between gap-4">
+        <div className="bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+              {vehicleType === 'Bike' ? '🏍️' : '🚗'}
+            </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-bold tracking-wide leading-tight">
-                {bike ? "Edit vehicle" : "Add vehicle"}
+              <h2 className="text-gray-900 font-bold text-base">
+                {bike ? 'Edit Vehicle' : 'Add New Vehicle'}
               </h2>
-              <p className="text-xs mt-1" style={{ color: "rgba(253,230,138,0.85)" }}>
-                Step {step} of {STEP_DEFS.length} — {stepMeta.label}
-              </p>
+              <p className="text-gray-800 text-xs">Step {step} of 4</p>
             </div>
-            <button
-              onClick={onCancel}
-              className="text-white/80 hover:text-white text-2xl leading-none"
-              aria-label="Close"
-              title="Close"
-            >
-              ✕
-            </button>
           </div>
+          <button onClick={onCancel} className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center text-gray-900 transition-colors">
+            ✕
+          </button>
+        </div>
 
-          {/* Stepper */}
-          <div className="mt-4">
-            <div className="grid grid-cols-4 gap-2">
-              {STEP_DEFS.map((s) => {
-                const active = s.n === step;
-                return (
-                  <button
-                    key={s.n}
-                    type="button"
-                    onClick={() => setStep(s.n)}
-                    className={
-                      "flex items-center justify-center gap-2 px-2 py-2 rounded-xl border text-xs sm:text-sm font-semibold transition-colors " +
-                      (active
-                        ? "bg-amber-200 text-gray-900 border-amber-200"
-                        : "bg-white/10 text-white border-white/10 hover:bg-white/15")
-                    }
-                  >
-                    <s.Icon className="w-4 h-4" />
-                    <span className="hidden sm:inline">{s.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="mt-3 h-1.5 rounded-full bg-white/10 overflow-hidden">
-              <div
-                className="h-full bg-amber-300"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
+        {/* Progress Steps */}
+        <div className="px-4 py-3 bg-gray-800/50 border-b border-gray-700">
+          <div className="flex items-center justify-between">
+            {steps.map((s, i) => (
+              <React.Fragment key={s.num}>
+                <button
+                  onClick={() => s.num < step && setStep(s.num)}
+                  className={`flex flex-col items-center gap-1 transition-all ${
+                    step === s.num 
+                      ? 'text-amber-400 scale-105' 
+                      : step > s.num 
+                        ? 'text-green-400 cursor-pointer hover:text-green-300' 
+                        : 'text-gray-500'
+                  }`}
+                >
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-bold transition-all ${
+                    step === s.num 
+                      ? 'bg-gradient-to-br from-amber-500 to-yellow-600 text-gray-900 shadow-lg shadow-amber-500/30' 
+                      : step > s.num 
+                        ? 'bg-green-500/20 text-green-400 border border-green-500/50' 
+                        : 'bg-gray-700 text-gray-400'
+                  }`}>
+                    {step > s.num ? '✓' : s.icon}
+                  </div>
+                  <span className="text-[10px] font-medium">{s.label}</span>
+                </button>
+                {i < steps.length - 1 && (
+                  <div className={`flex-1 h-0.5 mx-1 rounded ${step > s.num ? 'bg-green-500' : 'bg-gray-700'}`} />
+                )}
+              </React.Fragment>
+            ))}
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-            <div className="flex items-start gap-3">
-              <div
-                className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{
-                  backgroundColor: "rgba(212,175,55,0.10)",
-                  border: "1px solid rgba(212,175,55,0.22)",
-                  color: "#7C5E00",
-                }}
-              >
-                <stepMeta.Icon className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="font-semibold text-gray-900">{stepMeta.title}</div>
-                <div className="text-sm text-gray-600">{stepMeta.subtitle}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Step 1: Select */}
+        {/* Form Content */}
+        <div className="p-4 overflow-y-auto max-h-[55vh]">
+          
+          {/* Step 1: Vehicle Type */}
           {step === 1 && (
             <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="text-center mb-4">
+                <h3 className="text-white text-lg font-semibold">Select Vehicle Type</h3>
+                <p className="text-gray-400 text-xs mt-1">Choose the type of vehicle you want to add</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                {/* Bike Card */}
                 <button
-                  type="button"
-                  onClick={() => handleCategoryChange("bike")}
-                  className={
-                    "rounded-2xl border-2 p-4 text-left transition-all shadow-sm hover:shadow-md " +
-                    (form.vehicleCategory === "bike"
-                      ? "border-amber-300 bg-amber-50"
-                      : "border-gray-200 bg-white hover:border-amber-200")
-                  }
+                  onClick={() => handleVehicleTypeSelect('Bike')}
+                  className={`group relative p-4 rounded-xl border-2 transition-all duration-300 ${
+                    vehicleType === 'Bike'
+                      ? 'border-amber-500 bg-gradient-to-br from-amber-500/20 to-orange-600/20 shadow-lg shadow-amber-500/20'
+                      : 'border-gray-600 bg-gray-800/50 hover:border-amber-500/50 hover:bg-gray-700/50'
+                  }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={
-                        "w-12 h-12 rounded-2xl flex items-center justify-center " +
-                        (form.vehicleCategory === "bike"
-                          ? "bg-gray-900 text-amber-200"
-                          : "bg-gray-100 text-gray-700")
-                      }
-                    >
-                      <IconBike className="w-6 h-6" />
+                  <div className="text-center">
+                    <div className={`text-4xl mb-2 transition-transform group-hover:scale-110 ${vehicleType === 'Bike' ? 'animate-bounce' : ''}`}>
+                      🏍️
                     </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-gray-900">Bike</div>
-                      <div className="text-xs text-gray-600">Two-wheeler</div>
-                    </div>
-                    {form.vehicleCategory === "bike" ? (
-                      <div className="text-amber-700 font-semibold text-xs">Selected</div>
-                    ) : null}
+                    <h4 className="text-white font-bold text-sm">Bike</h4>
+                    <p className="text-gray-400 text-[10px] mt-0.5">Two-wheelers</p>
                   </div>
+                  {vehicleType === 'Bike' && (
+                    <div className="absolute top-2 right-2 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center">
+                      <span className="text-gray-900 text-xs">✓</span>
+                    </div>
+                  )}
                 </button>
 
+                {/* Car Card */}
                 <button
-                  type="button"
-                  onClick={() => handleCategoryChange("car")}
-                  className={
-                    "rounded-2xl border-2 p-4 text-left transition-all shadow-sm hover:shadow-md " +
-                    (form.vehicleCategory === "car"
-                      ? "border-amber-300 bg-amber-50"
-                      : "border-gray-200 bg-white hover:border-amber-200")
-                  }
+                  onClick={() => handleVehicleTypeSelect('Car')}
+                  className={`group relative p-4 rounded-xl border-2 transition-all duration-300 ${
+                    vehicleType === 'Car'
+                      ? 'border-amber-500 bg-gradient-to-br from-amber-500/20 to-orange-600/20 shadow-lg shadow-amber-500/20'
+                      : 'border-gray-600 bg-gray-800/50 hover:border-amber-500/50 hover:bg-gray-700/50'
+                  }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={
-                        "w-12 h-12 rounded-2xl flex items-center justify-center " +
-                        (form.vehicleCategory === "car"
-                          ? "bg-gray-900 text-amber-200"
-                          : "bg-gray-100 text-gray-700")
-                      }
-                    >
-                      <IconCar className="w-6 h-6" />
+                  <div className="text-center">
+                    <div className={`text-4xl mb-2 transition-transform group-hover:scale-110 ${vehicleType === 'Car' ? 'animate-bounce' : ''}`}>
+                      🚗
                     </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-gray-900">Car</div>
-                      <div className="text-xs text-gray-600">Four-wheeler</div>
-                    </div>
-                    {form.vehicleCategory === "car" ? (
-                      <div className="text-amber-700 font-semibold text-xs">Selected</div>
-                    ) : null}
+                    <h4 className="text-white font-bold text-sm">Car</h4>
+                    <p className="text-gray-400 text-[10px] mt-0.5">Four-wheelers</p>
                   </div>
+                  {vehicleType === 'Car' && (
+                    <div className="absolute top-2 right-2 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center">
+                      <span className="text-gray-900 text-xs">✓</span>
+                    </div>
+                  )}
                 </button>
               </div>
 
-              <div
-                className="rounded-2xl p-4 text-sm"
-                style={{
-                  backgroundColor: "rgba(212,175,55,0.10)",
-                  border: "1px solid rgba(212,175,55,0.22)",
-                }}
-              >
-                Tip: The next step will show India-focused Make/Model suggestions for your selection.
-              </div>
+              <p className="text-center text-gray-500 text-xs mt-4">
+                👆 Tap to select and continue
+              </p>
             </div>
           )}
 
-          {/* Step 2: Basic */}
+          {/* Step 2: Basic Details */}
           {step === 2 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className={cardClass}>
-                <FieldLabel icon={IconFleet} required>
-                  Make / Brand
-                </FieldLabel>
-                {!showNewMake ? (
-                  <select
-                    className={inputClass}
-                    value={form.make}
-                    onChange={(e) => handleMakeSelect(e.target.value)}
-                  >
-                    <option value="">Select make</option>
-                    {availableMakes.map((m) => (
-                      <option key={m} value={m}>
-                        {m}
-                      </option>
-                    ))}
-                    <option value="__new__">Add new make…</option>
-                  </select>
-                ) : (
-                  <div className="space-y-2">
+            <div className="space-y-3">
+              {/* Vehicle Type Badge */}
+              <div className="flex items-center justify-between bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{vehicleType === 'Bike' ? '🏍️' : '🚗'}</span>
+                  <span className="text-white font-medium text-sm">{vehicleType}</span>
+                </div>
+                <button onClick={() => setStep(1)} className="text-amber-400 text-xs hover:text-amber-300">
+                  Change
+                </button>
+              </div>
+
+              {/* Make Selection */}
+              <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                <label className="block text-amber-400 text-xs font-medium mb-1.5">
+                  Brand / Make <span className="text-red-400">*</span>
+                </label>
+                {isAddingMake ? (
+                  <div className="flex gap-2">
                     <input
-                      className={inputClass}
-                      value={form.newMake}
-                      onChange={(e) => setField("newMake", e.target.value)}
-                      placeholder="New make"
+                      type="text"
+                      value={newMake}
+                      onChange={(e) => setNewMake(e.target.value)}
+                      placeholder="Enter brand name"
+                      className="flex-1 bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none"
                       autoFocus
                     />
-                    <button
-                      type="button"
-                      className="text-xs text-gray-500 hover:text-gray-800"
-                      onClick={() => setShowNewMake(false)}
-                    >
-                      ← Back
-                    </button>
+                    <button onClick={handleAddNewMake} className="px-3 py-2 bg-amber-500 text-gray-900 rounded-lg text-sm font-medium hover:bg-amber-400">Add</button>
+                    <button onClick={() => setIsAddingMake(false)} className="px-3 py-2 bg-gray-600 text-white rounded-lg text-sm hover:bg-gray-500">✕</button>
                   </div>
+                ) : (
+                  <select
+                    value={formData.make}
+                    onChange={(e) => {
+                      if (e.target.value === '__add_new__') {
+                        setIsAddingMake(true);
+                      } else {
+                        setFormData(prev => ({ ...prev, make: e.target.value, model: '' }));
+                      }
+                    }}
+                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none"
+                  >
+                    <option value="">Select Brand</option>
+                    {getBrandsForVehicle().map(make => (
+                      <option key={make} value={make}>{make}</option>
+                    ))}
+                    <option value="__add_new__">➕ Add New Brand</option>
+                  </select>
                 )}
               </div>
 
-              <div className={cardClass}>
-                <FieldLabel icon={IconFleet} required>
-                  Model
-                </FieldLabel>
-                {!showNewModel ? (
-                  <select
-                    className={inputClass}
-                    value={form.model}
-                    onChange={(e) => handleModelSelect(e.target.value)}
-                    disabled={!currentMake}
-                  >
-                    <option value="">Select model</option>
-                    {availableModels.map((m) => (
-                      <option key={m} value={m}>
-                        {m}
-                      </option>
-                    ))}
-                    <option value="__new__">Add new model…</option>
-                  </select>
-                ) : (
-                  <div className="space-y-2">
+              {/* Model Selection */}
+              <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                <label className="block text-amber-400 text-xs font-medium mb-1.5">
+                  Model <span className="text-red-400">*</span>
+                </label>
+                {isAddingModel ? (
+                  <div className="flex gap-2">
                     <input
-                      className={inputClass}
-                      value={form.newModel}
-                      onChange={(e) => setField("newModel", e.target.value)}
-                      placeholder="New model"
+                      type="text"
+                      value={newModel}
+                      onChange={(e) => setNewModel(e.target.value)}
+                      placeholder="Enter model name"
+                      className="flex-1 bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none"
                       autoFocus
                     />
-                    <button
-                      type="button"
-                      className="text-xs text-gray-500 hover:text-gray-800"
-                      onClick={() => setShowNewModel(false)}
-                    >
-                      ← Back
-                    </button>
+                    <button onClick={handleAddNewModel} className="px-3 py-2 bg-amber-500 text-gray-900 rounded-lg text-sm font-medium hover:bg-amber-400">Add</button>
+                    <button onClick={() => setIsAddingModel(false)} className="px-3 py-2 bg-gray-600 text-white rounded-lg text-sm hover:bg-gray-500">✕</button>
                   </div>
+                ) : (
+                  <select
+                    value={formData.model}
+                    onChange={(e) => {
+                      if (e.target.value === '__add_new__') {
+                        setIsAddingModel(true);
+                      } else {
+                        setFormData(prev => ({ ...prev, model: e.target.value }));
+                      }
+                    }}
+                    disabled={!formData.make}
+                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none disabled:opacity-50"
+                  >
+                    <option value="">Select Model</option>
+                    {getModelsForMake().map(model => (
+                      <option key={model} value={model}>{model}</option>
+                    ))}
+                    <option value="__add_new__">➕ Add New Model</option>
+                  </select>
                 )}
-                {!currentMake && (
-                  <div className="text-[11px] text-amber-700 mt-2">
-                    Select Make first.
-                  </div>
-                )}
               </div>
 
-              <div className={cardClass}>
-                <FieldLabel icon={IconUserMini}>Owner Name</FieldLabel>
-                <input
-                  className={inputClass}
-                  value={form.ownerName}
-                  onChange={(e) => setField("ownerName", e.target.value)}
-                  placeholder="Owner name"
-                />
+              {/* Two Column Layout */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                  <label className="block text-amber-400 text-xs font-medium mb-1.5">Owner Name</label>
+                  <input
+                    type="text"
+                    value={formData.ownerName}
+                    onChange={(e) => setFormData(prev => ({ ...prev, ownerName: e.target.value }))}
+                    placeholder="Enter name"
+                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none"
+                  />
+                </div>
+                <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                  <label className="block text-amber-400 text-xs font-medium mb-1.5">
+                    Registration <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.registrationNumber}
+                    onChange={(e) => setFormData(prev => ({ ...prev, registrationNumber: e.target.value.toUpperCase() }))}
+                    placeholder="MH01AB1234"
+                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none uppercase"
+                  />
+                </div>
               </div>
 
-              <div className={cardClass}>
-                <FieldLabel icon={IconDocument} required>
-                  Registration Number
-                </FieldLabel>
-                <input
-                  className={inputClass + " font-mono uppercase"}
-                  value={form.registrationNumber}
-                  onChange={(e) =>
-                    setField("registrationNumber", e.target.value.toUpperCase())
-                  }
-                  placeholder="MH01AB1234"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                  <label className="block text-amber-400 text-xs font-medium mb-1.5">Chassis Number</label>
+                  <input
+                    type="text"
+                    value={formData.chassisNumber}
+                    onChange={(e) => setFormData(prev => ({ ...prev, chassisNumber: e.target.value.toUpperCase() }))}
+                    placeholder="Enter chassis"
+                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none uppercase"
+                  />
+                </div>
+                <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                  <label className="block text-amber-400 text-xs font-medium mb-1.5">Engine Number</label>
+                  <input
+                    type="text"
+                    value={formData.engineNumber}
+                    onChange={(e) => setFormData(prev => ({ ...prev, engineNumber: e.target.value.toUpperCase() }))}
+                    placeholder="Enter engine"
+                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none uppercase"
+                  />
+                </div>
               </div>
 
-              <div className={cardClass}>
-                <FieldLabel icon={IconChipMini}>Chassis Number</FieldLabel>
-                <input
-                  className={inputClass + " font-mono uppercase"}
-                  value={form.chassisNumber}
-                  onChange={(e) =>
-                    setField("chassisNumber", e.target.value.toUpperCase())
-                  }
-                  placeholder="Chassis"
-                />
-              </div>
-
-              <div className={cardClass}>
-                <FieldLabel icon={IconChipMini}>Engine Number</FieldLabel>
-                <input
-                  className={inputClass + " font-mono uppercase"}
-                  value={form.engineNumber}
-                  onChange={(e) =>
-                    setField("engineNumber", e.target.value.toUpperCase())
-                  }
-                  placeholder="Engine"
-                />
-              </div>
-
-              <div className={cardClass + " sm:col-span-2"}>
-                <FieldLabel icon={IconGauge} required>
-                  Current Odometer (KM)
-                </FieldLabel>
-                <input
-                  className={inputClass}
-                  type="number"
-                  min={0}
-                  value={form.currentOdometer}
-                  onChange={(e) => setField("currentOdometer", e.target.value)}
-                  placeholder="15000"
-                />
+              {/* Odometer - Full Width */}
+              <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-xl p-3 border border-amber-500/30">
+                <label className="block text-amber-400 text-xs font-medium mb-1.5">
+                  📊 Current Odometer (KM)
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    value={formData.currentOdometer}
+                    onChange={(e) => setFormData(prev => ({ ...prev, currentOdometer: e.target.value }))}
+                    placeholder="0"
+                    className="flex-1 bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none"
+                  />
+                  <span className="text-amber-400 font-medium text-sm">KM</span>
+                </div>
               </div>
             </div>
           )}
 
           {/* Step 3: Documents */}
           {step === 3 && (
-            <div className="space-y-4">
-              <div className={cardClass}>
-                <FieldLabel icon={IconDocument}>Vehicle Type</FieldLabel>
+            <div className="space-y-3">
+              {/* Usage Type Toggle */}
+              <div className="bg-gray-800/50 rounded-xl p-3 border border-gray-700">
+                <label className="block text-amber-400 text-xs font-medium mb-2">Vehicle Usage Type</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
-                    type="button"
-                    onClick={() => setField("vehicleType", "private")}
-                    className={
-                      "px-3 py-2 rounded-xl border text-sm font-semibold transition-colors " +
-                      (form.vehicleType === "private"
-                        ? "bg-gray-900 border-gray-900 text-amber-200"
-                        : "bg-white border-gray-200 text-gray-700 hover:border-amber-300")
-                    }
+                    onClick={() => setFormData(prev => ({ ...prev, vehicleUsage: 'Private' }))}
+                    className={`py-2.5 rounded-lg text-sm font-medium transition-all ${
+                      formData.vehicleUsage === 'Private'
+                        ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-gray-900 shadow-lg'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
                   >
-                    Private
+                    🏠 Private
                   </button>
                   <button
-                    type="button"
-                    onClick={() => setField("vehicleType", "commercial")}
-                    className={
-                      "px-3 py-2 rounded-xl border text-sm font-semibold transition-colors " +
-                      (form.vehicleType === "commercial"
-                        ? "bg-gray-900 border-gray-900 text-amber-200"
-                        : "bg-white border-gray-200 text-gray-700 hover:border-amber-300")
-                    }
+                    onClick={() => setFormData(prev => ({ ...prev, vehicleUsage: 'Commercial' }))}
+                    className={`py-2.5 rounded-lg text-sm font-medium transition-all ${
+                      formData.vehicleUsage === 'Commercial'
+                        ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-gray-900 shadow-lg'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
                   >
-                    Commercial
+                    🏢 Commercial
                   </button>
-                </div>
-                <div className="text-[11px] text-gray-500 mt-2">
-                  Private: Registration + Insurance + Pollution. Commercial: Insurance +
-                  Pollution + Fitness + Road Tax.
                 </div>
               </div>
 
-              {form.vehicleType === "private" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className={cardClass}>
-                    <FieldLabel icon={IconDocument}>Registration Valid Till</FieldLabel>
+              {/* Document Fields Based on Usage Type */}
+              <div className="space-y-3">
+                {formData.vehicleUsage === 'Private' && (
+                  <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                    <label className="block text-amber-400 text-xs font-medium mb-1.5">📋 Registration</label>
                     <input
-                      className={inputClass}
                       type="date"
-                      value={form.registrationValidity}
-                      onChange={(e) =>
-                        setField("registrationValidity", e.target.value)
-                      }
+                      value={formData.registrationValidity}
+                      onChange={(e) => setFormData(prev => ({ ...prev, registrationValidity: e.target.value }))}
+                      className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none"
                     />
                   </div>
-                  <div className={cardClass}>
-                    <FieldLabel icon={IconShield}>Insurance Valid Till</FieldLabel>
-                    <input
-                      className={inputClass}
-                      type="date"
-                      value={form.insuranceValidity}
-                      onChange={(e) =>
-                        setField("insuranceValidity", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div className={cardClass + " sm:col-span-2"}>
-                    <FieldLabel icon={IconSmoke}>Pollution Valid Till</FieldLabel>
-                    <input
-                      className={inputClass}
-                      type="date"
-                      value={form.pollutionValidity}
-                      onChange={(e) =>
-                        setField("pollutionValidity", e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-              )}
+                )}
 
-              {form.vehicleType === "commercial" && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className={cardClass}>
-                    <FieldLabel icon={IconShield}>Insurance Valid Till</FieldLabel>
-                    <input
-                      className={inputClass}
-                      type="date"
-                      value={form.insuranceValidity}
-                      onChange={(e) =>
-                        setField("insuranceValidity", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div className={cardClass}>
-                    <FieldLabel icon={IconSmoke}>Pollution Valid Till</FieldLabel>
-                    <input
-                      className={inputClass}
-                      type="date"
-                      value={form.pollutionValidity}
-                      onChange={(e) =>
-                        setField("pollutionValidity", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div className={cardClass}>
-                    <FieldLabel icon={IconCheckBadge}>Fitness Valid Till</FieldLabel>
-                    <input
-                      className={inputClass}
-                      type="date"
-                      value={form.fitnessValidity}
-                      onChange={(e) =>
-                        setField("fitnessValidity", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div className={cardClass}>
-                    <FieldLabel icon={IconRoad}>Road Tax Valid Till</FieldLabel>
-                    <input
-                      className={inputClass}
-                      type="date"
-                      value={form.roadTaxValidity}
-                      onChange={(e) =>
-                        setField("roadTaxValidity", e.target.value)
-                      }
-                    />
-                  </div>
+                <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                  <label className="block text-amber-400 text-xs font-medium mb-1.5">
+                    🛡️ Insurance <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.insuranceValidity}
+                    onChange={(e) => setFormData(prev => ({ ...prev, insuranceValidity: e.target.value }))}
+                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none"
+                  />
                 </div>
-              )}
+
+                <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                  <label className="block text-amber-400 text-xs font-medium mb-1.5">
+                    💨 Pollution <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.pollutionValidity}
+                    onChange={(e) => setFormData(prev => ({ ...prev, pollutionValidity: e.target.value }))}
+                    className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none"
+                  />
+                </div>
+
+                {formData.vehicleUsage === 'Commercial' && (
+                  <>
+                    <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                      <label className="block text-amber-400 text-xs font-medium mb-1.5">🔧 Fitness</label>
+                      <input
+                        type="date"
+                        value={formData.fitnessValidity}
+                        onChange={(e) => setFormData(prev => ({ ...prev, fitnessValidity: e.target.value }))}
+                        className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none"
+                      />
+                    </div>
+                    <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                      <label className="block text-amber-400 text-xs font-medium mb-1.5">🛣️ Road Tax</label>
+                      <input
+                        type="date"
+                        value={formData.roadTaxValidity}
+                        onChange={(e) => setFormData(prev => ({ ...prev, roadTaxValidity: e.target.value }))}
+                        className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none"
+                      />
+                    </div>
+                    <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                      <label className="block text-amber-400 text-xs font-medium mb-1.5">📜 Permit</label>
+                      <input
+                        type="date"
+                        value={formData.permitValidity}
+                        onChange={(e) => setFormData(prev => ({ ...prev, permitValidity: e.target.value }))}
+                        className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none"
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           )}
 
           {/* Step 4: Service */}
           {step === 4 && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className={cardClass}>
-                  <FieldLabel icon={IconWrench}>Service Interval (Months)</FieldLabel>
-                  <select
-                    className={inputClass}
-                    value={form.serviceIntervalMonths}
-                    onChange={(e) =>
-                      setField(
-                        "serviceIntervalMonths",
-                        parseInt(e.target.value, 10)
-                      )
-                    }
-                  >
-                    {[3, 4, 5, 6, 9, 12].map((m) => (
-                      <option key={m} value={m}>
-                        {m} months
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className={cardClass}>
-                  <FieldLabel icon={IconGauge}>Service Interval (KM)</FieldLabel>
-                  <select
-                    className={inputClass}
-                    value={form.serviceIntervalKms}
-                    onChange={(e) =>
-                      setField("serviceIntervalKms", parseInt(e.target.value, 10))
-                    }
-                  >
-                    {[3000, 4000, 5000, 6000, 8000, 10000].map((km) => (
-                      <option key={km} value={km}>
-                        {km.toLocaleString()} km
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className={cardClass}>
-                  <FieldLabel icon={IconWrench}>Last Service Date</FieldLabel>
-                  <input
-                    className={inputClass}
-                    type="date"
-                    value={form.lastServiceDate}
-                    onChange={(e) => setField("lastServiceDate", e.target.value)}
-                  />
-                </div>
-                <div className={cardClass}>
-                  <FieldLabel icon={IconGauge}>Last Service Odometer (KM)</FieldLabel>
-                  <input
-                    className={inputClass}
-                    type="number"
-                    min={0}
-                    value={form.lastServiceKm}
-                    onChange={(e) => setField("lastServiceKm", e.target.value)}
-                    placeholder="e.g., 12000"
-                  />
-                </div>
-              </div>
-
-              {String(form.currentOdometer).trim() && (
-                <div
-                  className="rounded-2xl p-4 text-sm"
-                  style={{
-                    backgroundColor: "rgba(212,175,55,0.10)",
-                    border: "1px solid rgba(212,175,55,0.22)",
-                  }}
-                >
-                  <div className="font-semibold text-gray-900">Quick summary</div>
-                  <div className="text-gray-700 mt-1">
-                    Current odometer:{" "}
-                    <strong>
-                      {(clampToNumber(String(form.currentOdometer)) || 0).toLocaleString()} km
-                    </strong>
+            <div className="space-y-3">
+              {/* Service Interval */}
+              <div className="bg-gray-800/50 rounded-xl p-3 border border-gray-700">
+                <label className="block text-amber-400 text-xs font-medium mb-2">⏱️ Service Interval</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-gray-400 text-[10px]">Every</span>
+                    <select
+                      value={formData.serviceIntervalMonths}
+                      onChange={(e) => setFormData(prev => ({ ...prev, serviceIntervalMonths: e.target.value }))}
+                      className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none mt-1"
+                    >
+                      <option value="3">3 Months</option>
+                      <option value="4">4 Months</option>
+                      <option value="5">5 Months</option>
+                      <option value="6">6 Months</option>
+                      <option value="9">9 Months</option>
+                      <option value="12">12 Months</option>
+                    </select>
+                  </div>
+                  <div>
+                    <span className="text-gray-400 text-[10px]">Or Every</span>
+                    <select
+                      value={formData.serviceIntervalKms}
+                      onChange={(e) => setFormData(prev => ({ ...prev, serviceIntervalKms: e.target.value }))}
+                      className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none mt-1"
+                    >
+                      <option value="3000">3,000 KM</option>
+                      <option value="4000">4,000 KM</option>
+                      <option value="5000">5,000 KM</option>
+                      <option value="6000">6,000 KM</option>
+                      <option value="8000">8,000 KM</option>
+                      <option value="10000">10,000 KM</option>
+                    </select>
                   </div>
                 </div>
-              )}
+              </div>
+
+              {/* Last Service */}
+              <div className="bg-gray-800/30 rounded-xl p-3 border border-gray-700/50">
+                <label className="block text-amber-400 text-xs font-medium mb-2">📅 Last Service</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-gray-400 text-[10px]">Date</span>
+                    <input
+                      type="date"
+                      value={formData.lastServiceDate}
+                      onChange={(e) => setFormData(prev => ({ ...prev, lastServiceDate: e.target.value }))}
+                      className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none mt-1"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-gray-400 text-[10px]">Odometer (KM)</span>
+                    <input
+                      type="number"
+                      value={formData.lastServiceKm}
+                      onChange={(e) => setFormData(prev => ({ ...prev, lastServiceKm: e.target.value }))}
+                      placeholder="0"
+                      className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 text-sm border border-gray-600 focus:border-amber-500 focus:outline-none mt-1"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Vehicle Summary Card */}
+              <div className="bg-gradient-to-br from-amber-500/10 to-orange-600/10 rounded-xl p-3 border border-amber-500/30">
+                <h4 className="text-amber-400 text-xs font-medium mb-2">📋 Vehicle Summary</h4>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Type:</span>
+                    <span className="text-white">{vehicleType === 'Bike' ? '🏍️' : '🚗'} {vehicleType}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Usage:</span>
+                    <span className="text-white">{formData.vehicleUsage === 'Private' ? '🏠' : '🏢'} {formData.vehicleUsage}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Make:</span>
+                    <span className="text-white">{formData.make || '-'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Model:</span>
+                    <span className="text-white">{formData.model || '-'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Reg:</span>
+                    <span className="text-white font-mono">{formData.registrationNumber || '-'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">Odometer:</span>
+                    <span className="text-white">{formData.currentOdometer || '0'} km</span>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Footer */}
-        <div className="border-t bg-gray-50/95 p-4 backdrop-blur-sm">
-          <div className="flex items-center justify-between gap-2">
-            <button
-              type="button"
-              onClick={onCancel}
-              className="px-4 py-2.5 text-gray-600 hover:text-gray-900 font-medium"
-            >
-              Cancel
-            </button>
-
-            <div className="flex items-center gap-2">
-              {step > 1 && (
-                <button
-                  type="button"
-                  onClick={() => setStep((s) => (s - 1) as StepId)}
-                  className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-white border border-gray-200 hover:border-amber-300 text-gray-800"
-                >
-                  ← Prev
-                </button>
-              )}
-
-              {step < 4 ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!canNext()) {
-                      alert("Please complete required fields in this step.");
-                      return;
-                    }
-                    setStep((s) => (s + 1) as StepId);
-                  }}
-                  className={
-                    "px-6 py-2.5 rounded-xl text-sm font-bold transition-colors " +
-                    (canNext()
-                      ? "bg-gray-900 hover:bg-black text-amber-200"
-                      : "bg-gray-300 text-gray-600 cursor-not-allowed")
-                  }
-                >
-                  Next →
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={save}
-                  className="px-6 py-2.5 rounded-xl text-sm font-bold bg-gray-900 hover:bg-black text-amber-200"
-                >
-                  Save Vehicle
-                </button>
-              )}
-            </div>
+        {/* Footer Buttons */}
+        <div className="px-4 py-3 bg-gray-800/50 border-t border-gray-700 flex items-center justify-between gap-2">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 text-gray-400 hover:text-white text-sm transition-colors"
+          >
+            Cancel
+          </button>
+          
+          <div className="flex items-center gap-2">
+            {step > 1 && (
+              <button
+                onClick={() => setStep(s => s - 1)}
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                ← Back
+              </button>
+            )}
+            
+            {step < 4 ? (
+              <button
+                onClick={() => setStep(s => s + 1)}
+                disabled={!canProceed()}
+                className="px-5 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-gray-900 rounded-lg text-sm font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-amber-500/20"
+              >
+                Next →
+              </button>
+            ) : (
+              <button
+                onClick={handleSubmit}
+                className="px-5 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-white rounded-lg text-sm font-bold transition-all shadow-lg shadow-green-500/20"
+              >
+                ✓ Save Vehicle
+              </button>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+export default BikeForm;

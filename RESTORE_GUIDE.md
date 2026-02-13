@@ -130,20 +130,4 @@ If you get a white screen after changes:
 
 ---
 
----
-
-## 🧭 Preview Restore Point (2026-02-05)
-
-A newer snapshot that matches the current UI preview (vehicles: bike/car, 4-step Add Vehicle form, clickable drill-downs in Analytics, black+gold theme, Supabase-ready).
-
-📁 Files stored in:
-```
-src/backup/preview-2026-02-05/
-```
-
-✅ Restore instructions:
-- See: `src/backup/preview-2026-02-05/RESTORE_PREVIEW.md`
-
----
-
-**Remember**: You can always come back to a stable version! 🖖
+**Remember**: You can always come back to this stable version! 🖖

@@ -33,6 +33,7 @@ export function getDaysUntil(dateString?: string): number {
 }
 
 export function getServiceStatus(bike: Motorcycle): { status: ServiceStatus; message: string; daysOrKm: number } {
+  // Ensure kmReadings is an array
   const kmReadings = Array.isArray(bike.kmReadings) ? bike.kmReadings : [];
   
   const currentKm = kmReadings.length > 0 
@@ -45,6 +46,7 @@ export function getServiceStatus(bike: Motorcycle): { status: ServiceStatus; mes
   const serviceIntervalMonths = bike.serviceIntervalMonths || 5;
   const kmUntilService = serviceIntervalKms - kmSinceService;
   
+  // Handle last service date
   let daysUntilService = Infinity;
   if (bike.lastServiceDate) {
     try {
@@ -59,22 +61,38 @@ export function getServiceStatus(bike: Motorcycle): { status: ServiceStatus; mes
     }
   }
   
+  // If no service date set, only use KM based status
   if (daysUntilService === Infinity && !bike.lastServiceDate) {
     if (kmUntilService <= 0) {
-      return { status: 'overdue', message: `Overdue by ${Math.abs(kmUntilService).toLocaleString()} km`, daysOrKm: kmUntilService };
+      return {
+        status: 'overdue',
+        message: `Overdue by ${Math.abs(kmUntilService).toLocaleString()} km`,
+        daysOrKm: kmUntilService
+      };
     }
     if (kmUntilService <= 500) {
-      return { status: 'upcoming', message: `Due in ${kmUntilService.toLocaleString()} km`, daysOrKm: kmUntilService };
+      return {
+        status: 'upcoming',
+        message: `Due in ${kmUntilService.toLocaleString()} km`,
+        daysOrKm: kmUntilService
+      };
     }
-    return { status: 'ok', message: `${kmUntilService.toLocaleString()} km remaining`, daysOrKm: kmUntilService };
+    return {
+      status: 'ok',
+      message: `${kmUntilService.toLocaleString()} km remaining`,
+      daysOrKm: kmUntilService
+    };
   }
   
-  const isKmCritical = kmUntilService <= daysUntilService * 50;
+  // Check which comes first - km or date
+  const isKmCritical = kmUntilService <= daysUntilService * 50; // Assuming ~50km per day avg
   
   if (kmUntilService <= 0 || daysUntilService <= 0) {
     return {
       status: 'overdue',
-      message: kmUntilService <= 0 ? `Overdue by ${Math.abs(kmUntilService).toLocaleString()} km` : `Overdue by ${Math.abs(daysUntilService)} days`,
+      message: kmUntilService <= 0 
+        ? `Overdue by ${Math.abs(kmUntilService).toLocaleString()} km` 
+        : `Overdue by ${Math.abs(daysUntilService)} days`,
       daysOrKm: isKmCritical ? kmUntilService : daysUntilService
     };
   }
@@ -82,14 +100,18 @@ export function getServiceStatus(bike: Motorcycle): { status: ServiceStatus; mes
   if (kmUntilService <= 500 || daysUntilService <= 15) {
     return {
       status: 'upcoming',
-      message: isKmCritical ? `Due in ${kmUntilService.toLocaleString()} km` : `Due in ${daysUntilService} days`,
+      message: isKmCritical 
+        ? `Due in ${kmUntilService.toLocaleString()} km` 
+        : `Due in ${daysUntilService} days`,
       daysOrKm: isKmCritical ? kmUntilService : daysUntilService
     };
   }
   
   return {
     status: 'ok',
-    message: isKmCritical ? `${kmUntilService.toLocaleString()} km remaining` : `${daysUntilService} days remaining`,
+    message: isKmCritical 
+      ? `${kmUntilService.toLocaleString()} km remaining` 
+      : `${daysUntilService} days remaining`,
     daysOrKm: isKmCritical ? kmUntilService : daysUntilService
   };
 }
