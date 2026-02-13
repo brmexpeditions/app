@@ -7,6 +7,9 @@ import AuthScreen from './components/AuthScreen';
 import { HomePage } from './components/HomePage';
 import { AdminPanel, SiteSettings } from './components/AdminPanel';
 import { Motorcycle, ServiceRecord, CompanySettings as CompanySettingsType } from './types';
+import { supabase, isSupabaseConfigured } from './lib/supabase';
+import { loadPublicSiteSettings, savePublicSiteSettings } from './lib/supabaseSiteSettings';
+import { loadFleetForCurrentUser, saveFleetForCurrentUser } from './lib/supabaseFleetStore';
 
 const defaultSiteSettings: SiteSettings = {
   siteName: 'Fleet Guard',
@@ -123,30 +126,63 @@ function App() {
   // Helper: hidden admin backend URL
   // Visit /admin in the browser to request backend access (admin-only).
 
-  // Load site settings
+  // Load site settings (local first, then Supabase if configured)
   useEffect(() => {
-    try {
-      const savedSiteSettings = localStorage.getItem('fleet_site_settings');
-      if (savedSiteSettings) {
-        setSiteSettings({ ...defaultSiteSettings, ...JSON.parse(savedSiteSettings) });
+    const load = async () => {
+      // Local cache first (fast)
+      try {
+        const savedSiteSettings = localStorage.getItem('fleet_site_settings');
+        if (savedSiteSettings) {
+          setSiteSettings({ ...defaultSiteSettings, ...JSON.parse(savedSiteSettings) });
+        }
+      } catch (e) {
+        console.error('Error loading site settings (local):', e);
       }
-    } catch (e) {
-      console.error('Error loading site settings:', e);
-    }
+
+      // Supabase public settings (shared for all users)
+      if (isSupabaseConfigured) {
+        try {
+          const remote = await loadPublicSiteSettings();
+          if (remote) {
+            const merged = { ...defaultSiteSettings, ...remote };
+            setSiteSettings(merged);
+            localStorage.setItem('fleet_site_settings', JSON.stringify(merged));
+          }
+        } catch (e) {
+          console.warn('Could not load site settings from Supabase. Using local settings.', e);
+        }
+      }
+    };
+
+    load();
   }, []);
 
-  // Save site settings
-  const handleSaveSiteSettings = (settings: SiteSettings) => {
-    setSiteSettings(settings);
-    localStorage.setItem('fleet_site_settings', JSON.stringify(settings));
-    
+  // Apply site settings whenever they change
+  useEffect(() => {
+    applySiteSettings(siteSettings);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteSettings]);
+
+  // Apply site settings to document (CSS + analytics)
+  const applySiteSettings = (settings: SiteSettings) => {
+    // Apply favicon if provided
+    if (settings.favicon) {
+      let link = document.querySelector('link[rel="icon"]') as HTMLLinkElement | null;
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+      link.href = settings.favicon;
+    }
+
     // Apply Google Analytics if provided
     if (settings.googleAnalyticsId && !document.querySelector(`script[src*="googletagmanager"]`)) {
       const script = document.createElement('script');
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtag/js?id=${settings.googleAnalyticsId}`;
       document.head.appendChild(script);
-      
+
       const inlineScript = document.createElement('script');
       inlineScript.innerHTML = `
         window.dataLayer = window.dataLayer || [];
@@ -165,6 +201,27 @@ function App() {
       document.head.appendChild(styleEl);
     }
     styleEl.innerHTML = settings.customCss || '';
+
+    // Title/meta
+    if (settings.metaTitle) document.title = settings.metaTitle;
+  };
+
+  // Save site settings (local + Supabase if configured)
+  const handleSaveSiteSettings = async (settings: SiteSettings) => {
+    setSiteSettings(settings);
+    localStorage.setItem('fleet_site_settings', JSON.stringify(settings));
+
+    applySiteSettings(settings);
+
+    if (isSupabaseConfigured) {
+      try {
+        await savePublicSiteSettings(settings);
+      } catch (e) {
+        console.warn('Failed saving site settings to Supabase. Saved locally only.', e);
+        // Non-blocking message
+        alert('Saved locally, but could not save to Supabase. Please ensure the "site_settings" table exists and RLS policies are correct.');
+      }
+    }
   };
 
   // Check if user is admin (simple check - case-insensitive)
@@ -172,8 +229,15 @@ function App() {
     if (!currentUser) return false;
     const email = (currentUser.email || '').toLowerCase().trim();
     const username = (currentUser.username || '').toLowerCase().trim();
+
+    const envAdminEmails = (import.meta.env.VITE_ADMIN_EMAILS || '')
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+
     return (
       username === 'admin' ||
+      envAdminEmails.includes(email) ||
       email === 'admin@fleetguard.in' ||
       email === 'admin@fleetguard.com'
     );
@@ -181,6 +245,8 @@ function App() {
 
   // Check for existing session + route (supports hidden /admin backend entry)
   useEffect(() => {
+    let unsub: { data?: { subscription?: { unsubscribe?: () => void } } } | null = null;
+
     const applyRoute = (user: User | null) => {
       const path = window.location.pathname;
       const wantsAdmin = path === '/admin' || path.startsWith('/admin/');
@@ -201,54 +267,151 @@ function App() {
       setCurrentView('auth');
     };
 
-    try {
-      const savedUser = localStorage.getItem('fleet_current_user');
-      if (savedUser) {
-        const user = JSON.parse(savedUser);
-        setCurrentUser(user);
-        // Default route
-        setCurrentView('dashboard');
-        applyRoute(user);
-      } else {
+    const userFromSupabaseSession = async (): Promise<User | null> => {
+      if (!isSupabaseConfigured || !supabase) return null;
+      const { data: sessionData } = await supabase.auth.getSession();
+      const u = sessionData.session?.user;
+      if (!u) return null;
+      const meta = (u.user_metadata || {}) as Record<string, unknown>;
+      return {
+        id: u.id,
+        username: String(meta.name || u.email || 'User'),
+        email: u.email || String(meta.email || ''),
+        companyName: String(meta.companyName || ''),
+        phone: String(meta.phone || ''),
+      };
+    };
+
+    const init = async () => {
+      try {
+        // IMPORTANT: If Supabase is configured, we must require a real Supabase session.
+        // Otherwise the UI may appear logged-in but saves will never reach Supabase.
+        if (isSupabaseConfigured && supabase) {
+          const supaUser = await userFromSupabaseSession();
+          if (supaUser) {
+            setCurrentUser(supaUser);
+            localStorage.setItem('fleet_current_user', JSON.stringify(supaUser));
+            setCurrentView('dashboard');
+            applyRoute(supaUser);
+          } else {
+            localStorage.removeItem('fleet_current_user');
+            setCurrentUser(null);
+            applyRoute(null);
+            // If user was trying to access /admin, route handler will move to auth.
+            if (window.location.pathname === '/admin' || window.location.pathname.startsWith('/admin/')) {
+              setPendingAdminOpen(true);
+              setAuthMode('login');
+              setCurrentView('auth');
+            }
+          }
+        } else {
+          // Local-only mode
+          const savedUser = localStorage.getItem('fleet_current_user');
+          if (savedUser) {
+            const user = JSON.parse(savedUser);
+            setCurrentUser(user);
+            setCurrentView('dashboard');
+            applyRoute(user);
+          } else {
+            applyRoute(null);
+          }
+        }
+      } catch (e) {
+        console.error('Error loading user session:', e);
         applyRoute(null);
       }
-    } catch (e) {
-      console.error('Error loading user session:', e);
-      applyRoute(null);
-    }
+
+      // Keep UI in sync with Supabase auth changes (sign-in/sign-out)
+      if (isSupabaseConfigured && supabase) {
+        unsub = supabase.auth.onAuthStateChange(async (_event, session) => {
+          const u = session?.user;
+          if (!u) {
+            localStorage.removeItem('fleet_current_user');
+            setCurrentUser(null);
+            setShowAdminPanel(false);
+            setCurrentView('home');
+            return;
+          }
+          const meta = (u.user_metadata || {}) as Record<string, unknown>;
+          const nextUser: User = {
+            id: u.id,
+            username: String(meta.name || u.email || 'User'),
+            email: u.email || '',
+            companyName: String(meta.companyName || ''),
+            phone: String(meta.phone || ''),
+          };
+          localStorage.setItem('fleet_current_user', JSON.stringify(nextUser));
+          setCurrentUser(nextUser);
+          setCurrentView('dashboard');
+        });
+      }
+
+      setIsLoading(false);
+    };
+
+    init();
 
     const onPopState = () => {
       applyRoute(currentUser);
     };
     window.addEventListener('popstate', onPopState);
 
-    setIsLoading(false);
-    return () => window.removeEventListener('popstate', onPopState);
+    return () => {
+      window.removeEventListener('popstate', onPopState);
+      unsub?.data?.subscription?.unsubscribe?.();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Load data from localStorage
+  // Load data (local first, then Supabase per-user if configured and logged in)
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('motorcycle_fleet_data');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setData({
-          ...defaultData,
-          ...parsed,
-          motorcycles: Array.isArray(parsed.motorcycles) ? parsed.motorcycles : [],
-          serviceRecords: Array.isArray(parsed.serviceRecords) ? parsed.serviceRecords : [],
-          savedMakes: Array.isArray(parsed.savedMakes) ? parsed.savedMakes : defaultData.savedMakes,
-          savedModels: parsed.savedModels || defaultData.savedModels,
-          companySettings: { ...defaultData.companySettings, ...parsed.companySettings }
-        });
+    const load = async () => {
+      // Local cache first
+      try {
+        const saved = localStorage.getItem('motorcycle_fleet_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setData({
+            ...defaultData,
+            ...parsed,
+            motorcycles: Array.isArray(parsed.motorcycles) ? parsed.motorcycles : [],
+            serviceRecords: Array.isArray(parsed.serviceRecords) ? parsed.serviceRecords : [],
+            savedMakes: Array.isArray(parsed.savedMakes) ? parsed.savedMakes : defaultData.savedMakes,
+            savedModels: parsed.savedModels || defaultData.savedModels,
+            companySettings: { ...defaultData.companySettings, ...parsed.companySettings }
+          });
+        }
+      } catch (e) {
+        console.error('Error loading data (local):', e);
       }
-    } catch (e) {
-      console.error('Error loading data:', e);
-    }
-  }, []);
 
-  // Save data to localStorage
+      if (isSupabaseConfigured && currentUser) {
+        try {
+          const remote = await loadFleetForCurrentUser();
+          if (remote) {
+            const merged: AppData = {
+              ...defaultData,
+              ...remote,
+              motorcycles: Array.isArray(remote.motorcycles) ? remote.motorcycles : [],
+              serviceRecords: Array.isArray(remote.serviceRecords) ? remote.serviceRecords : [],
+              savedMakes: Array.isArray(remote.savedMakes) ? remote.savedMakes : defaultData.savedMakes,
+              savedModels: remote.savedModels || defaultData.savedModels,
+              companySettings: { ...defaultData.companySettings, ...(remote.companySettings || {}) },
+              lastBackup: remote.lastBackup,
+            };
+            setData(merged);
+            localStorage.setItem('motorcycle_fleet_data', JSON.stringify(merged));
+          }
+        } catch (e) {
+          console.warn('Could not load fleet data from Supabase. Using local data.', e);
+        }
+      }
+    };
+
+    load();
+  }, [currentUser]);
+
+  // Save data (local + Supabase per-user when configured)
   const saveData = (updater: AppData | ((prev: AppData) => AppData)) => {
     setData(prev => {
       const next = typeof updater === 'function' ? (updater as (p: AppData) => AppData)(prev) : updater;
@@ -257,6 +420,15 @@ function App() {
       } catch (e) {
         console.error('Error saving data:', e);
       }
+
+      // Fire-and-forget cloud save
+      // IMPORTANT: only attempt cloud save if we have a Supabase session-backed user.
+      if (isSupabaseConfigured && supabase && currentUser) {
+        saveFleetForCurrentUser(next).catch((e) => {
+          console.warn('Failed saving fleet data to Supabase. Saved locally only.', e);
+        });
+      }
+
       return next;
     });
   };
@@ -265,7 +437,13 @@ function App() {
     if (!user) return false;
     const email = (user.email || '').toLowerCase().trim();
     const username = (user.username || '').toLowerCase().trim();
-    return username === 'admin' || email === 'admin@fleetguard.in' || email === 'admin@fleetguard.com';
+
+    const envAdminEmails = (import.meta.env.VITE_ADMIN_EMAILS || '')
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+
+    return username === 'admin' || envAdminEmails.includes(email) || email === 'admin@fleetguard.in' || email === 'admin@fleetguard.com';
   };
 
   const handleLogin = (user: User) => {
@@ -279,10 +457,20 @@ function App() {
     setPendingAdminOpen(false);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem('fleet_current_user');
     setCurrentUser(null);
+    setShowAdminPanel(false);
     setCurrentView('home');
+
+    // Also sign out from Supabase so server session is cleared
+    if (isSupabaseConfigured && supabase) {
+      try {
+        await supabase.auth.signOut();
+      } catch (e) {
+        console.warn('Supabase signOut failed:', e);
+      }
+    }
   };
 
   const handleGetStarted = () => {

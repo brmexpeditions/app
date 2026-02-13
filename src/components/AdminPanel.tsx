@@ -181,27 +181,59 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
     }
   };
 
-  // Get registered users from localStorage
-  const getUsers = (): User[] => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [usersError, setUsersError] = useState<string>('');
+  const [usersLoading, setUsersLoading] = useState(false);
+
+  const loadUsers = async () => {
+    setUsersError('');
+    setUsersLoading(true);
+
+    // Try Supabase-backed profiles first via API (preferred for security)
+    try {
+      const resp = await fetch('/api/admin/users', {
+        headers: {
+          // Used by the serverless endpoint as a simple admin guard.
+          // (In production you should validate JWT instead.)
+          'x-admin-email': localStorage.getItem('fleet_current_user') ? (JSON.parse(localStorage.getItem('fleet_current_user') as string).email || '') : ''
+        }
+      });
+      if (resp.ok) {
+        const payload = await resp.json();
+        if (Array.isArray(payload.users)) {
+          setUsers(payload.users);
+          setUsersLoading(false);
+          return;
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    // Fallback: read localStorage demo users
     try {
       const usersJson = localStorage.getItem('fleet_users');
       if (usersJson) {
-        const users = JSON.parse(usersJson);
-        return Array.isArray(users) ? users : [];
+        const local = JSON.parse(usersJson);
+        setUsers(Array.isArray(local) ? local : []);
+      } else {
+        setUsers([]);
       }
+      setUsersError('Showing local users only (Supabase Admin API not configured).');
     } catch (e) {
       console.error('Error loading users:', e);
+      setUsersError('Failed to load users list.');
+      setUsers([]);
     }
-    return [];
+
+    setUsersLoading(false);
   };
 
-  const [users, setUsers] = useState<User[]>(getUsers());
-
   useEffect(() => {
-    // Refresh users list when tab changes to users
     if (activeTab === 'users') {
-      setUsers(getUsers());
+      loadUsers();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const tabs = [
@@ -616,30 +648,34 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
               {/* Info Banner */}
               <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl">⚠️</span>
+                  <span className="text-2xl">ℹ️</span>
                   <div>
-                    <h4 className="font-semibold text-amber-400">Local Storage Mode</h4>
+                    <h4 className="font-semibold text-amber-400">Users Source</h4>
                     <p className="text-sm text-gray-400 mt-1">
-                      Currently, users are stored in localStorage (browser-only). To see all users across all devices and enable global data sync:
+                      This page tries to load users from a secure server endpoint (<code className="text-amber-300">/api/admin/users</code>). If not configured, it falls back to showing local demo users.
                     </p>
-                    <ol className="text-sm text-gray-400 mt-2 list-decimal list-inside space-y-1">
-                      <li>Connect to <strong className="text-amber-400">Supabase</strong> (free tier available)</li>
-                      <li>Add your Supabase URL and Anon Key to Vercel environment variables</li>
-                      <li>Redeploy your app</li>
-                    </ol>
+                    {usersError && (
+                      <p className="text-sm text-amber-200 mt-2">
+                        {usersError}
+                      </p>
+                    )}
                     <p className="text-sm text-gray-400 mt-2">
-                      With Supabase connected, you'll see <strong>all registered users globally</strong>, not just local ones.
+                      To enable global users list with Supabase, add a Vercel Serverless Function and set <code className="text-amber-300">SUPABASE_SERVICE_ROLE_KEY</code>.
                     </p>
                   </div>
                 </div>
               </div>
+
+              {usersLoading && (
+                <div className="text-sm text-gray-400">Loading users…</div>
+              )}
 
               {/* Users Table */}
               <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
                 <div className="p-4 border-b border-gray-800 flex items-center justify-between">
                   <h3 className="font-semibold text-white">User List ({users.length})</h3>
                   <button
-                    onClick={() => setUsers(getUsers())}
+                    onClick={loadUsers}
                     className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm transition-colors"
                   >
                     🔄 Refresh
