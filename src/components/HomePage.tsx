@@ -65,7 +65,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
   const showcase1 = settings.showcaseImage1 || 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400&h=500&fit=crop';
   const showcase2 = settings.showcaseImage2 || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop';
   const showcase3 = settings.showcaseImage3 || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&h=300&fit=crop';
-  const showcase4 = settings.showcaseImage4 || 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=400&h=500&fit=crop';
+  const showcase4 = settings.showcaseImage4 || 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=400&h=500&fit=crop';  
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');

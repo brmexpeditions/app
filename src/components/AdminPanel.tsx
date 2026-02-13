@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../supabase';
 
-interface RegisteredUser {
+interface User {
   id: string;
   email: string;
-  created_at: string;
-  last_sign_in_at?: string;
-  user_metadata?: {
-    full_name?: string;
-    phone?: string;
-    company_name?: string;
-  };
+  name: string;
+  phone?: string;
+  companyName?: string;
+  createdAt: string;
+  plan?: 'starter' | 'professional' | 'enterprise';
+  vehicleCount?: number;
 }
 
 interface SiteSettings {
@@ -140,44 +138,9 @@ interface AdminPanelProps {
 
 export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps) {
   const [settings, setSettings] = useState<SiteSettings>(currentSettings || defaultSettings);
-  const [activeTab, setActiveTab] = useState<'branding' | 'seo' | 'analytics' | 'social' | 'contact' | 'pricing' | 'sections' | 'users' | 'payments' | 'advanced'>('branding');
+  const [activeTab, setActiveTab] = useState<'branding' | 'users' | 'payments' | 'seo' | 'analytics' | 'social' | 'contact' | 'pricing' | 'sections' | 'advanced'>('branding');
   const [saved, setSaved] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
-  const [users, setUsers] = useState<RegisteredUser[]>([]);
-  const [loadingUsers, setLoadingUsers] = useState(false);
-  
-  // Load users from localStorage (simulated - in production use Supabase admin API)
-  useEffect(() => {
-    if (activeTab === 'users') {
-      loadUsers();
-    }
-  }, [activeTab]);
-  
-  const loadUsers = async () => {
-    setLoadingUsers(true);
-    try {
-      // Get users from localStorage (for demo purposes)
-      const storedUsers = localStorage.getItem('fleetguard_users');
-      if (storedUsers) {
-        const parsed = JSON.parse(storedUsers);
-        setUsers(Array.isArray(parsed) ? parsed : []);
-      }
-      
-      // If Supabase is configured, try to get users from there
-      if (supabase.url) {
-        const token = localStorage.getItem('supabase_access_token');
-        if (token) {
-          const supabaseUsers = await supabase.getUsers(token);
-          if (supabaseUsers.length > 0) {
-            setUsers(supabaseUsers);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error loading users:', error);
-    }
-    setLoadingUsers(false);
-  };
 
   const handleSave = () => {
     onSave(settings);
@@ -218,16 +181,39 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
     }
   };
 
+  // Get registered users from localStorage
+  const getUsers = (): User[] => {
+    try {
+      const usersJson = localStorage.getItem('fleet_users');
+      if (usersJson) {
+        const users = JSON.parse(usersJson);
+        return Array.isArray(users) ? users : [];
+      }
+    } catch (e) {
+      console.error('Error loading users:', e);
+    }
+    return [];
+  };
+
+  const [users, setUsers] = useState<User[]>(getUsers());
+
+  useEffect(() => {
+    // Refresh users list when tab changes to users
+    if (activeTab === 'users') {
+      setUsers(getUsers());
+    }
+  }, [activeTab]);
+
   const tabs = [
     { id: 'branding', label: 'Branding', icon: '🎨' },
+    { id: 'users', label: 'Users', icon: '👥' },
+    { id: 'payments', label: 'Payments', icon: '💳' },
     { id: 'seo', label: 'SEO', icon: '🔍' },
     { id: 'analytics', label: 'Analytics', icon: '📊' },
     { id: 'social', label: 'Social Media', icon: '📱' },
     { id: 'contact', label: 'Contact', icon: '📞' },
     { id: 'pricing', label: 'Pricing', icon: '💰' },
     { id: 'sections', label: 'Sections', icon: '📋' },
-    { id: 'users', label: 'Users', icon: '👥' },
-    { id: 'payments', label: 'Payments', icon: '💳' },
     { id: 'advanced', label: 'Advanced', icon: '⚙️' }
   ];
 
@@ -599,6 +585,278 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
             </div>
           )}
 
+          {/* Users Tab */}
+          {activeTab === 'users' && (
+            <div className="max-w-4xl space-y-6">
+              <div>
+                <h2 className="text-xl font-bold text-white mb-1">Registered Users</h2>
+                <p className="text-gray-400 text-sm">View all users who have signed up for Fleet Guard</p>
+              </div>
+
+              {/* Stats Cards */}
+              <div className="grid grid-cols-4 gap-4">
+                <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-xl p-4 border border-blue-500/30">
+                  <p className="text-blue-400 text-sm">Total Users</p>
+                  <p className="text-3xl font-bold text-white">{users.length}</p>
+                </div>
+                <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 rounded-xl p-4 border border-green-500/30">
+                  <p className="text-green-400 text-sm">Starter Plan</p>
+                  <p className="text-3xl font-bold text-white">{users.filter(u => !u.plan || u.plan === 'starter').length}</p>
+                </div>
+                <div className="bg-gradient-to-br from-amber-500/20 to-amber-600/10 rounded-xl p-4 border border-amber-500/30">
+                  <p className="text-amber-400 text-sm">Professional</p>
+                  <p className="text-3xl font-bold text-white">{users.filter(u => u.plan === 'professional').length}</p>
+                </div>
+                <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-xl p-4 border border-purple-500/30">
+                  <p className="text-purple-400 text-sm">Enterprise</p>
+                  <p className="text-3xl font-bold text-white">{users.filter(u => u.plan === 'enterprise').length}</p>
+                </div>
+              </div>
+
+              {/* Info Banner */}
+              <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">⚠️</span>
+                  <div>
+                    <h4 className="font-semibold text-amber-400">Local Storage Mode</h4>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Currently, users are stored in localStorage (browser-only). To see all users across all devices and enable global data sync:
+                    </p>
+                    <ol className="text-sm text-gray-400 mt-2 list-decimal list-inside space-y-1">
+                      <li>Connect to <strong className="text-amber-400">Supabase</strong> (free tier available)</li>
+                      <li>Add your Supabase URL and Anon Key to Vercel environment variables</li>
+                      <li>Redeploy your app</li>
+                    </ol>
+                    <p className="text-sm text-gray-400 mt-2">
+                      With Supabase connected, you'll see <strong>all registered users globally</strong>, not just local ones.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Users Table */}
+              <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+                <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+                  <h3 className="font-semibold text-white">User List ({users.length})</h3>
+                  <button
+                    onClick={() => setUsers(getUsers())}
+                    className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm transition-colors"
+                  >
+                    🔄 Refresh
+                  </button>
+                </div>
+                
+                {users.length === 0 ? (
+                  <div className="p-8 text-center">
+                    <span className="text-4xl">👥</span>
+                    <p className="text-gray-400 mt-2">No users registered yet</p>
+                    <p className="text-gray-500 text-sm mt-1">Users will appear here after they sign up</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-800/50">
+                        <tr>
+                          <th className="text-left text-xs font-medium text-gray-400 px-4 py-3">USER</th>
+                          <th className="text-left text-xs font-medium text-gray-400 px-4 py-3">EMAIL</th>
+                          <th className="text-left text-xs font-medium text-gray-400 px-4 py-3">PHONE</th>
+                          <th className="text-left text-xs font-medium text-gray-400 px-4 py-3">COMPANY</th>
+                          <th className="text-left text-xs font-medium text-gray-400 px-4 py-3">PLAN</th>
+                          <th className="text-left text-xs font-medium text-gray-400 px-4 py-3">JOINED</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-800">
+                        {users.map((user, idx) => (
+                          <tr key={user.id || idx} className="hover:bg-gray-800/50 transition-colors">
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center text-sm font-bold text-white">
+                                  {(user.name || user.email || '?')[0].toUpperCase()}
+                                </div>
+                                <span className="text-white font-medium">{user.name || 'Unknown'}</span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3 text-gray-400 text-sm">{user.email || '-'}</td>
+                            <td className="px-4 py-3 text-gray-400 text-sm">{user.phone || '-'}</td>
+                            <td className="px-4 py-3 text-gray-400 text-sm">{user.companyName || '-'}</td>
+                            <td className="px-4 py-3">
+                              <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                user.plan === 'enterprise' ? 'bg-purple-500/20 text-purple-400' :
+                                user.plan === 'professional' ? 'bg-amber-500/20 text-amber-400' :
+                                'bg-gray-700 text-gray-400'
+                              }`}>
+                                {user.plan || 'Starter'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-gray-500 text-sm">
+                              {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN') : '-'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Payments Tab */}
+          {activeTab === 'payments' && (
+            <div className="max-w-3xl space-y-6">
+              <div>
+                <h2 className="text-xl font-bold text-white mb-1">Payment Gateway</h2>
+                <p className="text-gray-400 text-sm">Configure payment methods for subscriptions</p>
+              </div>
+
+              {/* Info Banner */}
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">ℹ️</span>
+                  <div>
+                    <h4 className="font-semibold text-blue-400">Payment Integration</h4>
+                    <p className="text-sm text-gray-400 mt-1">
+                      To enable payments, you need to integrate a payment gateway. We recommend <strong className="text-blue-400">Razorpay</strong> for Indian businesses (supports UPI, Cards, Netbanking).
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Razorpay Setup */}
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-white flex items-center gap-2">
+                    <span className="text-2xl">💳</span> Razorpay
+                  </h3>
+                  <span className="px-2 py-1 rounded text-xs font-medium bg-amber-500/20 text-amber-400">
+                    Recommended
+                  </span>
+                </div>
+                
+                <div className="bg-gray-800 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-white mb-3">Setup Steps:</h4>
+                  <ol className="text-sm text-gray-400 space-y-2 list-decimal list-inside">
+                    <li>Go to <a href="https://razorpay.com" target="_blank" rel="noopener" className="text-amber-400 hover:underline">razorpay.com</a> and create a business account</li>
+                    <li>Complete KYC verification (takes 1-2 days)</li>
+                    <li>Get your API keys from Dashboard → Settings → API Keys</li>
+                    <li>Add keys to Vercel Environment Variables:
+                      <code className="block mt-1 bg-gray-900 px-2 py-1 rounded text-xs text-green-400">
+                        RAZORPAY_KEY_ID=rzp_live_xxxxx<br/>
+                        RAZORPAY_KEY_SECRET=xxxxx
+                      </code>
+                    </li>
+                    <li>Create subscription plans in Razorpay Dashboard</li>
+                    <li>Contact us to integrate checkout flow</li>
+                  </ol>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Razorpay Key ID</label>
+                    <input
+                      type="text"
+                      placeholder="rzp_live_xxxxxxxxxxxxx"
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent font-mono text-sm"
+                      disabled
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Set in Vercel Environment Variables</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+                    <div className="px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-amber-400 text-sm">
+                      ⏳ Not Configured
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* UPI */}
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-4">
+                <h3 className="font-semibold text-white flex items-center gap-2">
+                  <span className="text-2xl">📱</span> UPI Payments
+                </h3>
+                <p className="text-sm text-gray-400">
+                  UPI is automatically enabled when you integrate Razorpay. Your customers can pay using:
+                </p>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {['Google Pay', 'PhonePe', 'Paytm', 'BHIM', 'Amazon Pay', 'Any UPI App'].map(app => (
+                    <span key={app} className="px-3 py-1.5 bg-gray-800 rounded-lg text-sm text-gray-300">
+                      {app}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Other Gateways */}
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-4">
+                <h3 className="font-semibold text-white flex items-center gap-2">
+                  <span className="text-2xl">🌐</span> Other Payment Options
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { name: 'Cashfree', status: 'Coming Soon' },
+                    { name: 'PayU', status: 'Coming Soon' },
+                    { name: 'Stripe', status: 'Coming Soon' },
+                    { name: 'PhonePe PG', status: 'Coming Soon' },
+                  ].map(gateway => (
+                    <div key={gateway.name} className="p-4 bg-gray-800 rounded-lg flex items-center justify-between">
+                      <span className="text-white font-medium">{gateway.name}</span>
+                      <span className="text-xs text-gray-500">{gateway.status}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Pricing Plans Reference */}
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-4">
+                <h3 className="font-semibold text-white flex items-center gap-2">
+                  <span className="text-2xl">💰</span> Current Pricing Plans
+                </h3>
+                <p className="text-sm text-gray-400">These prices will be used for checkout. Edit in the Pricing tab.</p>
+                <div className="grid grid-cols-3 gap-4 mt-4">
+                  <div className="p-4 bg-gray-800 rounded-lg text-center">
+                    <p className="text-gray-400 text-sm">Starter</p>
+                    <p className="text-2xl font-bold text-white">₹{settings.starterPrice}</p>
+                    <p className="text-gray-500 text-xs">Up to {settings.starterVehicles} vehicles</p>
+                  </div>
+                  <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg text-center">
+                    <p className="text-amber-400 text-sm">Professional</p>
+                    <p className="text-2xl font-bold text-white">₹{settings.proPrice}</p>
+                    <p className="text-gray-500 text-xs">Up to {settings.proVehicles} vehicles</p>
+                  </div>
+                  <div className="p-4 bg-gray-800 rounded-lg text-center">
+                    <p className="text-purple-400 text-sm">Enterprise</p>
+                    <p className="text-2xl font-bold text-white">₹{settings.enterprisePrice}</p>
+                    <p className="text-gray-500 text-xs">Unlimited vehicles</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Server-side Note */}
+              <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl">⚠️</span>
+                  <div>
+                    <h4 className="font-semibold text-red-400">Important: Server-Side Required</h4>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Payment processing <strong>requires a backend server</strong> for security. This cannot be done in a pure frontend app.
+                    </p>
+                    <p className="text-sm text-gray-400 mt-2">
+                      You need to either:
+                    </p>
+                    <ul className="text-sm text-gray-400 mt-1 list-disc list-inside">
+                      <li>Use <strong>Vercel Serverless Functions</strong> (recommended)</li>
+                      <li>Or connect to a separate backend API</li>
+                    </ul>
+                    <p className="text-sm text-gray-400 mt-2">
+                      Contact the developer to integrate payments securely.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* SEO Tab */}
           {activeTab === 'seo' && (
             <div className="max-w-3xl space-y-6">
@@ -964,321 +1222,6 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     </div>
                   </label>
                 ))}
-              </div>
-            </div>
-          )}
-
-          {/* Users Tab */}
-          {activeTab === 'users' && (
-            <div className="max-w-4xl space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xl font-bold text-white mb-1">Registered Users</h2>
-                  <p className="text-gray-400 text-sm">View and manage all registered users</p>
-                </div>
-                <button
-                  onClick={loadUsers}
-                  className="px-4 py-2 bg-amber-500 text-black rounded-lg font-medium hover:bg-amber-400 transition-colors flex items-center gap-2"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  Refresh
-                </button>
-              </div>
-
-              {/* Stats Cards */}
-              <div className="grid grid-cols-4 gap-4">
-                <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
-                  <div className="text-3xl font-bold text-white">{users.length}</div>
-                  <div className="text-sm text-gray-400">Total Users</div>
-                </div>
-                <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
-                  <div className="text-3xl font-bold text-green-400">
-                    {users.filter(u => {
-                      const lastWeek = new Date();
-                      lastWeek.setDate(lastWeek.getDate() - 7);
-                      return new Date(u.created_at) > lastWeek;
-                    }).length}
-                  </div>
-                  <div className="text-sm text-gray-400">New This Week</div>
-                </div>
-                <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
-                  <div className="text-3xl font-bold text-cyan-400">
-                    {users.filter(u => {
-                      if (!u.last_sign_in_at) return false;
-                      const lastWeek = new Date();
-                      lastWeek.setDate(lastWeek.getDate() - 7);
-                      return new Date(u.last_sign_in_at) > lastWeek;
-                    }).length}
-                  </div>
-                  <div className="text-sm text-gray-400">Active This Week</div>
-                </div>
-                <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
-                  <div className="text-3xl font-bold text-amber-400">0</div>
-                  <div className="text-sm text-gray-400">Paid Users</div>
-                </div>
-              </div>
-
-              {/* Users Table */}
-              <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-                <div className="overflow-x-auto">
-                  {loadingUsers ? (
-                    <div className="p-8 text-center text-gray-400">
-                      <div className="animate-spin w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-                      Loading users...
-                    </div>
-                  ) : users.length === 0 ? (
-                    <div className="p-8 text-center">
-                      <div className="text-4xl mb-4">👥</div>
-                      <p className="text-gray-400 mb-2">No users registered yet</p>
-                      <p className="text-xs text-gray-500">Users will appear here when they sign up</p>
-                    </div>
-                  ) : (
-                    <table className="w-full">
-                      <thead className="bg-gray-800">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">#</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Name</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Email</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Phone</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Company</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Joined</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Last Active</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Plan</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-800">
-                        {users.map((user, index) => (
-                          <tr key={user.id} className="hover:bg-gray-800/50">
-                            <td className="px-4 py-3 text-sm text-gray-400">{index + 1}</td>
-                            <td className="px-4 py-3">
-                              <span className="text-white font-medium">
-                                {user.user_metadata?.full_name || 'Unknown'}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-300">{user.email}</td>
-                            <td className="px-4 py-3 text-sm text-gray-400">
-                              {user.user_metadata?.phone || '-'}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-400">
-                              {user.user_metadata?.company_name || '-'}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-400">
-                              {new Date(user.created_at).toLocaleDateString('en-IN')}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-400">
-                              {user.last_sign_in_at 
-                                ? new Date(user.last_sign_in_at).toLocaleDateString('en-IN')
-                                : 'Never'}
-                            </td>
-                            <td className="px-4 py-3">
-                              <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs">
-                                Free
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-                </div>
-              </div>
-
-              {/* Export Users */}
-              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
-                <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-                  <span className="text-amber-400">📥</span> Export Users
-                </h3>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => {
-                      const csv = [
-                        ['Name', 'Email', 'Phone', 'Company', 'Joined', 'Plan'].join(','),
-                        ...users.map(u => [
-                          u.user_metadata?.full_name || '',
-                          u.email,
-                          u.user_metadata?.phone || '',
-                          u.user_metadata?.company_name || '',
-                          new Date(u.created_at).toLocaleDateString('en-IN'),
-                          'Free'
-                        ].join(','))
-                      ].join('\n');
-                      const blob = new Blob([csv], { type: 'text/csv' });
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.href = url;
-                      a.download = `fleetguard-users-${new Date().toISOString().split('T')[0]}.csv`;
-                      a.click();
-                    }}
-                    className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                  >
-                    📄 Export as CSV
-                  </button>
-                  <button
-                    onClick={() => {
-                      const json = JSON.stringify(users, null, 2);
-                      const blob = new Blob([json], { type: 'application/json' });
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.href = url;
-                      a.download = `fleetguard-users-${new Date().toISOString().split('T')[0]}.json`;
-                      a.click();
-                    }}
-                    className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                  >
-                    📋 Export as JSON
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Payments Tab */}
-          {activeTab === 'payments' && (
-            <div className="max-w-3xl space-y-6">
-              <div>
-                <h2 className="text-xl font-bold text-white mb-1">Payment Gateway</h2>
-                <p className="text-gray-400 text-sm">Configure payment options for subscriptions</p>
-              </div>
-
-              {/* Razorpay Integration */}
-              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-white flex items-center gap-2">
-                    <span className="text-2xl">💳</span> Razorpay (Recommended for India)
-                  </h3>
-                  <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded text-xs font-medium">
-                    UPI Supported ✓
-                  </span>
-                </div>
-                
-                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-                  <h4 className="text-blue-400 font-medium mb-2">📘 How to set up Razorpay:</h4>
-                  <ol className="text-sm text-gray-300 space-y-2 list-decimal list-inside">
-                    <li>Create a Razorpay account at <a href="https://razorpay.com" target="_blank" rel="noopener" className="text-amber-400 hover:underline">razorpay.com</a></li>
-                    <li>Complete KYC verification (takes 1-2 days)</li>
-                    <li>Go to Settings → API Keys → Generate Key</li>
-                    <li>Copy the Key ID and Key Secret</li>
-                    <li>Paste them below</li>
-                    <li>Create subscription plans in Razorpay Dashboard</li>
-                  </ol>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Razorpay Key ID</label>
-                    <input
-                      type="text"
-                      placeholder="rzp_live_xxxxxxxxxxxxxxx"
-                      className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent font-mono text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Razorpay Key Secret</label>
-                    <input
-                      type="password"
-                      placeholder="••••••••••••••••"
-                      className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent font-mono text-sm"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Webhook Secret (for subscription events)</label>
-                  <input
-                    type="password"
-                    placeholder="whsec_xxxxxxxxxxxxxxx"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent font-mono text-sm"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Webhook URL: <code className="bg-gray-800 px-2 py-0.5 rounded">https://yourdomain.com/api/razorpay-webhook</code>
-                  </p>
-                </div>
-
-                <div className="flex gap-3">
-                  <button className="px-4 py-2 bg-amber-500 text-black rounded-lg font-medium hover:bg-amber-400 transition-colors">
-                    Save Razorpay Settings
-                  </button>
-                  <button className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors">
-                    Test Connection
-                  </button>
-                </div>
-              </div>
-
-              {/* Subscription Plans Mapping */}
-              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-4">
-                <h3 className="font-semibold text-white flex items-center gap-2">
-                  <span className="text-amber-400">📋</span> Subscription Plan IDs
-                </h3>
-                <p className="text-sm text-gray-400">
-                  Create plans in Razorpay Dashboard and paste the Plan IDs here
-                </p>
-                
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4 p-4 bg-gray-800 rounded-lg">
-                    <div className="flex-1">
-                      <div className="text-white font-medium">Professional Plan</div>
-                      <div className="text-sm text-gray-400">₹{settings.proPrice}/year • Up to {settings.proVehicles} vehicles</div>
-                    </div>
-                    <input
-                      type="text"
-                      placeholder="plan_xxxxxxxxxxxxxxx"
-                      className="w-64 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent font-mono text-sm"
-                    />
-                  </div>
-                  
-                  <div className="flex items-center gap-4 p-4 bg-gray-800 rounded-lg">
-                    <div className="flex-1">
-                      <div className="text-white font-medium">Enterprise Plan</div>
-                      <div className="text-sm text-gray-400">₹{settings.enterprisePrice}/year • Unlimited vehicles</div>
-                    </div>
-                    <input
-                      type="text"
-                      placeholder="plan_xxxxxxxxxxxxxxx"
-                      className="w-64 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent font-mono text-sm"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment Methods */}
-              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-4">
-                <h3 className="font-semibold text-white flex items-center gap-2">
-                  <span className="text-amber-400">💵</span> Accepted Payment Methods
-                </h3>
-                
-                <div className="grid grid-cols-3 gap-4">
-                  {[
-                    { name: 'UPI', icon: '📱', enabled: true },
-                    { name: 'Credit/Debit Cards', icon: '💳', enabled: true },
-                    { name: 'Net Banking', icon: '🏦', enabled: true },
-                    { name: 'Wallets', icon: '👛', enabled: true },
-                    { name: 'EMI', icon: '📅', enabled: false },
-                    { name: 'Pay Later', icon: '⏰', enabled: false },
-                  ].map(method => (
-                    <label key={method.name} className="flex items-center gap-3 p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-750 transition-colors">
-                      <input type="checkbox" defaultChecked={method.enabled} className="w-4 h-4 rounded border-gray-600 text-amber-500 focus:ring-amber-500 bg-gray-700" />
-                      <span className="text-xl">{method.icon}</span>
-                      <span className="text-white text-sm">{method.name}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Revenue Dashboard Coming Soon */}
-              <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-xl p-6 border border-amber-500/30">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-amber-500/20 rounded-full flex items-center justify-center text-3xl">
-                    📊
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white mb-1">Revenue Dashboard</h3>
-                    <p className="text-sm text-gray-400">
-                      Once Razorpay is connected, you'll see real-time revenue, subscription analytics, and payment history here.
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           )}
