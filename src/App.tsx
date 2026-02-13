@@ -7,9 +7,6 @@ import AuthScreen from './components/AuthScreen';
 import { HomePage } from './components/HomePage';
 import { AdminPanel, SiteSettings } from './components/AdminPanel';
 import { Motorcycle, ServiceRecord, CompanySettings as CompanySettingsType } from './types';
-import { isSupabaseConfigured } from './lib/supabase';
-import { loadPublicSiteSettings, savePublicSiteSettings } from './lib/supabaseSiteSettings';
-import { loadFleetForCurrentUser, saveFleetForCurrentUser } from './lib/supabaseFleetStore';
 
 const defaultSiteSettings: SiteSettings = {
   siteName: 'Fleet Guard',
@@ -126,46 +123,30 @@ function App() {
   // Helper: hidden admin backend URL
   // Visit /admin in the browser to request backend access (admin-only).
 
-  // Load site settings (local first, then Supabase if configured)
+  // Load site settings
   useEffect(() => {
-    const load = async () => {
-      // Local cache first (fast)
-      try {
-        const savedSiteSettings = localStorage.getItem('fleet_site_settings');
-        if (savedSiteSettings) {
-          setSiteSettings({ ...defaultSiteSettings, ...JSON.parse(savedSiteSettings) });
-        }
-      } catch (e) {
-        console.error('Error loading site settings (local):', e);
+    try {
+      const savedSiteSettings = localStorage.getItem('fleet_site_settings');
+      if (savedSiteSettings) {
+        setSiteSettings({ ...defaultSiteSettings, ...JSON.parse(savedSiteSettings) });
       }
-
-      // Supabase public settings (shared for all users)
-      if (isSupabaseConfigured) {
-        try {
-          const remote = await loadPublicSiteSettings();
-          if (remote) {
-            const merged = { ...defaultSiteSettings, ...remote };
-            setSiteSettings(merged);
-            localStorage.setItem('fleet_site_settings', JSON.stringify(merged));
-          }
-        } catch (e) {
-          console.warn('Could not load site settings from Supabase. Using local settings.', e);
-        }
-      }
-    };
-
-    load();
+    } catch (e) {
+      console.error('Error loading site settings:', e);
+    }
   }, []);
 
-  // Apply site settings to document (CSS + analytics)
-  const applySiteSettings = (settings: SiteSettings) => {
+  // Save site settings
+  const handleSaveSiteSettings = (settings: SiteSettings) => {
+    setSiteSettings(settings);
+    localStorage.setItem('fleet_site_settings', JSON.stringify(settings));
+    
     // Apply Google Analytics if provided
     if (settings.googleAnalyticsId && !document.querySelector(`script[src*="googletagmanager"]`)) {
       const script = document.createElement('script');
       script.async = true;
       script.src = `https://www.googletagmanager.com/gtag/js?id=${settings.googleAnalyticsId}`;
       document.head.appendChild(script);
-
+      
       const inlineScript = document.createElement('script');
       inlineScript.innerHTML = `
         window.dataLayer = window.dataLayer || [];
@@ -184,27 +165,6 @@ function App() {
       document.head.appendChild(styleEl);
     }
     styleEl.innerHTML = settings.customCss || '';
-
-    // Title/meta
-    if (settings.metaTitle) document.title = settings.metaTitle;
-  };
-
-  // Save site settings (local + Supabase if configured)
-  const handleSaveSiteSettings = async (settings: SiteSettings) => {
-    setSiteSettings(settings);
-    localStorage.setItem('fleet_site_settings', JSON.stringify(settings));
-
-    applySiteSettings(settings);
-
-    if (isSupabaseConfigured) {
-      try {
-        await savePublicSiteSettings(settings);
-      } catch (e) {
-        console.warn('Failed saving site settings to Supabase. Saved locally only.', e);
-        // Non-blocking message
-        alert('Saved locally, but could not save to Supabase. Please ensure the "site_settings" table exists and RLS policies are correct.');
-      }
-    }
   };
 
   // Check if user is admin (simple check - case-insensitive)
@@ -267,55 +227,28 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Load data (local first, then Supabase per-user if configured and logged in)
+  // Load data from localStorage
   useEffect(() => {
-    const load = async () => {
-      // Local cache first
-      try {
-        const saved = localStorage.getItem('motorcycle_fleet_data');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          setData({
-            ...defaultData,
-            ...parsed,
-            motorcycles: Array.isArray(parsed.motorcycles) ? parsed.motorcycles : [],
-            serviceRecords: Array.isArray(parsed.serviceRecords) ? parsed.serviceRecords : [],
-            savedMakes: Array.isArray(parsed.savedMakes) ? parsed.savedMakes : defaultData.savedMakes,
-            savedModels: parsed.savedModels || defaultData.savedModels,
-            companySettings: { ...defaultData.companySettings, ...parsed.companySettings }
-          });
-        }
-      } catch (e) {
-        console.error('Error loading data (local):', e);
+    try {
+      const saved = localStorage.getItem('motorcycle_fleet_data');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setData({
+          ...defaultData,
+          ...parsed,
+          motorcycles: Array.isArray(parsed.motorcycles) ? parsed.motorcycles : [],
+          serviceRecords: Array.isArray(parsed.serviceRecords) ? parsed.serviceRecords : [],
+          savedMakes: Array.isArray(parsed.savedMakes) ? parsed.savedMakes : defaultData.savedMakes,
+          savedModels: parsed.savedModels || defaultData.savedModels,
+          companySettings: { ...defaultData.companySettings, ...parsed.companySettings }
+        });
       }
+    } catch (e) {
+      console.error('Error loading data:', e);
+    }
+  }, []);
 
-      if (isSupabaseConfigured && currentUser) {
-        try {
-          const remote = await loadFleetForCurrentUser();
-          if (remote) {
-            const merged: AppData = {
-              ...defaultData,
-              ...remote,
-              motorcycles: Array.isArray(remote.motorcycles) ? remote.motorcycles : [],
-              serviceRecords: Array.isArray(remote.serviceRecords) ? remote.serviceRecords : [],
-              savedMakes: Array.isArray(remote.savedMakes) ? remote.savedMakes : defaultData.savedMakes,
-              savedModels: remote.savedModels || defaultData.savedModels,
-              companySettings: { ...defaultData.companySettings, ...(remote.companySettings || {}) },
-              lastBackup: remote.lastBackup,
-            };
-            setData(merged);
-            localStorage.setItem('motorcycle_fleet_data', JSON.stringify(merged));
-          }
-        } catch (e) {
-          console.warn('Could not load fleet data from Supabase. Using local data.', e);
-        }
-      }
-    };
-
-    load();
-  }, [currentUser]);
-
-  // Save data (local + Supabase per-user when configured)
+  // Save data to localStorage
   const saveData = (updater: AppData | ((prev: AppData) => AppData)) => {
     setData(prev => {
       const next = typeof updater === 'function' ? (updater as (p: AppData) => AppData)(prev) : updater;
@@ -324,14 +257,6 @@ function App() {
       } catch (e) {
         console.error('Error saving data:', e);
       }
-
-      // Fire-and-forget cloud save
-      if (isSupabaseConfigured && currentUser) {
-        saveFleetForCurrentUser(next).catch((e) => {
-          console.warn('Failed saving fleet data to Supabase. Saved locally only.', e);
-        });
-      }
-
       return next;
     });
   };
