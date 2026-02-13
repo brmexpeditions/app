@@ -5,79 +5,34 @@ import Analytics from './components/Analytics';
 import CompanySettings from './components/CompanySettings';
 import AuthScreen from './components/AuthScreen';
 import { HomePage } from './components/HomePage';
-import { AdminBackend } from './components/AdminBackend';
+import { AdminPanel, SiteSettings } from './components/AdminPanel';
 import { Motorcycle, ServiceRecord, CompanySettings as CompanySettingsType } from './types';
-
-interface SiteSettings {
-  siteName: string;
-  tagline: string;
-  logo: string;
-  favicon: string;
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
-  backgroundColor: string;
-  textColor: string;
-  headingFont: string;
-  bodyFont: string;
-  fontSize: 'small' | 'medium' | 'large';
-  heroImage: string;
-  aboutImage: string;
-  featureImages: string[];
-  metaTitle: string;
-  metaDescription: string;
-  metaKeywords: string;
-  ogImage: string;
-  googleAnalyticsId: string;
-  googleSearchConsole: string;
-  facebookPixel: string;
-  facebook: string;
-  twitter: string;
-  instagram: string;
-  linkedin: string;
-  youtube: string;
-  email: string;
-  phone: string;
-  whatsapp: string;
-  address: string;
-  starterPrice: number;
-  starterVehicles: number;
-  proPrice: number;
-  proVehicles: number;
-  enterprisePrice: number;
-  showPricing: boolean;
-  showReviews: boolean;
-  showFaq: boolean;
-  showContact: boolean;
-  showBrands: boolean;
-  customCss: string;
-  headerScripts: string;
-  footerScripts: string;
-}
 
 const defaultSiteSettings: SiteSettings = {
   siteName: 'Fleet Guard',
   tagline: 'Protect Your Fleet',
   logo: '',
   favicon: '',
+  fontFamily: 'System',
+
+  heroBackgroundImage: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=1920&h=1080&fit=crop&q=80',
+  ctaBackgroundImage: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&q=80',
+  showcaseImage1: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400&h=500&fit=crop',
+  showcaseImage2: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop',
+  showcaseImage3: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&h=300&fit=crop',
+  showcaseImage4: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=400&h=500&fit=crop',
+
   primaryColor: '#f59e0b',
   secondaryColor: '#1f2937',
   accentColor: '#10b981',
   backgroundColor: '#000000',
   textColor: '#ffffff',
-  headingFont: 'Inter',
-  bodyFont: 'Inter',
-  fontSize: 'medium',
-  heroImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920',
-  aboutImage: '',
-  featureImages: [],
+  googleAnalyticsId: '',
+  googleSearchConsoleId: '',
   metaTitle: 'Fleet Guard - Protect Your Fleet | Vehicle Management System',
   metaDescription: 'Manage your vehicle fleet with ease. Track services, documents, and maintenance for cars & bikes.',
   metaKeywords: 'fleet management, vehicle tracking, service reminder',
   ogImage: '',
-  googleAnalyticsId: '',
-  googleSearchConsole: '',
-  facebookPixel: '',
   facebook: '',
   twitter: '',
   instagram: '',
@@ -96,7 +51,6 @@ const defaultSiteSettings: SiteSettings = {
   showReviews: true,
   showFaq: true,
   showContact: true,
-  showBrands: true,
   customCss: '',
   headerScripts: '',
   footerScripts: ''
@@ -164,6 +118,40 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(defaultSiteSettings);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [pendingAdminOpen, setPendingAdminOpen] = useState(false);
+
+  // Check if user is admin (simple check - case-insensitive)
+  const isAdmin = (() => {
+    if (!currentUser) return false;
+    const email = (currentUser.email || '').toLowerCase().trim();
+    const username = (currentUser.username || '').toLowerCase().trim();
+    return (
+      username === 'admin' ||
+      email === 'admin@fleetguard.in' ||
+      email === 'admin@fleetguard.com'
+    );
+  })();
+
+  // Secret admin access via keyboard shortcut (Ctrl+Shift+A)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+Shift+A to open admin panel
+      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        if (currentUser && isAdmin) {
+          setShowAdminPanel(true);
+        } else if (!currentUser) {
+          // If not logged in, go to login with admin intent
+          setPendingAdminOpen(true);
+          setAuthMode('login');
+          setCurrentView('auth');
+        }
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentUser, isAdmin]);
 
   // Load site settings
   useEffect(() => {
@@ -208,12 +196,6 @@ function App() {
     }
     styleEl.innerHTML = settings.customCss || '';
   };
-
-  // Check if user is admin (simple check - can be enhanced)
-  const isAdmin = currentUser?.email?.toLowerCase() === 'admin@fleetguard.com' || 
-                  currentUser?.email?.toLowerCase() === 'admin@fleetguard.in' ||
-                  currentUser?.username?.toLowerCase() === 'admin' ||
-                  currentUser?.id === 'admin';
 
   // Check for existing session on mount
   useEffect(() => {
@@ -264,9 +246,22 @@ function App() {
     });
   };
 
+  const isAdminUser = (user: User | null) => {
+    if (!user) return false;
+    const email = (user.email || '').toLowerCase().trim();
+    const username = (user.username || '').toLowerCase().trim();
+    return username === 'admin' || email === 'admin@fleetguard.in' || email === 'admin@fleetguard.com';
+  };
+
   const handleLogin = (user: User) => {
     setCurrentUser(user);
     setCurrentView('dashboard');
+
+    // If user requested admin access from the homepage, open backend right after login
+    if (pendingAdminOpen && isAdminUser(user)) {
+      setShowAdminPanel(true);
+    }
+    setPendingAdminOpen(false);
   };
 
   const handleLogout = () => {
@@ -281,6 +276,7 @@ function App() {
   };
 
   const handleGoToLogin = () => {
+    setPendingAdminOpen(false);
     setAuthMode('login');
     setCurrentView('auth');
   };
@@ -395,10 +391,10 @@ function App() {
   // Show Admin Panel
   if (showAdminPanel && isAdmin) {
     return (
-      <AdminBackend
+      <AdminPanel
         onClose={() => setShowAdminPanel(false)}
         onSave={handleSaveSiteSettings}
-        settings={siteSettings}
+        currentSettings={siteSettings}
       />
     );
   }
@@ -409,10 +405,6 @@ function App() {
       <HomePage 
         onGetStarted={handleGetStarted}
         onLogin={handleGoToLogin}
-        onAdminAccess={() => {
-          setAuthMode('login');
-          setCurrentView('auth');
-        }}
         siteSettings={siteSettings}
       />
     );
@@ -475,8 +467,8 @@ function App() {
               {isAdmin && (
                 <button
                   onClick={() => setShowAdminPanel(true)}
-                  className="px-3 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 rounded-lg text-sm font-medium text-purple-400 transition-colors flex items-center gap-1"
-                  title="Admin Panel"
+                  className="px-3 py-2 bg-gradient-to-r from-purple-500/20 to-purple-600/20 hover:from-purple-500/30 hover:to-purple-600/30 border border-purple-400/30 rounded-lg text-sm font-semibold text-purple-200 transition-colors flex items-center gap-2"
+                  title="Admin Backend"
                 >
                   <span className="hidden sm:inline">Admin</span>
                   <span>⚙️</span>
