@@ -319,6 +319,7 @@ function App() {
   const [data, setData] = useState<AppData>(defaultData);
   const [activeTab, setActiveTab] = useState<'fleet' | 'service' | 'analytics' | 'settings'>('fleet');
   const [isLoading, setIsLoading] = useState(true);
+  const [openVehicleId, setOpenVehicleId] = useState<string | null>(null);
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(defaultSiteSettings);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [pendingAdminOpen, setPendingAdminOpen] = useState(false);
@@ -934,6 +935,8 @@ function App() {
             onDeleteBike={handleDeleteBike}
             onAddMake={handleAddMake}
             onAddModel={handleAddModel}
+            openVehicleId={openVehicleId}
+            onOpenVehicleHandled={() => setOpenVehicleId(null)}
           />
         )}
 
@@ -953,6 +956,10 @@ function App() {
             motorcycles={data.motorcycles}
             serviceRecords={data.serviceRecords}
             companySettings={data.companySettings}
+            onOpenVehicle={(vehicleId) => {
+              setActiveTab('fleet');
+              setOpenVehicleId(vehicleId);
+            }}
           />
         )}
 

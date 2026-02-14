@@ -5,11 +5,21 @@ interface AnalyticsProps {
   motorcycles: Motorcycle[];
   serviceRecords: ServiceRecord[];
   companySettings: CompanySettings;
+  /** If provided, clicking a vehicle in Analytics will open that vehicle profile in Fleet tab */
+  onOpenVehicle?: (vehicleId: string) => void;
 }
 
-const Analytics: React.FC<AnalyticsProps> = ({ motorcycles, serviceRecords, companySettings }) => {
+const Analytics: React.FC<AnalyticsProps> = ({ motorcycles, serviceRecords, companySettings, onOpenVehicle }) => {
   const [showServiceDetails, setShowServiceDetails] = useState<'upcoming' | 'overdue' | null>(null);
+  // 'all' = show all
+  const [serviceDueWithinDays, setServiceDueWithinDays] = useState<number | 'all'>(30);
+
   const [showDocDetails, setShowDocDetails] = useState<string | null>(null);
+  // 'all' = show all
+  const [docDueWithinDays, setDocDueWithinDays] = useState<number | 'all'>(30);
+
+  const serviceDaysThreshold = serviceDueWithinDays === 'all' ? Number.POSITIVE_INFINITY : serviceDueWithinDays;
+  const docDaysThreshold = docDueWithinDays === 'all' ? Number.POSITIVE_INFINITY : docDueWithinDays;
   // Fleet Statistics
   const totalBikes = motorcycles.length;
   const uniqueMakes = [...new Set(motorcycles.map(m => m.make))];
@@ -172,28 +182,62 @@ const Analytics: React.FC<AnalyticsProps> = ({ motorcycles, serviceRecords, comp
   
   // Service Status Analysis with detailed info
   const getServiceStatusDetailed = (m: Motorcycle) => {
-    const lastServiceDate = new Date(m.lastServiceDate || new Date());
-    const monthsSince = (today.getTime() - lastServiceDate.getTime()) / (1000 * 60 * 60 * 24 * 30);
+    // We compute an "effective" days left based on BOTH:
+    // 1) date-based interval (if lastServiceDate is valid)
+    // 2) km-based interval (converted to days using an assumed avg km/day)
+    const AVG_KM_PER_DAY = 50;
+
     const kmReadings = Array.isArray(m.kmReadings) ? m.kmReadings : [];
-    const currentKm = kmReadings.length > 0 
-      ? Math.max(...kmReadings.map(r => r.kilometers))
-      : (m.lastServiceKm || 0);
-    const kmSince = currentKm - m.lastServiceKm;
-    
-    const monthsLeft = m.serviceIntervalMonths - monthsSince;
-    const kmsLeft = m.serviceIntervalKms - kmSince;
-    const daysLeft = Math.round(monthsLeft * 30);
-    
+    const currentKm = kmReadings.length > 0
+      ? Math.max(...kmReadings.map((r) => r.kilometers))
+      : (m.currentOdometer ?? (m.lastServiceKm || 0));
+
+    const lastServiceKm = m.lastServiceKm || 0;
+    const kmSince = Math.max(0, currentKm - lastServiceKm);
+
+    const serviceIntervalMonths = m.serviceIntervalMonths || 5;
+    const serviceIntervalKms = m.serviceIntervalKms || 5000;
+
+    const kmsLeft = Math.round(serviceIntervalKms - kmSince);
+
+    // Date-based days left (optional)
+    let daysLeftByDate: number | null = null;
+    if (m.lastServiceDate) {
+      const last = new Date(m.lastServiceDate);
+      if (!Number.isNaN(last.getTime())) {
+        const next = new Date(last);
+        next.setMonth(next.getMonth() + serviceIntervalMonths);
+        const d = Math.ceil((next.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        daysLeftByDate = d;
+      }
+    }
+
+    // KM-based days left
+    const daysLeftByKm = Number.isFinite(kmsLeft)
+      ? Math.ceil(kmsLeft / AVG_KM_PER_DAY)
+      : null;
+
+    const effectiveDaysLeft = Math.round(
+      Math.min(daysLeftByDate ?? Number.POSITIVE_INFINITY, daysLeftByKm ?? Number.POSITIVE_INFINITY)
+    );
+
     let status: 'ok' | 'upcoming' | 'overdue' = 'ok';
-    if (monthsLeft <= 0 || kmsLeft <= 0) status = 'overdue';
-    else if (monthsLeft <= 0.5 || kmsLeft <= 500) status = 'upcoming';
-    
+
+    const isOverdueByDate = daysLeftByDate !== null && daysLeftByDate <= 0;
+    const isUpcomingByDate = daysLeftByDate !== null && daysLeftByDate <= 15;
+
+    const isOverdueByKm = kmsLeft <= 0;
+    const isUpcomingByKm = kmsLeft <= 500;
+
+    if (isOverdueByDate || isOverdueByKm) status = 'overdue';
+    else if (isUpcomingByDate || isUpcomingByKm) status = 'upcoming';
+
     return {
       status,
-      daysLeft: Math.round(daysLeft),
-      kmsLeft: Math.round(kmsLeft),
+      daysLeft: effectiveDaysLeft,
+      kmsLeft,
       currentKm,
-      lastServiceDate: m.lastServiceDate
+      lastServiceDate: m.lastServiceDate,
     };
   };
   
@@ -411,14 +455,45 @@ const Analytics: React.FC<AnalyticsProps> = ({ motorcycles, serviceRecords, comp
           {/* Expandable Service Details */}
           {showServiceDetails && vehiclesNeedingService.filter(v => v.status === showServiceDetails).length > 0 && (
             <div className={`mt-4 p-4 rounded-lg ${showServiceDetails === 'overdue' ? 'bg-red-50 border border-red-200' : 'bg-amber-50 border border-amber-200'}`}>
-              <h4 className={`font-bold mb-3 ${showServiceDetails === 'overdue' ? 'text-red-700' : 'text-amber-700'}`}>
-                {showServiceDetails === 'overdue' ? '🚨 Vehicles Overdue for Service' : '⚠️ Vehicles with Upcoming Service'}
-              </h4>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                <h4 className={`font-bold ${showServiceDetails === 'overdue' ? 'text-red-700' : 'text-amber-700'}`}>
+                  {showServiceDetails === 'overdue' ? '🚨 Vehicles Overdue for Service' : '⚠️ Vehicles with Upcoming Service'}
+                </h4>
+
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-gray-600">Show due within:</span>
+                  <select
+                    value={serviceDueWithinDays}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setServiceDueWithinDays(v === 'all' ? 'all' : (parseInt(v) || 30));
+                    }}
+                    className="px-2 py-1 border border-gray-300 rounded-lg bg-white"
+                    title="Filter by days"
+                  >
+                    <option value="all">All</option>
+                    {[3, 5, 7, 10, 15, 30, 60, 90].map((d) => (
+                      <option key={d} value={d}>
+                        {d} days
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {vehiclesNeedingService
                   .filter(v => v.status === showServiceDetails)
+                  // overdue always shows; upcoming respects the "due within" threshold
+                  .filter((v) => (showServiceDetails === 'overdue' ? true : v.daysLeft <= serviceDaysThreshold))
                   .map(item => (
-                    <div key={item.vehicle.id} className="bg-white p-3 rounded-lg shadow-sm flex items-center justify-between">
+                    <button
+                      type="button"
+                      key={item.vehicle.id}
+                      onClick={() => onOpenVehicle?.(item.vehicle.id)}
+                      className="w-full text-left bg-white p-3 rounded-lg shadow-sm flex items-center justify-between hover:ring-2 hover:ring-amber-300 transition"
+                      title="Open vehicle profile"
+                    >
                       <div>
                         <div className="font-medium text-gray-800">
                           {item.vehicle.vehicleType === 'Car' ? '🚗' : '🏍️'} {item.vehicle.make} {item.vehicle.model}
@@ -433,9 +508,15 @@ const Analytics: React.FC<AnalyticsProps> = ({ motorcycles, serviceRecords, comp
                           {item.kmsLeft < 0 ? `${formatNumber(Math.abs(item.kmsLeft))} km overdue` : `${formatNumber(item.kmsLeft)} km left`}
                         </div>
                       </div>
-                    </div>
+                    </button>
                   ))}
               </div>
+
+              {vehiclesNeedingService
+                .filter(v => v.status === showServiceDetails)
+                .filter((v) => (showServiceDetails === 'overdue' ? true : v.daysLeft <= serviceDaysThreshold)).length === 0 && (
+                <div className="text-sm text-gray-600 bg-white/60 rounded-lg p-3">No vehicles within this timeframe.</div>
+              )}
             </div>
           )}
           
@@ -504,34 +585,70 @@ const Analytics: React.FC<AnalyticsProps> = ({ motorcycles, serviceRecords, comp
                   {/* Expandable Document Details */}
                   {showDocDetails === doc && issues.length > 0 && (
                     <div className="mt-2 p-3 rounded-lg bg-gray-50 border border-gray-200">
-                      <h4 className="font-bold text-gray-700 mb-2 text-sm">
-                        🚨 {docLabel} Issues ({issues.length} vehicles)
-                      </h4>
-                      <div className="space-y-2 max-h-48 overflow-y-auto">
-                        {issues.map(item => (
-                          <div key={item.vehicle.id} className={`p-2 rounded-lg text-sm flex items-center justify-between ${
-                            item.status === 'expired' ? 'bg-red-50 border border-red-200' : 'bg-amber-50 border border-amber-200'
-                          }`}>
-                            <div>
-                              <div className="font-medium text-gray-800">
-                                {item.vehicle.vehicleType === 'Car' ? '🚗' : '🏍️'} {item.vehicle.make} {item.vehicle.model}
-                              </div>
-                              <div className="text-xs text-gray-500">{item.vehicle.registrationNumber}</div>
-                            </div>
-                            <div className="text-right">
-                              <div className={`font-bold ${item.status === 'expired' ? 'text-red-600' : 'text-amber-600'}`}>
-                                {item.status === 'expired' 
-                                  ? `Expired ${Math.abs(item.daysLeft)} days ago`
-                                  : `${item.daysLeft} days left`
-                                }
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                Valid till: {new Date(item.validTill).toLocaleDateString('en-IN')}
-                              </div>
-                            </div>
-                          </div>
-                        ))}
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
+                        <h4 className="font-bold text-gray-700 text-sm">
+                          🚨 {docLabel} Issues ({issues.length} vehicles)
+                        </h4>
+
+                        <div className="flex items-center gap-2 text-sm">
+                          <span className="text-gray-600">Show due within:</span>
+                          <select
+                            value={docDueWithinDays}
+                            onChange={(e) => {
+                              const v = e.target.value;
+                              setDocDueWithinDays(v === 'all' ? 'all' : (parseInt(v) || 30));
+                            }}
+                            className="px-2 py-1 border border-gray-300 rounded-lg bg-white"
+                            title="Filter by days"
+                          >
+                            <option value="all">All</option>
+                            {[3, 5, 7, 10, 15, 30, 60, 90].map((d) => (
+                              <option key={d} value={d}>
+                                {d} days
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
+
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {issues
+                          // expired always shows; expiring respects the "due within" threshold
+                          .filter((it) => (it.status === 'expired' ? true : it.daysLeft <= docDaysThreshold))
+                          .map(item => (
+                            <button
+                              type="button"
+                              key={item.vehicle.id}
+                              onClick={() => onOpenVehicle?.(item.vehicle.id)}
+                              className={`w-full text-left p-2 rounded-lg text-sm flex items-center justify-between hover:ring-2 hover:ring-amber-300 transition ${
+                                item.status === 'expired' ? 'bg-red-50 border border-red-200' : 'bg-amber-50 border border-amber-200'
+                              }`}
+                              title="Open vehicle profile"
+                            >
+                              <div>
+                                <div className="font-medium text-gray-800">
+                                  {item.vehicle.vehicleType === 'Car' ? '🚗' : '🏍️'} {item.vehicle.make} {item.vehicle.model}
+                                </div>
+                                <div className="text-xs text-gray-500">{item.vehicle.registrationNumber}</div>
+                              </div>
+                              <div className="text-right">
+                                <div className={`font-bold ${item.status === 'expired' ? 'text-red-600' : 'text-amber-600'}`}>
+                                  {item.status === 'expired' 
+                                    ? `Expired ${Math.abs(item.daysLeft)} days ago`
+                                    : `${item.daysLeft} days left`
+                                  }
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  Date: {new Date(item.validTill).toLocaleDateString('en-IN')}
+                                </div>
+                              </div>
+                            </button>
+                          ))}
+                      </div>
+
+                      {issues.filter((it) => (it.status === 'expired' ? true : it.daysLeft <= docDaysThreshold)).length === 0 && (
+                        <div className="text-sm text-gray-600 bg-white/60 rounded-lg p-3">No vehicles within this timeframe.</div>
+                      )}
                     </div>
                   )}
                 </div>

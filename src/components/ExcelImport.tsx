@@ -31,24 +31,75 @@ const normalizeKey = (k: string) => k.toLowerCase().replace(/[^a-z0-9]/g, '');
 
 const toStr = (v: unknown) => {
   if (v === null || v === undefined) return '';
+  if (v instanceof Date) return v.toISOString().split('T')[0];
   if (typeof v === 'string') return v;
   if (typeof v === 'number') return String(v);
   if (typeof v === 'boolean') return v ? 'true' : 'false';
   return String(v);
 };
 
-const excelDateToString = (excelDate: unknown): string => {
-  if (!excelDate) return '';
-  if (typeof excelDate === 'string') {
-    // Some exports contain "YYYY-MM-DD" already
-    const trimmed = excelDate.trim();
-    return trimmed;
+const pad2 = (n: number) => String(n).padStart(2, '0');
+
+const toISODate = (value: unknown): string => {
+  // Accept numbers/strings/dates and always output YYYY-MM-DD or ''
+
+  if (value === null || value === undefined) return '';
+
+  // If XLSX is configured with cellDates=true, you may receive Date objects.
+  if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) return '';
+    return value.toISOString().split('T')[0];
   }
-  if (typeof excelDate === 'number') {
-    // Excel serial date
-    const date = new Date((excelDate - 25569) * 86400 * 1000);
+
+  // Excel serial date or numeric
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    try {
+      // Prefer SSF parsing (avoids timezone day-shift)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const dc = (XLSX as any).SSF?.parse_date_code?.(value);
+      if (dc && dc.y && dc.m && dc.d) {
+        return `${dc.y}-${pad2(dc.m)}-${pad2(dc.d)}`;
+      }
+    } catch {
+      // ignore
+    }
+
+    // Fallback conversion
+    const date = new Date((value - 25569) * 86400 * 1000);
+    if (Number.isNaN(date.getTime())) return '';
     return date.toISOString().split('T')[0];
   }
+
+  // String formats
+  if (typeof value === 'string') {
+    const s = value.trim();
+    if (!s) return '';
+
+    // Already ISO
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+    // Common Indian formats: dd/mm/yyyy, dd-mm-yyyy, dd.mm.yyyy
+    const m1 = s.match(/^\s*(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})\s*$/);
+    if (m1) {
+      const d = Number(m1[1]);
+      const m = Number(m1[2]);
+      let y = Number(m1[3]);
+      if (y < 100) y = 2000 + y;
+      if (y >= 1900 && y <= 2100 && m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+        return `${y}-${pad2(m)}-${pad2(d)}`;
+      }
+      return '';
+    }
+
+    // Things like 31-Dec-2026
+    const parsed = new Date(s);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed.toISOString().split('T')[0];
+    }
+
+    return '';
+  }
+
   return '';
 };
 
@@ -105,6 +156,28 @@ export function ExcelImport({
 
   // Download Excel template
   const downloadTemplate = () => {
+    const headers = [
+      'Vehicle Type',
+      'Make',
+      'Model',
+      'Owner Name',
+      'Registration Number',
+      'Chassis Number',
+      'Engine Number',
+      'Current Odometer (KM)',
+      'Usage Type',
+      'Insurance',
+      'Pollution',
+      'Fitness',
+      'Road Tax',
+      'Permit',
+      'Registration',
+      'Service Interval (Months)',
+      'Service Interval (KM)',
+      'Last Service Date',
+      'Last Service KM',
+    ];
+
     const templateData = [
       {
         'Vehicle Type': 'Bike',
@@ -150,7 +223,10 @@ export function ExcelImport({
       },
     ];
 
-    const ws = XLSX.utils.json_to_sheet(templateData);
+    const ws = XLSX.utils.json_to_sheet(templateData, {
+      header: headers,
+      skipHeader: false,
+    });
 
     ws['!cols'] = [
       { wch: 12 }, // Vehicle Type
@@ -200,7 +276,7 @@ export function ExcelImport({
     wsInstructions['!cols'] = [{ wch: 22 }, { wch: 48 }, { wch: 18 }, { wch: 22 }];
     XLSX.utils.book_append_sheet(wb, wsInstructions, 'Instructions');
 
-    XLSX.writeFile(wb, 'fleet-guard-vehicle-import-template.xlsx');
+    XLSX.writeFile(wb, 'fleet-guard-vehicle-import-template-v3.xlsx');
   };
 
   const buildPreview = (rows: Record<string, unknown>[]): PreviewRow[] => {
@@ -245,17 +321,19 @@ export function ExcelImport({
     reader.onload = (e) => {
       try {
         const data = e.target?.result;
-        const workbook = XLSX.read(data, { type: 'binary' });
+        const workbook = XLSX.read(data, { type: 'binary', cellDates: true });
 
         // Prefer a sheet named "Vehicles" (fixes the common issue where Instructions is first)
         const preferred = workbook.SheetNames.find((n) => normalizeKey(n) === 'vehicles');
         const sheetName = preferred || workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
 
+        // Note: xlsx types don't expose all runtime options; we cast to any to enable better date parsing.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const jsonData = XLSX.utils.sheet_to_json(sheet, {
           defval: '',
-          raw: false,
-        }) as Record<string, unknown>[];
+          raw: true,
+        } as any) as Record<string, unknown>[];
 
         if (!jsonData.length) {
           setError('No rows found in the selected sheet. Make sure you filled the Vehicles sheet.');
@@ -327,22 +405,22 @@ export function ExcelImport({
 
         const usageType = pRow.usageType;
 
-        const insurance = excelDateToString(
+        const insurance = toISODate(
           pick(nrow, ['insurance', 'insurancevalidtill', 'insuranceexpiry', 'insurancevalidity', 'insurancetill'])
         );
-        const pollution = excelDateToString(
+        const pollution = toISODate(
           pick(nrow, ['pollution', 'pollutionvalidtill', 'puc', 'pucvalidtill', 'pollutionexpiry'])
         );
-        const fitness = excelDateToString(pick(nrow, ['fitness', 'fitnessvalidtill', 'fitnessexpiry']));
-        const roadTax = excelDateToString(pick(nrow, ['roadtax', 'roadtaxvalidtill', 'tax', 'taxvalidtill']));
-        const permit = excelDateToString(pick(nrow, ['permit', 'permitvalidtill', 'permitexpiry']));
-        const registrationValidity = excelDateToString(
+        const fitness = toISODate(pick(nrow, ['fitness', 'fitnessvalidtill', 'fitnessexpiry']));
+        const roadTax = toISODate(pick(nrow, ['roadtax', 'roadtaxvalidtill', 'tax', 'taxvalidtill']));
+        const permit = toISODate(pick(nrow, ['permit', 'permitvalidtill', 'permitexpiry']));
+        const registrationValidity = toISODate(
           pick(nrow, ['registration', 'registrationvalidtill', 'rcvalidtill', 'rc', 'registrationexpiry'])
         );
 
         const serviceIntervalMonths = Number(pick(nrow, ['serviceintervalmonths', 'serviceintervalmonth', 'intervalmonths'])) || 5;
         const serviceIntervalKms = Number(pick(nrow, ['serviceintervalkm', 'serviceintervalkms', 'serviceinterval', 'intervalkm'])) || 5000;
-        const lastServiceDate = excelDateToString(pick(nrow, ['lastservicedate', 'service date', 'servicedate']));
+        const lastServiceDate = toISODate(pick(nrow, ['lastservicedate', 'servicedate', 'service date']));
         const lastServiceKm = Number(pick(nrow, ['lastservicekm', 'lastservicekms', 'last serviced km', 'lastserviceodometer'])) || 0;
 
         const vehicle: Motorcycle = {
