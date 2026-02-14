@@ -75,6 +75,13 @@ const Analytics: React.FC<AnalyticsProps> = ({ motorcycles, serviceRecords, comp
   
   // Document Status Analysis
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const withinDays = (daysLeft: number, threshold: number) => {
+    if (!Number.isFinite(threshold)) return true;
+    if (!Number.isFinite(daysLeft)) return false;
+    return Math.abs(daysLeft) <= threshold;
+  };
   
   const documentStats = {
     insurance: { expired: 0, expiring: 0, valid: 0 },
@@ -99,8 +106,13 @@ const Analytics: React.FC<AnalyticsProps> = ({ motorcycles, serviceRecords, comp
   };
   
   const getDocStatusDetailed = (dateStr?: string) => {
-    if (!dateStr) return { status: 'unknown', daysLeft: 0 };
+    if (!dateStr) return { status: 'unknown', daysLeft: Number.NaN };
     const date = new Date(dateStr);
+    if (Number.isNaN(date.getTime())) return { status: 'unknown', daysLeft: Number.NaN };
+
+    // normalize to midnight to avoid timezone edge issues
+    date.setHours(0, 0, 0, 0);
+
     const daysLeft = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     if (daysLeft < 0) return { status: 'expired', daysLeft };
     if (daysLeft <= 30) return { status: 'expiring', daysLeft };
@@ -484,8 +496,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ motorcycles, serviceRecords, comp
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {vehiclesNeedingService
                   .filter(v => v.status === showServiceDetails)
-                  // overdue always shows; upcoming respects the "due within" threshold
-                  .filter((v) => (showServiceDetails === 'overdue' ? true : v.daysLeft <= serviceDaysThreshold))
+                  .filter((v) => withinDays(v.daysLeft, serviceDaysThreshold))
                   .map(item => (
                     <button
                       type="button"
@@ -514,7 +525,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ motorcycles, serviceRecords, comp
 
               {vehiclesNeedingService
                 .filter(v => v.status === showServiceDetails)
-                .filter((v) => (showServiceDetails === 'overdue' ? true : v.daysLeft <= serviceDaysThreshold)).length === 0 && (
+                .filter((v) => withinDays(v.daysLeft, serviceDaysThreshold)).length === 0 && (
                 <div className="text-sm text-gray-600 bg-white/60 rounded-lg p-3">No vehicles within this timeframe.</div>
               )}
             </div>
@@ -613,8 +624,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ motorcycles, serviceRecords, comp
 
                       <div className="space-y-2 max-h-48 overflow-y-auto">
                         {issues
-                          // expired always shows; expiring respects the "due within" threshold
-                          .filter((it) => (it.status === 'expired' ? true : it.daysLeft <= docDaysThreshold))
+                          .filter((it) => withinDays(it.daysLeft, docDaysThreshold))
                           .map(item => (
                             <button
                               type="button"
@@ -646,7 +656,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ motorcycles, serviceRecords, comp
                           ))}
                       </div>
 
-                      {issues.filter((it) => (it.status === 'expired' ? true : it.daysLeft <= docDaysThreshold)).length === 0 && (
+                      {issues.filter((it) => withinDays(it.daysLeft, docDaysThreshold)).length === 0 && (
                         <div className="text-sm text-gray-600 bg-white/60 rounded-lg p-3">No vehicles within this timeframe.</div>
                       )}
                     </div>

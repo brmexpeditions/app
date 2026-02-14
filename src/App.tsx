@@ -1044,6 +1044,36 @@ function App() {
               )}
             </div>
 
+            {/* Danger Zone */}
+            <div className="bg-gray-900 rounded-xl shadow-lg p-6 border border-red-500/30">
+              <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                ⚠️ Danger Zone
+              </h2>
+              <p className="text-sm text-gray-400 mb-4">
+                Reset your inventory by deleting all vehicles and service records for this account.
+              </p>
+              <button
+                onClick={() => {
+                  const confirmText = window.prompt(
+                    'This will permanently delete ALL vehicles and service records.\n\nType DELETE to confirm.'
+                  );
+                  if (confirmText !== 'DELETE') return;
+                  saveData((prev) => ({
+                    ...prev,
+                    motorcycles: [],
+                    serviceRecords: [],
+                  }));
+                  alert('Inventory reset complete.');
+                }}
+                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors"
+              >
+                Delete All Vehicles (Reset Inventory)
+              </button>
+              <p className="text-xs text-gray-500 mt-3">
+                Tip: Download a backup first if you might need to restore later.
+              </p>
+            </div>
+
             {/* User Info Section */}
             <div className="bg-gray-900 rounded-xl shadow-lg p-6 border border-gray-800">
               <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
