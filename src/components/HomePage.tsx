@@ -37,6 +37,62 @@ interface HomePageProps {
     showcaseImage2?: string;
     showcaseImage3?: string;
     showcaseImage4?: string;
+    homepageContent?: {
+      navHome?: string;
+      navFeatures?: string;
+      navHowItWorks?: string;
+      navPricing?: string;
+      navReviews?: string;
+      navFaq?: string;
+      navContact?: string;
+      navLoginCta?: string;
+      navStartCta?: string;
+
+      trustBadge?: string;
+      heroTitleLine1?: string;
+      heroTitleLine2?: string;
+      heroSubtitle?: string;
+      heroPrimaryCta?: string;
+      heroSecondaryCta?: string;
+      heroScrollHint?: string;
+
+      featuresBadge?: string;
+      featuresTitleLine1?: string;
+      featuresTitleLine2?: string;
+      featuresSubtitle?: string;
+
+      howItWorksBadge?: string;
+      howItWorksTitle?: string;
+      howItWorksSubtitle?: string;
+
+      pricingBadge?: string;
+      pricingTitle?: string;
+      pricingSubtitle?: string;
+
+      reviewsBadge?: string;
+      reviewsTitle?: string;
+      reviewsSubtitle?: string;
+
+      faqBadge?: string;
+      faqTitle?: string;
+
+      contactBadge?: string;
+      contactTitle?: string;
+      contactSubtitle?: string;
+
+      ctaTitle?: string;
+      ctaSubtitle?: string;
+      ctaPrimary?: string;
+      ctaSecondary?: string;
+
+      footerDescription?: string;
+      footerMadeIn?: string;
+
+      stats?: Array<{ icon: string; value: string; label: string }>;
+      features?: Array<{ icon: string; title: string; description: string; image: string }>;
+      reviews?: Array<{ name: string; role: string; company: string; location: string; image: string; text: string; rating: number }>;
+      faqs?: Array<{ question: string; answer: string }>;
+    };
   };
 }
 
@@ -118,56 +174,46 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
     ...(showContact ? [{ id: 'contact', label: 'Contact' }] : []),
   ];
 
-  const features = [
-    {
-      icon: '🏍️',
-      title: 'Multi-Vehicle Support',
-      description: 'Manage bikes, cars, trucks - all vehicle types in one place',
-      color: 'from-amber-500 to-orange-500',
-      bgColor: 'bg-amber-500/10',
-      image: 'https://images.unsplash.com/photo-1558981285-6f0c94958bb6?w=400&q=80'
-    },
-    {
-      icon: '🔔',
-      title: 'Smart Reminders',
-      description: 'Never miss insurance, PUC, or service deadlines again',
-      color: 'from-emerald-500 to-teal-500',
-      bgColor: 'bg-emerald-500/10',
-      image: 'https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=400&q=80'
-    },
-    {
-      icon: '📊',
-      title: 'Analytics Dashboard',
-      description: 'Track expenses, service history, and fleet health',
-      color: 'from-cyan-500 to-blue-500',
-      bgColor: 'bg-cyan-500/10',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80'
-    },
-    {
-      icon: '📄',
-      title: 'Document Vault',
-      description: 'Store and access all vehicle documents digitally',
-      color: 'from-rose-500 to-red-500',
-      bgColor: 'bg-rose-500/10',
-      image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80'
-    },
-    {
-      icon: '🔧',
-      title: 'Service Tracking',
-      description: 'Complete maintenance history at your fingertips',
-      color: 'from-indigo-500 to-blue-500',
-      bgColor: 'bg-indigo-500/10',
-      image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&q=80'
-    },
-    {
-      icon: '📱',
-      title: 'Works Everywhere',
-      description: 'Access from phone, tablet, or computer - anytime',
-      color: 'from-orange-500 to-amber-500',
-      bgColor: 'bg-orange-500/10',
-      image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80'
-    },
-  ];
+  const features = (settings.homepageContent?.features?.length
+    ? settings.homepageContent.features
+    : [
+        {
+          icon: '🏍️',
+          title: 'Multi-Vehicle Support',
+          description: 'Manage bikes, cars, trucks - all vehicle types in one place',
+          image: 'https://images.unsplash.com/photo-1558981285-6f0c94958bb6?w=400&q=80',
+        },
+        {
+          icon: '🔔',
+          title: 'Smart Reminders',
+          description: 'Never miss insurance, PUC, or service deadlines again',
+          image: 'https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=400&q=80',
+        },
+        {
+          icon: '📊',
+          title: 'Analytics Dashboard',
+          description: 'Track expenses, service history, and fleet health',
+          image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80',
+        },
+        {
+          icon: '📄',
+          title: 'Document Vault',
+          description: 'Store and access all vehicle documents digitally',
+          image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80',
+        },
+        {
+          icon: '🔧',
+          title: 'Service Tracking',
+          description: 'Complete maintenance history at your fingertips',
+          image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&q=80',
+        },
+        {
+          icon: '📱',
+          title: 'Works Everywhere',
+          description: 'Access from phone, tablet, or computer - anytime',
+          image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80',
+        },
+      ]) as Array<{ icon: string; title: string; description: string; image: string }>;
 
   const reviews = [
     {
@@ -609,7 +655,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent"></div>
-                  <div className={`absolute bottom-4 left-4 w-12 h-12 ${feature.bgColor} rounded-xl flex items-center justify-center text-2xl backdrop-blur-sm border border-white/10`}>
+                  <div className={`absolute bottom-4 left-4 w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-2xl backdrop-blur-sm border border-white/10`}>
                     {feature.icon}
                   </div>
                 </div>
@@ -621,7 +667,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                 </div>
 
                 {/* Hover Glow */}
-                <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+                <div className={`absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
               </div>
             ))}
           </div>

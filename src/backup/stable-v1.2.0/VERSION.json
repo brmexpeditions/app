@@ -1,0 +1,20 @@
+{
+  "version": "1.2.0",
+  "codename": "Fleet Guard – Supabase Stable",
+  "createdAt": "2026-02-13",
+  "status": "RESTORE_POINT",
+  "notes": [
+    "Restore point created for the current working state.",
+    "This restore point is intended to be used with a Git commit + tag so you can revert ALL files reliably.",
+    "Supabase is enabled (if env vars are configured) and localStorage fallback exists for offline mode."
+  ],
+  "majorFeatures": [
+    "Homepage (Fleet Guard) + sticky nav",
+    "Auth (Supabase when configured; local fallback)",
+    "Fleet dashboard with vehicles + service/doc tracking",
+    "Excel import with preview",
+    "Admin backend UI for website settings",
+    "Supabase site settings + fleet_store wiring",
+    "Admin users endpoint (api/admin/users.ts)"
+  ]
+}
