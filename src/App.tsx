@@ -12,7 +12,7 @@ import { loadPublicSiteSettings, savePublicSiteSettings } from './lib/supabaseSi
 import { loadFleetForCurrentUser, saveFleetForCurrentUser } from './lib/supabaseFleetStore';
 
 const defaultSiteSettings: SiteSettings = {
-  siteName: 'Fleet Guard',
+  siteName: 'Fleet Guard 360',
   tagline: 'Protect Your Fleet',
   logo: '',
   favicon: '',
@@ -232,7 +232,7 @@ const defaultSiteSettings: SiteSettings = {
   textColor: '#ffffff',
   googleAnalyticsId: '',
   googleSearchConsoleId: '',
-  metaTitle: 'Fleet Guard - Protect Your Fleet | Vehicle Management System',
+  metaTitle: 'Fleet Guard 360 - Protect Your Fleet | Vehicle Management System',
   metaDescription: 'Manage your vehicle fleet with ease. Track services, documents, and maintenance for cars & bikes.',
   metaKeywords: 'fleet management, vehicle tracking, service reminder',
   ogImage: '',
@@ -291,7 +291,7 @@ const defaultData: AppData = {
     'Hero': ['Splendor', 'HF Deluxe', 'Passion', 'Glamour']
   },
   companySettings: {
-    companyName: 'Fleet Guard',
+    companyName: 'Fleet Guard 360',
     tagline: 'Protect Your Fleet',
     logo: '',
     email: '',
@@ -787,7 +787,7 @@ function App() {
           <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
             <span className="text-4xl">🛡️</span>
           </div>
-          <p className="text-xl text-amber-400 font-semibold">Fleet Guard</p>
+          <p className="text-xl text-amber-400 font-semibold">Fleet Guard 360</p>
           <p className="text-gray-400 mt-2">Loading...</p>
         </div>
       </div>
@@ -1111,7 +1111,7 @@ function App() {
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-400 py-4 mt-8 border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm">
-          <p>© 2026 {data.companySettings.companyName || 'Fleet Guard'}. All rights reserved.</p>
+          <p>© 2026 {data.companySettings.companyName || 'Fleet Guard 360'}. All rights reserved.</p>
         </div>
       </footer>
     </div>

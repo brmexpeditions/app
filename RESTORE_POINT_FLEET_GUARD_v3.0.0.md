@@ -11,6 +11,8 @@ A known-good, buildable version of Fleet Guard with:
 - Supabase wiring (auth + fleet_store + site_settings + profiles)
 - Excel import w/ preview
 - Razorpay serverless endpoints
+- **Analytics due-within filters fixed** (Service + Documents)
+- **Settings → Danger Zone** reset inventory button (Delete all vehicles + service records)
 
 ---
 

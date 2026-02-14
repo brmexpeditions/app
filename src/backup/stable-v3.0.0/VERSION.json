@@ -6,7 +6,8 @@
   "notes": [
     "This is the ONLY in-repo restore point kept.",
     "For a perfect full-project restore, create a GitHub tag at this commit as well.",
-    "Includes Fleet Guard homepage + app, Admin backend UI, Supabase wiring, Excel import, and Razorpay serverless endpoints."
+    "Includes Fleet Guard homepage + app, Admin backend UI, Supabase wiring, Excel import, and Razorpay serverless endpoints.",
+    "Includes Analytics due-within filters fix (service + documents) and Settings → Danger Zone reset inventory button."
   ],
   "majorFeatures": [
     "Fleet Guard homepage with editable content + brand logos",
@@ -14,6 +15,8 @@
     "Vehicles (Bike/Car) management with documents + permit",
     "Excel import with template + preview + validation",
     "Analytics with clickable service/doc details (includes permit)",
+    "Analytics due-within filters (service + documents) - fixed and stable",
+    "Settings → Danger Zone: Delete All Vehicles (Reset Inventory)",
     "Supabase support (auth + fleet_store + site_settings + user_profiles best-effort)",
     "Admin users endpoint (/api/admin/users)",
     "Razorpay endpoints (/api/payments/create-order, /api/payments/verify)"
