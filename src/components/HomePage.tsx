@@ -37,69 +37,11 @@ interface HomePageProps {
     showcaseImage2?: string;
     showcaseImage3?: string;
     showcaseImage4?: string;
-    homepageContent?: {
-      navHome?: string;
-      navFeatures?: string;
-      navHowItWorks?: string;
-      navPricing?: string;
-      navReviews?: string;
-      navFaq?: string;
-      navContact?: string;
-      navLoginCta?: string;
-      navStartCta?: string;
-
-      trustBadge?: string;
-      heroTitleLine1?: string;
-      heroTitleLine2?: string;
-      heroSubtitle?: string;
-      heroPrimaryCta?: string;
-      heroSecondaryCta?: string;
-      heroScrollHint?: string;
-
-      featuresBadge?: string;
-      featuresTitleLine1?: string;
-      featuresTitleLine2?: string;
-      featuresSubtitle?: string;
-
-      howItWorksBadge?: string;
-      howItWorksTitle?: string;
-      howItWorksSubtitle?: string;
-
-      pricingBadge?: string;
-      pricingTitle?: string;
-      pricingSubtitle?: string;
-
-      reviewsBadge?: string;
-      reviewsTitle?: string;
-      reviewsSubtitle?: string;
-
-      faqBadge?: string;
-      faqTitle?: string;
-
-      contactBadge?: string;
-      contactTitle?: string;
-      contactSubtitle?: string;
-
-      ctaTitle?: string;
-      ctaSubtitle?: string;
-      ctaPrimary?: string;
-      ctaSecondary?: string;
-
-      footerDescription?: string;
-      footerMadeIn?: string;
-
-      stats?: Array<{ icon: string; value: string; label: string }>;
-      features?: Array<{ icon: string; title: string; description: string; image: string }>;
-      reviews?: Array<{ name: string; role: string; company: string; location: string; image: string; text: string; rating: number }>;
-      faqs?: Array<{ question: string; answer: string }>;
-    };
   };
 }
 
 export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps) {
   const settings = siteSettings || {};
-  const content = settings.homepageContent || {};
-
   const siteName = settings.siteName || 'Fleet Guard';
   const tagline = settings.tagline || 'Protect Your Fleet';
   const bg = settings.backgroundColor || '#030712';
@@ -167,121 +109,127 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
   };
 
   const navLinks = [
-    { id: 'home', label: content.navHome ?? 'Home' },
-    { id: 'features', label: content.navFeatures ?? 'Features' },
-    { id: 'how-it-works', label: content.navHowItWorks ?? 'How It Works' },
-    ...(showPricing ? [{ id: 'pricing', label: content.navPricing ?? 'Pricing' }] : []),
-    ...(showReviews ? [{ id: 'reviews', label: content.navReviews ?? 'Reviews' }] : []),
-    ...(showFaq ? [{ id: 'faq', label: content.navFaq ?? 'FAQ' }] : []),
-    ...(showContact ? [{ id: 'contact', label: content.navContact ?? 'Contact' }] : []),
+    { id: 'home', label: 'Home' },
+    { id: 'features', label: 'Features' },
+    { id: 'how-it-works', label: 'How It Works' },
+    ...(showPricing ? [{ id: 'pricing', label: 'Pricing' }] : []),
+    ...(showReviews ? [{ id: 'reviews', label: 'Reviews' }] : []),
+    ...(showFaq ? [{ id: 'faq', label: 'FAQ' }] : []),
+    ...(showContact ? [{ id: 'contact', label: 'Contact' }] : []),
   ];
 
-  const features = (settings.homepageContent?.features?.length
-    ? settings.homepageContent.features
-    : [
-        {
-          icon: '🏍️',
-          title: 'Multi-Vehicle Support',
-          description: 'Manage bikes, cars, trucks - all vehicle types in one place',
-          image: 'https://images.unsplash.com/photo-1558981285-6f0c94958bb6?w=400&q=80',
-        },
-        {
-          icon: '🔔',
-          title: 'Smart Reminders',
-          description: 'Never miss insurance, PUC, or service deadlines again',
-          image: 'https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=400&q=80',
-        },
-        {
-          icon: '📊',
-          title: 'Analytics Dashboard',
-          description: 'Track expenses, service history, and fleet health',
-          image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80',
-        },
-        {
-          icon: '📄',
-          title: 'Document Vault',
-          description: 'Store and access all vehicle documents digitally',
-          image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80',
-        },
-        {
-          icon: '🔧',
-          title: 'Service Tracking',
-          description: 'Complete maintenance history at your fingertips',
-          image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&q=80',
-        },
-        {
-          icon: '📱',
-          title: 'Works Everywhere',
-          description: 'Access from phone, tablet, or computer - anytime',
-          image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80',
-        },
-      ]) as Array<{ icon: string; title: string; description: string; image: string }>;
+  const features = [
+    {
+      icon: '🏍️',
+      title: 'Multi-Vehicle Support',
+      description: 'Manage bikes, cars, trucks - all vehicle types in one place',
+      color: 'from-amber-500 to-orange-500',
+      bgColor: 'bg-amber-500/10',
+      image: 'https://images.unsplash.com/photo-1558981285-6f0c94958bb6?w=400&q=80'
+    },
+    {
+      icon: '🔔',
+      title: 'Smart Reminders',
+      description: 'Never miss insurance, PUC, or service deadlines again',
+      color: 'from-emerald-500 to-teal-500',
+      bgColor: 'bg-emerald-500/10',
+      image: 'https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=400&q=80'
+    },
+    {
+      icon: '📊',
+      title: 'Analytics Dashboard',
+      description: 'Track expenses, service history, and fleet health',
+      color: 'from-cyan-500 to-blue-500',
+      bgColor: 'bg-cyan-500/10',
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80'
+    },
+    {
+      icon: '📄',
+      title: 'Document Vault',
+      description: 'Store and access all vehicle documents digitally',
+      color: 'from-rose-500 to-red-500',
+      bgColor: 'bg-rose-500/10',
+      image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80'
+    },
+    {
+      icon: '🔧',
+      title: 'Service Tracking',
+      description: 'Complete maintenance history at your fingertips',
+      color: 'from-indigo-500 to-blue-500',
+      bgColor: 'bg-indigo-500/10',
+      image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&q=80'
+    },
+    {
+      icon: '📱',
+      title: 'Works Everywhere',
+      description: 'Access from phone, tablet, or computer - anytime',
+      color: 'from-orange-500 to-amber-500',
+      bgColor: 'bg-orange-500/10',
+      image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80'
+    },
+  ];
 
-  const reviews = (content.reviews?.length
-    ? content.reviews
-    : [
-        {
-          name: 'Rajesh Kumar',
-          role: 'Fleet Owner',
-          company: 'Kumar Transport Services',
-          location: 'Mumbai',
-          image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
-          text: 'Fleet Guard has transformed how we manage our 50+ vehicle fleet. The reminders have saved us from countless penalty situations!',
-          rating: 5,
-        },
-        {
-          name: 'Priya Sharma',
-          role: 'Operations Manager',
-          company: 'Swift Bike Rentals',
-          location: 'Bangalore',
-          image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
-          text: 'Managing 30 rental bikes was a nightmare before Fleet Guard. Now everything is organized and automated. Highly recommended!',
-          rating: 5,
-        },
-        {
-          name: 'Amit Patel',
-          role: 'Business Owner',
-          company: 'Patel Logistics',
-          location: 'Delhi',
-          image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&q=80',
-          text: 'The analytics feature helps us understand our fleet costs better. We saved ₹2 lakhs in the first year by optimizing maintenance schedules.',
-          rating: 5,
-        },
-        {
-          name: 'Sneha Reddy',
-          role: 'Founder',
-          company: 'EcoRide Rentals',
-          location: 'Hyderabad',
-          image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80',
-          text: 'As a startup, we needed something simple yet powerful. Fleet Guard is exactly that. The free tier is perfect for small fleets!',
-          rating: 5,
-        },
-      ]) as Array<{ name: string; role: string; company: string; location: string; image: string; text: string; rating: number }>;
+  const reviews = [
+    {
+      name: 'Rajesh Kumar',
+      role: 'Fleet Owner',
+      company: 'Kumar Transport Services',
+      location: 'Mumbai',
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
+      text: 'Fleet Guard has transformed how we manage our 50+ vehicle fleet. The reminders have saved us from countless penalty situations!',
+      rating: 5,
+    },
+    {
+      name: 'Priya Sharma',
+      role: 'Operations Manager',
+      company: 'Swift Bike Rentals',
+      location: 'Bangalore',
+      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
+      text: 'Managing 30 rental bikes was a nightmare before Fleet Guard. Now everything is organized and automated. Highly recommended!',
+      rating: 5,
+    },
+    {
+      name: 'Amit Patel',
+      role: 'Business Owner',
+      company: 'Patel Logistics',
+      location: 'Delhi',
+      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&q=80',
+      text: 'The analytics feature helps us understand our fleet costs better. We saved ₹2 lakhs in the first year by optimizing maintenance schedules.',
+      rating: 5,
+    },
+    {
+      name: 'Sneha Reddy',
+      role: 'Founder',
+      company: 'EcoRide Rentals',
+      location: 'Hyderabad',
+      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80',
+      text: 'As a startup, we needed something simple yet powerful. Fleet Guard is exactly that. The free tier is perfect for small fleets!',
+      rating: 5,
+    },
+  ];
 
-  const faqs = (content.faqs?.length
-    ? content.faqs
-    : [
-        {
-          question: 'How does Fleet Guard help manage my vehicles?',
-          answer: 'Fleet Guard provides a centralized dashboard to track all your vehicles, their documents, service history, and upcoming renewals. You get smart reminders before any document expires or service is due.',
-        },
-        {
-          question: 'Is my data secure?',
-          answer: 'Absolutely! We use industry-standard encryption and your data is stored securely. You can also export backups anytime for extra peace of mind.',
-        },
-        {
-          question: 'Can I try before I pay?',
-          answer: 'Yes! Our Starter plan is completely free for up to 5 vehicles. No credit card required. You can upgrade anytime as your fleet grows.',
-        },
-        {
-          question: 'Does it work for both personal and commercial vehicles?',
-          answer: 'Yes! Fleet Guard supports both private and commercial vehicles with different document tracking requirements for each type.',
-        },
-        {
-          question: 'Can I import my existing vehicle data?',
-          answer: 'Absolutely! We provide an Excel template that you can fill with your vehicle data and import in bulk. No need to enter everything manually.',
-        },
-      ]) as Array<{ question: string; answer: string }>;
+  const faqs = [
+    {
+      question: 'How does Fleet Guard help manage my vehicles?',
+      answer: 'Fleet Guard provides a centralized dashboard to track all your vehicles, their documents, service history, and upcoming renewals. You get smart reminders before any document expires or service is due.',
+    },
+    {
+      question: 'Is my data secure?',
+      answer: 'Absolutely! We use industry-standard encryption and your data is stored securely. You can also export backups anytime for extra peace of mind.',
+    },
+    {
+      question: 'Can I try before I pay?',
+      answer: 'Yes! Our Starter plan is completely free for up to 5 vehicles. No credit card required. You can upgrade anytime as your fleet grows.',
+    },
+    {
+      question: 'Does it work for both personal and commercial vehicles?',
+      answer: 'Yes! Fleet Guard supports both private and commercial vehicles with different document tracking requirements for each type.',
+    },
+    {
+      question: 'Can I import my existing vehicle data?',
+      answer: 'Absolutely! We provide an Excel template that you can fill with your vehicle data and import in bulk. No need to enter everything manually.',
+    },
+  ];
 
   const fontMap: Record<string, string> = {
     System: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'",
@@ -344,13 +292,13 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                 onClick={onLogin}
                 className="px-5 py-2.5 text-sm font-semibold text-gray-300 hover:text-white transition-all duration-300 hover:bg-white/5 rounded-xl"
               >
-                {content.navLoginCta ?? 'Login'}
+                Login
               </button>
               <button
                 onClick={onGetStarted}
                 className="px-6 py-2.5 text-sm font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-gray-900 rounded-xl hover:shadow-lg hover:shadow-amber-500/30 hover:scale-105 transition-all duration-300"
               >
-                {content.navStartCta ?? 'Start Free →'}
+                Start Free →
               </button>
             </div>
 
@@ -389,10 +337,10 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
               ))}
               <div className="pt-4 flex flex-col gap-2">
                 <button onClick={onLogin} className="w-full py-3 text-gray-300 border border-gray-700 rounded-xl hover:bg-gray-800 transition-all">
-                  {content.navLoginCta ?? 'Login'}
+                  Login
                 </button>
                 <button onClick={onGetStarted} className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-gray-900 font-bold rounded-xl">
-                  {content.navStartCta ?? 'Start Free →'}
+                  Start Free →
                 </button>
               </div>
             </div>
@@ -422,20 +370,21 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
-              <span className="text-white font-medium">{content.trustBadge ?? 'Trusted by 800+ Fleet Operators Across India'}</span>
+              <span className="text-white font-medium">Trusted by 800+ Fleet Operators Across India</span>
             </div>
 
             {/* Main Headline */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-8">
-              {content.heroTitleLine1 ?? 'Protect Your'}
+              Protect Your
               <span className="block bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent mt-2">
-                {content.heroTitleLine2 ?? 'Fleet Like Never Before'}
+                Fleet Like Never Before
               </span>
             </h1>
 
             {/* Subtitle */}
             <p className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed">
-              {content.heroSubtitle ?? 'The smartest way to manage vehicles. Track services, documents, and never miss a deadline. Built for Indian fleet operators.'}
+              The smartest way to manage vehicles. Track services, documents, and never miss a deadline.
+              <span className="text-amber-400 font-semibold"> Built for Indian fleet operators.</span>
             </p>
 
             {/* CTA Buttons */}
@@ -446,7 +395,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-amber-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <span className="relative z-10 flex items-center justify-center gap-3">
-                  {content.heroPrimaryCta ?? '🚀 Start Free Trial'}
+                  🚀 Start Free Trial
                   <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -459,21 +408,18 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
-                {content.heroSecondaryCta ?? 'Login to Dashboard'}
+                Login to Dashboard
               </button>
             </div>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl mx-auto">
-              {(content.stats?.length
-                ? content.stats
-                : [
-                    { value: '15,000+', label: 'Vehicles Managed', icon: '🚗' },
-                    { value: '800+', label: 'Happy Customers', icon: '😊' },
-                    { value: '₹2 Crore+', label: 'Penalties Saved', icon: '💰' },
-                    { value: '99.9%', label: 'Uptime Guarantee', icon: '⚡' },
-                  ]
-              ).map((stat, i) => (
+              {[
+                { value: '15,000+', label: 'Vehicles Managed', icon: '🚗' },
+                { value: '800+', label: 'Happy Customers', icon: '😊' },
+                { value: '₹2 Crore+', label: 'Penalties Saved', icon: '💰' },
+                { value: '99.9%', label: 'Uptime Guarantee', icon: '⚡' }
+              ].map((stat, i) => (
                 <div key={i} className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:border-amber-500/50 transition-all hover:scale-105 hover:bg-white/15">
                   <div className="text-3xl mb-2">{stat.icon}</div>
                   <div className="text-3xl font-black text-amber-400">{stat.value}</div>
@@ -487,7 +433,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
         {/* Scroll Indicator */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
           <div className="flex flex-col items-center gap-2 animate-bounce">
-            <span className="text-white/60 text-sm font-medium">{content.heroScrollHint ?? 'Scroll to explore'}</span>
+            <span className="text-white/60 text-sm font-medium">Scroll to explore</span>
             <div className="w-8 h-12 border-2 border-amber-500/50 rounded-full flex justify-center">
               <div className="w-1.5 h-3 bg-amber-400 rounded-full mt-2 animate-pulse" />
             </div>
@@ -635,16 +581,16 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
           {/* Section Header */}
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 text-sm font-semibold rounded-full mb-4">
-              {content.featuresBadge ?? '✨ Powerful Features'}
+              ✨ Powerful Features
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-              {content.featuresTitleLine1 ?? 'Everything You Need to'}
+              Everything You Need to
               <span className="block bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-                {content.featuresTitleLine2 ?? 'Manage Your Fleet'}
+                Manage Your Fleet
               </span>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              {content.featuresSubtitle ?? 'From document tracking to expense analytics, Fleet Guard has all the tools you need'}
+              From document tracking to expense analytics, Fleet Guard has all the tools you need
             </p>
           </div>
 
@@ -663,7 +609,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-800 to-transparent"></div>
-                  <div className={`absolute bottom-4 left-4 w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-2xl backdrop-blur-sm border border-white/10`}>
+                  <div className={`absolute bottom-4 left-4 w-12 h-12 ${feature.bgColor} rounded-xl flex items-center justify-center text-2xl backdrop-blur-sm border border-white/10`}>
                     {feature.icon}
                   </div>
                 </div>
@@ -675,7 +621,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                 </div>
 
                 {/* Hover Glow */}
-                <div className={`absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+                <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
               </div>
             ))}
           </div>
@@ -759,13 +705,13 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-2 bg-emerald-500/10 text-emerald-400 text-sm font-semibold rounded-full mb-4">
-              {content.howItWorksBadge ?? '🚀 Quick Setup'}
+              🚀 Quick Setup
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-              {content.howItWorksTitle ?? 'Get Started in 3 Simple Steps'}
+              Get Started in 3 Simple Steps
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              {content.howItWorksSubtitle ?? 'Start managing your fleet in under 5 minutes'}
+              Start managing your fleet in under 5 minutes
             </p>
           </div>
 
@@ -834,13 +780,13 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 text-sm font-semibold rounded-full mb-4">
-              {content.pricingBadge ?? '💰 Simple Pricing'}
+              💰 Simple Pricing
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-              {content.pricingTitle ?? 'Choose Your Plan'}
+              Choose Your Plan
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              {content.pricingSubtitle ?? 'Start free, upgrade when you need more'}
+              Start free, upgrade when you need more
             </p>
           </div>
 
@@ -949,13 +895,13 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 text-sm font-semibold rounded-full mb-4">
-              {content.reviewsBadge ?? '💬 Customer Love'}
+              💬 Customer Love
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-              {content.reviewsTitle ?? 'What Our Customers Say'}
+              What Our Customers Say
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              {content.reviewsSubtitle ?? 'Join 800+ happy fleet operators across India'}
+              Join 800+ happy fleet operators across India
             </p>
           </div>
 
@@ -1000,10 +946,10 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-2 bg-cyan-500/10 text-cyan-400 text-sm font-semibold rounded-full mb-4">
-              {content.faqBadge ?? '❓ FAQ'}
+              ❓ FAQ
             </span>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              {content.faqTitle ?? 'Frequently Asked Questions'}
+              Frequently Asked Questions
             </h2>
           </div>
 
@@ -1042,13 +988,13 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
             {/* Contact Info */}
             <div>
               <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 text-sm font-semibold rounded-full mb-4">
-                {content.contactBadge ?? '📞 Get In Touch'}
+                📞 Get In Touch
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                {content.contactTitle ?? "Let's Talk About Your Fleet"}
+                Let's Talk About Your Fleet
               </h2>
               <p className="text-gray-400 mb-8">
-                {content.contactSubtitle ?? "Have questions? We'd love to hear from you. Send us a message and we'll respond within 24 hours."}
+                Have questions? We'd love to hear from you. Send us a message and we'll respond within 24 hours.
               </p>
 
               <div className="space-y-6">
@@ -1137,10 +1083,10 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
             
             <div className="relative z-10 p-12">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-                {content.ctaTitle ?? 'Ready to Guard Your Fleet?'}
+                Ready to Guard Your Fleet?
               </h2>
               <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
-                {content.ctaSubtitle ?? 'Join 800+ fleet operators who trust Fleet Guard to manage their vehicles. Start your free trial today!'}
+                Join 800+ fleet operators who trust Fleet Guard to manage their vehicles. Start your free trial today!
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
