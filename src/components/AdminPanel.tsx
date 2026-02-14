@@ -11,6 +11,101 @@ interface User {
   vehicleCount?: number;
 }
 
+interface HomepageStat {
+  icon: string;
+  value: string;
+  label: string;
+}
+
+interface HomepageFeature {
+  icon: string;
+  title: string;
+  description: string;
+  image: string;
+}
+
+interface HomepageReview {
+  name: string;
+  role: string;
+  company: string;
+  location: string;
+  image: string;
+  text: string;
+  rating: number;
+}
+
+interface HomepageFaq {
+  question: string;
+  answer: string;
+}
+
+export interface BrandLogo {
+  name: string;
+  logoUrl: string;
+}
+
+export interface HomepageContent {
+  // Nav labels
+  navHome: string;
+  navFeatures: string;
+  navHowItWorks: string;
+  navPricing: string;
+  navReviews: string;
+  navFaq: string;
+  navContact: string;
+  navLoginCta: string;
+  navStartCta: string;
+
+  // Hero
+  trustBadge: string;
+  heroTitleLine1: string;
+  heroTitleLine2: string;
+  heroSubtitle: string;
+  heroPrimaryCta: string;
+  heroSecondaryCta: string;
+  heroScrollHint: string;
+
+  // Section headers
+  featuresBadge: string;
+  featuresTitleLine1: string;
+  featuresTitleLine2: string;
+  featuresSubtitle: string;
+
+  howItWorksBadge: string;
+  howItWorksTitle: string;
+  howItWorksSubtitle: string;
+
+  pricingBadge: string;
+  pricingTitle: string;
+  pricingSubtitle: string;
+
+  reviewsBadge: string;
+  reviewsTitle: string;
+  reviewsSubtitle: string;
+
+  faqBadge: string;
+  faqTitle: string;
+
+  contactBadge: string;
+  contactTitle: string;
+  contactSubtitle: string;
+
+  ctaTitle: string;
+  ctaSubtitle: string;
+  ctaPrimary: string;
+  ctaSecondary: string;
+
+  footerDescription: string;
+  footerMadeIn: string;
+
+  // Collections
+  stats: HomepageStat[];
+  features: HomepageFeature[];
+  brandLogos: BrandLogo[];
+  reviews: HomepageReview[];
+  faqs: HomepageFaq[];
+}
+
 interface SiteSettings {
   // Branding
   siteName: string;
@@ -18,6 +113,9 @@ interface SiteSettings {
   logo: string;
   favicon: string;
   fontFamily: 'System' | 'Inter' | 'Poppins' | 'Montserrat';
+
+  // Homepage content
+  homepageContent: HomepageContent;
 
   // Homepage Images
   heroBackgroundImage: string;
@@ -83,6 +181,206 @@ const defaultSettings: SiteSettings = {
   favicon: '',
   fontFamily: 'System',
 
+  homepageContent: {
+    navHome: 'Home',
+    navFeatures: 'Features',
+    navHowItWorks: 'How It Works',
+    navPricing: 'Pricing',
+    navReviews: 'Reviews',
+    navFaq: 'FAQ',
+    navContact: 'Contact',
+    navLoginCta: 'Login',
+    navStartCta: 'Start Free →',
+
+    trustBadge: 'Trusted by 800+ Fleet Operators Across India',
+    heroTitleLine1: 'Protect Your',
+    heroTitleLine2: 'Fleet Like Never Before',
+    heroSubtitle:
+      'The smartest way to manage vehicles. Track services, documents, and never miss a deadline. Built for Indian fleet operators.',
+    heroPrimaryCta: '🚀 Start Free Trial',
+    heroSecondaryCta: 'Login to Dashboard',
+    heroScrollHint: 'Scroll to explore',
+
+    featuresBadge: '✨ Powerful Features',
+    featuresTitleLine1: 'Everything You Need to',
+    featuresTitleLine2: 'Manage Your Fleet',
+    featuresSubtitle: 'From document tracking to expense analytics, Fleet Guard has all the tools you need',
+
+    howItWorksBadge: '🚀 Quick Setup',
+    howItWorksTitle: 'Get Started in 3 Simple Steps',
+    howItWorksSubtitle: 'Start managing your fleet in under 5 minutes',
+
+    pricingBadge: '💰 Simple Pricing',
+    pricingTitle: 'Choose Your Plan',
+    pricingSubtitle: 'Start free, upgrade when you need more',
+
+    reviewsBadge: '💬 Customer Love',
+    reviewsTitle: 'What Our Customers Say',
+    reviewsSubtitle: 'Join 800+ happy fleet operators across India',
+
+    faqBadge: '❓ FAQ',
+    faqTitle: 'Frequently Asked Questions',
+
+    contactBadge: '📞 Get In Touch',
+    contactTitle: "Let's Talk About Your Fleet",
+    contactSubtitle:
+      "Have questions? We'd love to hear from you. Send us a message and we'll respond within 24 hours.",
+
+    ctaTitle: 'Ready to Guard Your Fleet?',
+    ctaSubtitle:
+      'Join 800+ fleet operators who trust Fleet Guard to manage their vehicles. Start your free trial today!',
+    ctaPrimary: 'Start Free Trial →',
+    ctaSecondary: 'View Pricing',
+
+    footerDescription:
+      'The smart way to manage your vehicle fleet. Track, protect, and grow with confidence.',
+    footerMadeIn: 'Made with ❤️ in India',
+
+    stats: [
+      { icon: '🚗', value: '15,000+', label: 'Vehicles Managed' },
+      { icon: '😊', value: '800+', label: 'Happy Customers' },
+      { icon: '💰', value: '₹2 Crore+', label: 'Penalties Saved' },
+      { icon: '⚡', value: '99.9%', label: 'Uptime Guarantee' },
+    ],
+
+    features: [
+      {
+        icon: '🏍️',
+        title: 'Multi-Vehicle Support',
+        description: 'Manage bikes, cars, trucks - all vehicle types in one place',
+        image: 'https://images.unsplash.com/photo-1558981285-6f0c94958bb6?w=400&q=80',
+      },
+      {
+        icon: '🔔',
+        title: 'Smart Reminders',
+        description: 'Never miss insurance, PUC, or service deadlines again',
+        image: 'https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=400&q=80',
+      },
+      {
+        icon: '📊',
+        title: 'Analytics Dashboard',
+        description: 'Track expenses, service history, and fleet health',
+        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80',
+      },
+      {
+        icon: '📄',
+        title: 'Document Vault',
+        description: 'Store and access all vehicle documents digitally',
+        image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80',
+      },
+      {
+        icon: '🔧',
+        title: 'Service Tracking',
+        description: 'Complete maintenance history at your fingertips',
+        image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&q=80',
+      },
+      {
+        icon: '📱',
+        title: 'Works Everywhere',
+        description: 'Access from phone, tablet, or computer - anytime',
+        image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80',
+      },
+    ],
+
+    brandLogos: [
+      {
+        name: 'Triumph',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Triumph_Motorcycles_logo.svg/256px-Triumph_Motorcycles_logo.svg.png',
+      },
+      {
+        name: 'Harley-Davidson',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Harley-Davidson_logo.svg/256px-Harley-Davidson_logo.svg.png',
+      },
+      {
+        name: 'Royal Enfield',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d7/Royal_Enfield_logo.svg/256px-Royal_Enfield_logo.svg.png',
+      },
+      {
+        name: 'KTM',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/KTM-Logo.svg/256px-KTM-Logo.svg.png',
+      },
+      {
+        name: 'Toyota',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Toyota_carlogo.svg/256px-Toyota_carlogo.svg.png',
+      },
+      {
+        name: 'Mahindra',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Mahindra_%26_Mahindra_Logo.svg/256px-Mahindra_%26_Mahindra_Logo.svg.png',
+      },
+      {
+        name: 'Volvo',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Volvo_iron_mark.svg/256px-Volvo_iron_mark.svg.png',
+      },
+    ],
+
+    reviews: [
+      {
+        name: 'Rajesh Kumar',
+        role: 'Fleet Owner',
+        company: 'Kumar Transport Services',
+        location: 'Mumbai',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
+        text: 'Fleet Guard has transformed how we manage our 50+ vehicle fleet. The reminders have saved us from countless penalty situations!',
+        rating: 5,
+      },
+      {
+        name: 'Priya Sharma',
+        role: 'Operations Manager',
+        company: 'Swift Bike Rentals',
+        location: 'Bangalore',
+        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
+        text: 'Managing 30 rental bikes was a nightmare before Fleet Guard. Now everything is organized and automated. Highly recommended!',
+        rating: 5,
+      },
+      {
+        name: 'Amit Patel',
+        role: 'Business Owner',
+        company: 'Patel Logistics',
+        location: 'Delhi',
+        image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&q=80',
+        text: 'The analytics feature helps us understand our fleet costs better. We saved ₹2 lakhs in the first year by optimizing maintenance schedules.',
+        rating: 5,
+      },
+      {
+        name: 'Sneha Reddy',
+        role: 'Founder',
+        company: 'EcoRide Rentals',
+        location: 'Hyderabad',
+        image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80',
+        text: 'As a startup, we needed something simple yet powerful. Fleet Guard is exactly that. The free tier is perfect for small fleets!',
+        rating: 5,
+      },
+    ],
+
+    faqs: [
+      {
+        question: 'How does Fleet Guard help manage my vehicles?',
+        answer:
+          'Fleet Guard provides a centralized dashboard to track all your vehicles, their documents, service history, and upcoming renewals. You get smart reminders before any document expires or service is due.',
+      },
+      {
+        question: 'Is my data secure?',
+        answer:
+          'Absolutely! We use industry-standard encryption and your data is stored securely. You can also export backups anytime for extra peace of mind.',
+      },
+      {
+        question: 'Can I try before I pay?',
+        answer:
+          'Yes! Our Starter plan is completely free for up to 5 vehicles. No credit card required. You can upgrade anytime as your fleet grows.',
+      },
+      {
+        question: 'Does it work for both personal and commercial vehicles?',
+        answer:
+          'Yes! Fleet Guard supports both private and commercial vehicles with different document tracking requirements for each type.',
+      },
+      {
+        question: 'Can I import my existing vehicle data?',
+        answer:
+          'Absolutely! We provide an Excel template that you can fill with your vehicle data and import in bulk. No need to enter everything manually.',
+      },
+    ],
+  },
+
   heroBackgroundImage: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=1920&h=1080&fit=crop&q=80',
   ctaBackgroundImage: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&q=80',
   showcaseImage1: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400&h=500&fit=crop',
@@ -137,10 +435,40 @@ interface AdminPanelProps {
 }
 
 export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps) {
-  const [settings, setSettings] = useState<SiteSettings>(currentSettings || defaultSettings);
-  const [activeTab, setActiveTab] = useState<'branding' | 'users' | 'payments' | 'seo' | 'analytics' | 'social' | 'contact' | 'pricing' | 'sections' | 'advanced'>('branding');
+  const mergedInitial = {
+    ...defaultSettings,
+    ...(currentSettings || {}),
+    homepageContent: {
+      ...defaultSettings.homepageContent,
+      ...((currentSettings as any)?.homepageContent || {}),
+      stats: Array.isArray((currentSettings as any)?.homepageContent?.stats)
+        ? (currentSettings as any).homepageContent.stats
+        : defaultSettings.homepageContent.stats,
+      features: Array.isArray((currentSettings as any)?.homepageContent?.features)
+        ? (currentSettings as any).homepageContent.features
+        : defaultSettings.homepageContent.features,
+      reviews: Array.isArray((currentSettings as any)?.homepageContent?.reviews)
+        ? (currentSettings as any).homepageContent.reviews
+        : defaultSettings.homepageContent.reviews,
+      faqs: Array.isArray((currentSettings as any)?.homepageContent?.faqs)
+        ? (currentSettings as any).homepageContent.faqs
+        : defaultSettings.homepageContent.faqs,
+      brandLogos: Array.isArray((currentSettings as any)?.homepageContent?.brandLogos)
+        ? (currentSettings as any).homepageContent.brandLogos
+        : defaultSettings.homepageContent.brandLogos,
+    },
+  } as SiteSettings;
+
+  const [settings, setSettings] = useState<SiteSettings>(mergedInitial);
+  const [activeTab, setActiveTab] = useState<'branding' | 'content' | 'users' | 'payments' | 'seo' | 'analytics' | 'social' | 'contact' | 'pricing' | 'sections' | 'advanced'>('branding');
   const [saved, setSaved] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+
+  // Payments UI state
+  const [payPlan, setPayPlan] = useState<'professional' | 'enterprise'>('professional');
+  const [payEmail, setPayEmail] = useState('');
+  const [payStatus, setPayStatus] = useState<string>('');
+  const [payLoading, setPayLoading] = useState(false);
 
   const handleSave = () => {
     onSave(settings);
@@ -238,6 +566,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
 
   const tabs = [
     { id: 'branding', label: 'Branding', icon: '🎨' },
+    { id: 'content', label: 'Homepage Text', icon: '✍️' },
     { id: 'users', label: 'Users', icon: '👥' },
     { id: 'payments', label: 'Payments', icon: '💳' },
     { id: 'seo', label: 'SEO', icon: '🔍' },
@@ -617,6 +946,633 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
             </div>
           )}
 
+          {/* Homepage Text Tab */}
+          {activeTab === 'content' && (
+            <div className="max-w-4xl space-y-6">
+              <div>
+                <h2 className="text-xl font-bold text-white mb-1">Homepage Text</h2>
+                <p className="text-gray-400 text-sm">Edit the text and content shown on the public homepage</p>
+              </div>
+
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-6">
+                <h3 className="font-semibold text-white">Navigation</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { key: 'navHome', label: 'Home' },
+                    { key: 'navFeatures', label: 'Features' },
+                    { key: 'navHowItWorks', label: 'How It Works' },
+                    { key: 'navPricing', label: 'Pricing' },
+                    { key: 'navReviews', label: 'Reviews' },
+                    { key: 'navFaq', label: 'FAQ' },
+                    { key: 'navContact', label: 'Contact' },
+                    { key: 'navLoginCta', label: 'Login button' },
+                    { key: 'navStartCta', label: 'Start button' },
+                  ].map((f) => (
+                    <div key={f.key}>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">{f.label}</label>
+                      <input
+                        value={(settings.homepageContent as any)[f.key] || ''}
+                        onChange={(e) =>
+                          setSettings({
+                            ...settings,
+                            homepageContent: { ...settings.homepageContent, [f.key]: e.target.value },
+                          })
+                        }
+                        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-6">
+                <h3 className="font-semibold text-white">Hero</h3>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Trust badge</label>
+                  <input
+                    value={settings.homepageContent.trustBadge}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        homepageContent: { ...settings.homepageContent, trustBadge: e.target.value },
+                      })
+                    }
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Title line 1</label>
+                    <input
+                      value={settings.homepageContent.heroTitleLine1}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          homepageContent: { ...settings.homepageContent, heroTitleLine1: e.target.value },
+                        })
+                      }
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Title line 2</label>
+                    <input
+                      value={settings.homepageContent.heroTitleLine2}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          homepageContent: { ...settings.homepageContent, heroTitleLine2: e.target.value },
+                        })
+                      }
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Subtitle</label>
+                  <textarea
+                    value={settings.homepageContent.heroSubtitle}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        homepageContent: { ...settings.homepageContent, heroSubtitle: e.target.value },
+                      })
+                    }
+                    rows={3}
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white resize-none"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Primary CTA</label>
+                    <input
+                      value={settings.homepageContent.heroPrimaryCta}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          homepageContent: { ...settings.homepageContent, heroPrimaryCta: e.target.value },
+                        })
+                      }
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Secondary CTA</label>
+                    <input
+                      value={settings.homepageContent.heroSecondaryCta}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          homepageContent: { ...settings.homepageContent, heroSecondaryCta: e.target.value },
+                        })
+                      }
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">Scroll hint</label>
+                  <input
+                    value={settings.homepageContent.heroScrollHint}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        homepageContent: { ...settings.homepageContent, heroScrollHint: e.target.value },
+                      })
+                    }
+                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-6">
+                <h3 className="font-semibold text-white">Section headings</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { key: 'featuresBadge', label: 'Features badge' },
+                    { key: 'featuresTitleLine1', label: 'Features title line 1' },
+                    { key: 'featuresTitleLine2', label: 'Features title line 2' },
+                    { key: 'featuresSubtitle', label: 'Features subtitle' },
+                    { key: 'howItWorksBadge', label: 'How It Works badge' },
+                    { key: 'howItWorksTitle', label: 'How It Works title' },
+                    { key: 'howItWorksSubtitle', label: 'How It Works subtitle' },
+                    { key: 'pricingBadge', label: 'Pricing badge' },
+                    { key: 'pricingTitle', label: 'Pricing title' },
+                    { key: 'pricingSubtitle', label: 'Pricing subtitle' },
+                    { key: 'reviewsBadge', label: 'Reviews badge' },
+                    { key: 'reviewsTitle', label: 'Reviews title' },
+                    { key: 'reviewsSubtitle', label: 'Reviews subtitle' },
+                    { key: 'faqBadge', label: 'FAQ badge' },
+                    { key: 'faqTitle', label: 'FAQ title' },
+                    { key: 'contactBadge', label: 'Contact badge' },
+                    { key: 'contactTitle', label: 'Contact title' },
+                    { key: 'contactSubtitle', label: 'Contact subtitle' },
+                    { key: 'ctaTitle', label: 'CTA title' },
+                    { key: 'ctaSubtitle', label: 'CTA subtitle' },
+                    { key: 'ctaPrimary', label: 'CTA primary button' },
+                    { key: 'ctaSecondary', label: 'CTA secondary button' },
+                    { key: 'footerDescription', label: 'Footer description' },
+                    { key: 'footerMadeIn', label: 'Footer "Made in"' },
+                  ].map((f) => (
+                    <div key={f.key} className={f.key.includes('Subtitle') || f.key.includes('Description') ? 'col-span-2' : ''}>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">{f.label}</label>
+                      {f.key.includes('Subtitle') || f.key.includes('Description') ? (
+                        <textarea
+                          value={(settings.homepageContent as any)[f.key] || ''}
+                          onChange={(e) =>
+                            setSettings({
+                              ...settings,
+                              homepageContent: { ...settings.homepageContent, [f.key]: e.target.value },
+                            })
+                          }
+                          rows={2}
+                          className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white resize-none"
+                        />
+                      ) : (
+                        <input
+                          value={(settings.homepageContent as any)[f.key] || ''}
+                          onChange={(e) =>
+                            setSettings({
+                              ...settings,
+                              homepageContent: { ...settings.homepageContent, [f.key]: e.target.value },
+                            })
+                          }
+                          className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-white">Stats (Hero)</h3>
+                  <button
+                    onClick={() =>
+                      setSettings({
+                        ...settings,
+                        homepageContent: {
+                          ...settings.homepageContent,
+                          stats: [
+                            ...settings.homepageContent.stats,
+                            { icon: '⭐', value: '1+', label: 'New stat' },
+                          ],
+                        },
+                      })
+                    }
+                    className="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg text-sm"
+                  >
+                    + Add Stat
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {settings.homepageContent.stats.map((s, idx) => (
+                    <div key={idx} className="grid grid-cols-12 gap-3 items-center bg-gray-800/50 p-3 rounded-xl border border-gray-700">
+                      <input
+                        className="col-span-2 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                        value={s.icon}
+                        onChange={(e) => {
+                          const next = [...settings.homepageContent.stats];
+                          next[idx] = { ...next[idx], icon: e.target.value };
+                          setSettings({ ...settings, homepageContent: { ...settings.homepageContent, stats: next } });
+                        }}
+                        placeholder="Icon"
+                      />
+                      <input
+                        className="col-span-3 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                        value={s.value}
+                        onChange={(e) => {
+                          const next = [...settings.homepageContent.stats];
+                          next[idx] = { ...next[idx], value: e.target.value };
+                          setSettings({ ...settings, homepageContent: { ...settings.homepageContent, stats: next } });
+                        }}
+                        placeholder="Value"
+                      />
+                      <input
+                        className="col-span-6 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                        value={s.label}
+                        onChange={(e) => {
+                          const next = [...settings.homepageContent.stats];
+                          next[idx] = { ...next[idx], label: e.target.value };
+                          setSettings({ ...settings, homepageContent: { ...settings.homepageContent, stats: next } });
+                        }}
+                        placeholder="Label"
+                      />
+                      <button
+                        onClick={() => {
+                          const next = settings.homepageContent.stats.filter((_, i) => i !== idx);
+                          setSettings({ ...settings, homepageContent: { ...settings.homepageContent, stats: next } });
+                        }}
+                        className="col-span-1 px-2 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-300 rounded-lg"
+                        title="Remove"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-white">Brand Logos</h3>
+                  <button
+                    onClick={() =>
+                      setSettings({
+                        ...settings,
+                        homepageContent: {
+                          ...settings.homepageContent,
+                          brandLogos: [
+                            ...(settings.homepageContent.brandLogos || []),
+                            { name: 'New Brand', logoUrl: '' },
+                          ],
+                        },
+                      })
+                    }
+                    className="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg text-sm"
+                  >
+                    + Add Logo
+                  </button>
+                </div>
+
+                <p className="text-sm text-gray-400">
+                  These logos appear on the homepage under “Trusted by fleet operators managing these brands”. Use direct image URLs (PNG/SVG).
+                </p>
+
+                <div className="space-y-3">
+                  {(settings.homepageContent.brandLogos || []).map((b, idx) => (
+                    <div key={idx} className="bg-gray-800/50 p-4 rounded-xl border border-gray-700 space-y-3">
+                      <div className="grid grid-cols-12 gap-3 items-center">
+                        <div className="col-span-3">
+                          <label className="block text-xs text-gray-400 mb-1">Brand Name</label>
+                          <input
+                            className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                            value={b.name}
+                            onChange={(e) => {
+                              const next = [...(settings.homepageContent.brandLogos || [])];
+                              next[idx] = { ...next[idx], name: e.target.value };
+                              setSettings({
+                                ...settings,
+                                homepageContent: { ...settings.homepageContent, brandLogos: next },
+                              });
+                            }}
+                            placeholder="Triumph"
+                          />
+                        </div>
+                        <div className="col-span-8">
+                          <label className="block text-xs text-gray-400 mb-1">Logo URL</label>
+                          <input
+                            className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                            value={b.logoUrl}
+                            onChange={(e) => {
+                              const next = [...(settings.homepageContent.brandLogos || [])];
+                              next[idx] = { ...next[idx], logoUrl: e.target.value };
+                              setSettings({
+                                ...settings,
+                                homepageContent: { ...settings.homepageContent, brandLogos: next },
+                              });
+                            }}
+                            placeholder="https://.../logo.png"
+                          />
+                        </div>
+                        <div className="col-span-1 flex justify-end">
+                          <button
+                            onClick={() => {
+                              const next = (settings.homepageContent.brandLogos || []).filter((_, i) => i !== idx);
+                              setSettings({
+                                ...settings,
+                                homepageContent: { ...settings.homepageContent, brandLogos: next },
+                              });
+                            }}
+                            className="px-2 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-300 rounded-lg"
+                            title="Remove"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="w-28 h-10 bg-gray-900 border border-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+                          {b.logoUrl ? (
+                            <img src={b.logoUrl} alt={b.name} className="max-h-full max-w-full object-contain" />
+                          ) : (
+                            <span className="text-xs text-gray-600">Preview</span>
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Tip: SVG/PNG works best. If you use Wikipedia URLs, prefer direct image URLs.
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {(settings.homepageContent.brandLogos || []).length === 0 && (
+                    <div className="text-sm text-gray-500 bg-gray-800/40 border border-gray-700 rounded-xl p-4">
+                      No brand logos yet. Click “Add Logo”.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-white">Features</h3>
+                  <button
+                    onClick={() =>
+                      setSettings({
+                        ...settings,
+                        homepageContent: {
+                          ...settings.homepageContent,
+                          features: [
+                            ...settings.homepageContent.features,
+                            { icon: '✨', title: 'New feature', description: 'Describe it...', image: '' },
+                          ],
+                        },
+                      })
+                    }
+                    className="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg text-sm"
+                  >
+                    + Add Feature
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {settings.homepageContent.features.map((f, idx) => (
+                    <div key={idx} className="bg-gray-800/50 p-4 rounded-xl border border-gray-700 space-y-3">
+                      <div className="grid grid-cols-12 gap-3 items-center">
+                        <input
+                          className="col-span-2 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                          value={f.icon}
+                          onChange={(e) => {
+                            const next = [...settings.homepageContent.features];
+                            next[idx] = { ...next[idx], icon: e.target.value };
+                            setSettings({ ...settings, homepageContent: { ...settings.homepageContent, features: next } });
+                          }}
+                          placeholder="Icon"
+                        />
+                        <input
+                          className="col-span-9 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                          value={f.title}
+                          onChange={(e) => {
+                            const next = [...settings.homepageContent.features];
+                            next[idx] = { ...next[idx], title: e.target.value };
+                            setSettings({ ...settings, homepageContent: { ...settings.homepageContent, features: next } });
+                          }}
+                          placeholder="Title"
+                        />
+                        <button
+                          onClick={() => {
+                            const next = settings.homepageContent.features.filter((_, i) => i !== idx);
+                            setSettings({ ...settings, homepageContent: { ...settings.homepageContent, features: next } });
+                          }}
+                          className="col-span-1 px-2 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-300 rounded-lg"
+                          title="Remove"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                      <textarea
+                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white resize-none"
+                        rows={2}
+                        value={f.description}
+                        onChange={(e) => {
+                          const next = [...settings.homepageContent.features];
+                          next[idx] = { ...next[idx], description: e.target.value };
+                          setSettings({ ...settings, homepageContent: { ...settings.homepageContent, features: next } });
+                        }}
+                        placeholder="Description"
+                      />
+                      <input
+                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                        value={f.image}
+                        onChange={(e) => {
+                          const next = [...settings.homepageContent.features];
+                          next[idx] = { ...next[idx], image: e.target.value };
+                          setSettings({ ...settings, homepageContent: { ...settings.homepageContent, features: next } });
+                        }}
+                        placeholder="Image URL"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-white">Reviews</h3>
+                  <button
+                    onClick={() =>
+                      setSettings({
+                        ...settings,
+                        homepageContent: {
+                          ...settings.homepageContent,
+                          reviews: [
+                            ...settings.homepageContent.reviews,
+                            {
+                              name: 'New Customer',
+                              role: 'Owner',
+                              company: '',
+                              location: '',
+                              image: '',
+                              text: 'Great app!',
+                              rating: 5,
+                            },
+                          ],
+                        },
+                      })
+                    }
+                    className="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg text-sm"
+                  >
+                    + Add Review
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {settings.homepageContent.reviews.map((r, idx) => (
+                    <div key={idx} className="bg-gray-800/50 p-4 rounded-xl border border-gray-700 space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        {[
+                          { key: 'name', label: 'Name' },
+                          { key: 'role', label: 'Role' },
+                          { key: 'company', label: 'Company' },
+                          { key: 'location', label: 'Location' },
+                        ].map((f) => (
+                          <div key={f.key}>
+                            <label className="block text-xs text-gray-400 mb-1">{f.label}</label>
+                            <input
+                              className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                              value={(r as any)[f.key]}
+                              onChange={(e) => {
+                                const next = [...settings.homepageContent.reviews];
+                                next[idx] = { ...next[idx], [f.key]: e.target.value } as any;
+                                setSettings({ ...settings, homepageContent: { ...settings.homepageContent, reviews: next } });
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Image URL</label>
+                          <input
+                            className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                            value={r.image}
+                            onChange={(e) => {
+                              const next = [...settings.homepageContent.reviews];
+                              next[idx] = { ...next[idx], image: e.target.value };
+                              setSettings({ ...settings, homepageContent: { ...settings.homepageContent, reviews: next } });
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Rating (1-5)</label>
+                          <input
+                            type="number"
+                            min={1}
+                            max={5}
+                            className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                            value={r.rating}
+                            onChange={(e) => {
+                              const next = [...settings.homepageContent.reviews];
+                              next[idx] = { ...next[idx], rating: Math.max(1, Math.min(5, Number(e.target.value) || 5)) };
+                              setSettings({ ...settings, homepageContent: { ...settings.homepageContent, reviews: next } });
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-400 mb-1">Review text</label>
+                        <textarea
+                          className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white resize-none"
+                          rows={2}
+                          value={r.text}
+                          onChange={(e) => {
+                            const next = [...settings.homepageContent.reviews];
+                            next[idx] = { ...next[idx], text: e.target.value };
+                            setSettings({ ...settings, homepageContent: { ...settings.homepageContent, reviews: next } });
+                          }}
+                        />
+                      </div>
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => {
+                            const next = settings.homepageContent.reviews.filter((_, i) => i !== idx);
+                            setSettings({ ...settings, homepageContent: { ...settings.homepageContent, reviews: next } });
+                          }}
+                          className="px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-300 rounded-lg text-sm"
+                        >
+                          Remove review
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-white">FAQs</h3>
+                  <button
+                    onClick={() =>
+                      setSettings({
+                        ...settings,
+                        homepageContent: {
+                          ...settings.homepageContent,
+                          faqs: [...settings.homepageContent.faqs, { question: 'New question?', answer: 'Answer...' }],
+                        },
+                      })
+                    }
+                    className="px-3 py-2 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg text-sm"
+                  >
+                    + Add FAQ
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {settings.homepageContent.faqs.map((fq, idx) => (
+                    <div key={idx} className="bg-gray-800/50 p-4 rounded-xl border border-gray-700 space-y-3">
+                      <input
+                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white"
+                        value={fq.question}
+                        onChange={(e) => {
+                          const next = [...settings.homepageContent.faqs];
+                          next[idx] = { ...next[idx], question: e.target.value };
+                          setSettings({ ...settings, homepageContent: { ...settings.homepageContent, faqs: next } });
+                        }}
+                        placeholder="Question"
+                      />
+                      <textarea
+                        className="w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white resize-none"
+                        rows={2}
+                        value={fq.answer}
+                        onChange={(e) => {
+                          const next = [...settings.homepageContent.faqs];
+                          next[idx] = { ...next[idx], answer: e.target.value };
+                          setSettings({ ...settings, homepageContent: { ...settings.homepageContent, faqs: next } });
+                        }}
+                        placeholder="Answer"
+                      />
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => {
+                            const next = settings.homepageContent.faqs.filter((_, i) => i !== idx);
+                            setSettings({ ...settings, homepageContent: { ...settings.homepageContent, faqs: next } });
+                          }}
+                          className="px-3 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-300 rounded-lg text-sm"
+                        >
+                          Remove FAQ
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 text-sm text-gray-300">
+                Tip: Click <strong>Save Changes</strong> in the header to apply these updates to the live homepage.
+              </div>
+            </div>
+          )}
+
           {/* Users Tab */}
           {activeTab === 'users' && (
             <div className="max-w-4xl space-y-6">
@@ -740,6 +1696,129 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
           {/* Payments Tab */}
           {activeTab === 'payments' && (
             <div className="max-w-3xl space-y-6">
+              {/* Test Checkout */}
+              <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-white">Test Razorpay Checkout</h3>
+                    <p className="text-sm text-gray-400">Creates a Razorpay order using your Vercel backend and opens checkout (UPI supported).</p>
+                  </div>
+                  <span className="text-xs text-gray-500">Server: /api/payments/*</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Plan</label>
+                    <select
+                      value={payPlan}
+                      onChange={(e) => setPayPlan(e.target.value as any)}
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                    >
+                      <option value="professional">Professional (₹{settings.proPrice}/year)</option>
+                      <option value="enterprise">Enterprise (₹{settings.enterprisePrice}/year)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">Customer Email (optional)</label>
+                    <input
+                      value={payEmail}
+                      onChange={(e) => setPayEmail(e.target.value)}
+                      placeholder="customer@email.com"
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                    />
+                  </div>
+                </div>
+
+                {payStatus && (
+                  <div className="text-sm text-amber-200 bg-amber-500/10 border border-amber-500/30 rounded-lg px-4 py-3">
+                    {payStatus}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3">
+                  <button
+                    disabled={payLoading}
+                    onClick={async () => {
+                      setPayStatus('');
+                      setPayLoading(true);
+                      try {
+                        // 1) Create order on server
+                        const resp = await fetch('/api/payments/create-order', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ plan: payPlan, email: payEmail }),
+                        });
+                        const payload = await resp.json();
+                        if (!resp.ok) {
+                          throw new Error(payload?.error || 'Failed to create order');
+                        }
+
+                        // 2) Load Razorpay checkout script
+                        await new Promise<void>((resolve, reject) => {
+                          const existing = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+                          if (existing) return resolve();
+                          const s = document.createElement('script');
+                          s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+                          s.onload = () => resolve();
+                          s.onerror = () => reject(new Error('Failed to load Razorpay script'));
+                          document.body.appendChild(s);
+                        });
+
+                        // 3) Open checkout
+                        const options: any = {
+                          key: payload.keyId,
+                          amount: payload.amount,
+                          currency: payload.currency,
+                          order_id: payload.orderId,
+                          name: settings.siteName,
+                          description: `Fleet Guard subscription: ${payload.plan}`,
+                          prefill: {
+                            email: payEmail || undefined,
+                          },
+                          theme: {
+                            color: settings.primaryColor,
+                          },
+                          handler: async (response: any) => {
+                            try {
+                              setPayStatus('Verifying payment…');
+                              const vr = await fetch('/api/payments/verify', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(response),
+                              });
+                              const vj = await vr.json();
+                              if (!vr.ok || !vj.verified) {
+                                throw new Error(vj?.error || 'Verification failed');
+                              }
+                              setPayStatus('✅ Payment verified. Next step: store subscription in DB.');
+                            } catch (e: any) {
+                              setPayStatus(`❌ Verification failed: ${e?.message || 'Unknown error'}`);
+                            }
+                          },
+                        };
+
+                        // @ts-ignore
+                        const rz = new (window as any).Razorpay(options);
+                        rz.on('payment.failed', (resp: any) => {
+                          setPayStatus(`❌ Payment failed: ${resp?.error?.description || 'Unknown error'}`);
+                        });
+                        rz.open();
+                      } catch (e: any) {
+                        setPayStatus(`❌ ${e?.message || 'Payment init failed'}`);
+                      } finally {
+                        setPayLoading(false);
+                      }
+                    }}
+                    className="px-5 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold rounded-xl hover:from-amber-400 hover:to-orange-400 transition-all disabled:opacity-50"
+                  >
+                    {payLoading ? 'Working…' : 'Run Test Checkout'}
+                  </button>
+
+                  <div className="text-xs text-gray-500">
+                    Requires Vercel env vars: <code className="text-amber-300">RAZORPAY_KEY_ID</code>, <code className="text-amber-300">RAZORPAY_KEY_SECRET</code>
+                  </div>
+                </div>
+              </div>
               <div>
                 <h2 className="text-xl font-bold text-white mb-1">Payment Gateway</h2>
                 <p className="text-gray-400 text-sm">Configure payment methods for subscriptions</p>

@@ -18,6 +18,206 @@ const defaultSiteSettings: SiteSettings = {
   favicon: '',
   fontFamily: 'System',
 
+  homepageContent: {
+    navHome: 'Home',
+    navFeatures: 'Features',
+    navHowItWorks: 'How It Works',
+    navPricing: 'Pricing',
+    navReviews: 'Reviews',
+    navFaq: 'FAQ',
+    navContact: 'Contact',
+    navLoginCta: 'Login',
+    navStartCta: 'Start Free →',
+
+    trustBadge: 'Trusted by 800+ Fleet Operators Across India',
+    heroTitleLine1: 'Protect Your',
+    heroTitleLine2: 'Fleet Like Never Before',
+    heroSubtitle:
+      'The smartest way to manage vehicles. Track services, documents, and never miss a deadline. Built for Indian fleet operators.',
+    heroPrimaryCta: '🚀 Start Free Trial',
+    heroSecondaryCta: 'Login to Dashboard',
+    heroScrollHint: 'Scroll to explore',
+
+    featuresBadge: '✨ Powerful Features',
+    featuresTitleLine1: 'Everything You Need to',
+    featuresTitleLine2: 'Manage Your Fleet',
+    featuresSubtitle: 'From document tracking to expense analytics, Fleet Guard has all the tools you need',
+
+    howItWorksBadge: '🚀 Quick Setup',
+    howItWorksTitle: 'Get Started in 3 Simple Steps',
+    howItWorksSubtitle: 'Start managing your fleet in under 5 minutes',
+
+    pricingBadge: '💰 Simple Pricing',
+    pricingTitle: 'Choose Your Plan',
+    pricingSubtitle: 'Start free, upgrade when you need more',
+
+    reviewsBadge: '💬 Customer Love',
+    reviewsTitle: 'What Our Customers Say',
+    reviewsSubtitle: 'Join 800+ happy fleet operators across India',
+
+    faqBadge: '❓ FAQ',
+    faqTitle: 'Frequently Asked Questions',
+
+    contactBadge: '📞 Get In Touch',
+    contactTitle: "Let's Talk About Your Fleet",
+    contactSubtitle:
+      "Have questions? We'd love to hear from you. Send us a message and we'll respond within 24 hours.",
+
+    ctaTitle: 'Ready to Guard Your Fleet?',
+    ctaSubtitle:
+      'Join 800+ fleet operators who trust Fleet Guard to manage their vehicles. Start your free trial today!',
+    ctaPrimary: 'Start Free Trial →',
+    ctaSecondary: 'View Pricing',
+
+    footerDescription:
+      'The smart way to manage your vehicle fleet. Track, protect, and grow with confidence.',
+    footerMadeIn: 'Made with ❤️ in India',
+
+    stats: [
+      { icon: '🚗', value: '15,000+', label: 'Vehicles Managed' },
+      { icon: '😊', value: '800+', label: 'Happy Customers' },
+      { icon: '💰', value: '₹2 Crore+', label: 'Penalties Saved' },
+      { icon: '⚡', value: '99.9%', label: 'Uptime Guarantee' },
+    ],
+
+    features: [
+      {
+        icon: '🏍️',
+        title: 'Multi-Vehicle Support',
+        description: 'Manage bikes, cars, trucks - all vehicle types in one place',
+        image: 'https://images.unsplash.com/photo-1558981285-6f0c94958bb6?w=400&q=80',
+      },
+      {
+        icon: '🔔',
+        title: 'Smart Reminders',
+        description: 'Never miss insurance, PUC, or service deadlines again',
+        image: 'https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=400&q=80',
+      },
+      {
+        icon: '📊',
+        title: 'Analytics Dashboard',
+        description: 'Track expenses, service history, and fleet health',
+        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80',
+      },
+      {
+        icon: '📄',
+        title: 'Document Vault',
+        description: 'Store and access all vehicle documents digitally',
+        image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80',
+      },
+      {
+        icon: '🔧',
+        title: 'Service Tracking',
+        description: 'Complete maintenance history at your fingertips',
+        image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&q=80',
+      },
+      {
+        icon: '📱',
+        title: 'Works Everywhere',
+        description: 'Access from phone, tablet, or computer - anytime',
+        image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80',
+      },
+    ],
+
+    brandLogos: [
+      {
+        name: 'Triumph',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Triumph_Motorcycles_logo.svg/256px-Triumph_Motorcycles_logo.svg.png',
+      },
+      {
+        name: 'Harley-Davidson',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Harley-Davidson_logo.svg/256px-Harley-Davidson_logo.svg.png',
+      },
+      {
+        name: 'Royal Enfield',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d7/Royal_Enfield_logo.svg/256px-Royal_Enfield_logo.svg.png',
+      },
+      {
+        name: 'KTM',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/KTM-Logo.svg/256px-KTM-Logo.svg.png',
+      },
+      {
+        name: 'Toyota',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Toyota_carlogo.svg/256px-Toyota_carlogo.svg.png',
+      },
+      {
+        name: 'Mahindra',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Mahindra_%26_Mahindra_Logo.svg/256px-Mahindra_%26_Mahindra_Logo.svg.png',
+      },
+      {
+        name: 'Volvo',
+        logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Volvo_iron_mark.svg/256px-Volvo_iron_mark.svg.png',
+      },
+    ],
+
+    reviews: [
+      {
+        name: 'Rajesh Kumar',
+        role: 'Fleet Owner',
+        company: 'Kumar Transport Services',
+        location: 'Mumbai',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
+        text: 'Fleet Guard has transformed how we manage our 50+ vehicle fleet. The reminders have saved us from countless penalty situations!',
+        rating: 5,
+      },
+      {
+        name: 'Priya Sharma',
+        role: 'Operations Manager',
+        company: 'Swift Bike Rentals',
+        location: 'Bangalore',
+        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
+        text: 'Managing 30 rental bikes was a nightmare before Fleet Guard. Now everything is organized and automated. Highly recommended!',
+        rating: 5,
+      },
+      {
+        name: 'Amit Patel',
+        role: 'Business Owner',
+        company: 'Patel Logistics',
+        location: 'Delhi',
+        image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&q=80',
+        text: 'The analytics feature helps us understand our fleet costs better. We saved ₹2 lakhs in the first year by optimizing maintenance schedules.',
+        rating: 5,
+      },
+      {
+        name: 'Sneha Reddy',
+        role: 'Founder',
+        company: 'EcoRide Rentals',
+        location: 'Hyderabad',
+        image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80',
+        text: 'As a startup, we needed something simple yet powerful. Fleet Guard is exactly that. The free tier is perfect for small fleets!',
+        rating: 5,
+      },
+    ],
+
+    faqs: [
+      {
+        question: 'How does Fleet Guard help manage my vehicles?',
+        answer:
+          'Fleet Guard provides a centralized dashboard to track all your vehicles, their documents, service history, and upcoming renewals. You get smart reminders before any document expires or service is due.',
+      },
+      {
+        question: 'Is my data secure?',
+        answer:
+          'Absolutely! We use industry-standard encryption and your data is stored securely. You can also export backups anytime for extra peace of mind.',
+      },
+      {
+        question: 'Can I try before I pay?',
+        answer:
+          'Yes! Our Starter plan is completely free for up to 5 vehicles. No credit card required. You can upgrade anytime as your fleet grows.',
+      },
+      {
+        question: 'Does it work for both personal and commercial vehicles?',
+        answer:
+          'Yes! Fleet Guard supports both private and commercial vehicles with different document tracking requirements for each type.',
+      },
+      {
+        question: 'Can I import my existing vehicle data?',
+        answer:
+          'Absolutely! We provide an Excel template that you can fill with your vehicle data and import in bulk. No need to enter everything manually.',
+      },
+    ],
+  },
+
   heroBackgroundImage: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=1920&h=1080&fit=crop&q=80',
   ctaBackgroundImage: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&q=80',
   showcaseImage1: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400&h=500&fit=crop',
