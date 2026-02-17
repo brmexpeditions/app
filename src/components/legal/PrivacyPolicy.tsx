@@ -11,7 +11,7 @@ export function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
                 <section>
                     <h2 className="text-2xl font-bold text-white mb-4">1. Introduction</h2>
                     <p>
-                        Welcome to Fleet Guard 360 ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about this privacy notice or our practices with regard to your personal information, please contact us at privacy@fleetguard.in.
+                        Welcome to Fleet Guard 360 Everywhere ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. If you have any questions or concerns about this privacy notice or our practices with regard to your personal information, please contact us at privacy@fleetguard.in.
                     </p>
                 </section>
 
@@ -62,7 +62,7 @@ export function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
                         If you have questions or comments about this policy, you may email us at privacy@fleetguard.in or by post to:
                     </p>
                     <address className="mt-4 not-italic text-gray-400">
-                        Fleet Guard 360<br />
+                        Fleet Guard 360 Everywhere<br />
                         Mumbai, Maharashtra<br />
                         India
                     </address>

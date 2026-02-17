@@ -122,8 +122,8 @@ export function UpgradeModal(props: Props) {
         amount: payload.amount,
         currency: payload.currency,
         order_id: payload.orderId,
-        name: 'Fleet Guard',
-        description: `Fleet Guard yearly subscription – ${formatPlanName(plan)}`,
+        name: 'Fleet Guard 360 Everywhere',
+        description: `Fleet Guard 360 Everywhere yearly subscription – ${formatPlanName(plan)}`,
         prefill: {
           email: currentUserEmail || undefined,
         },

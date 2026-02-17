@@ -124,14 +124,14 @@ interface SiteSettings {
   showcaseImage2: string;
   showcaseImage3: string;
   showcaseImage4: string;
-  
+
   // Colors
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
   backgroundColor: string;
   textColor: string;
-  
+
   // SEO
   googleAnalyticsId: string;
   googleSearchConsoleId: string;
@@ -139,43 +139,43 @@ interface SiteSettings {
   metaDescription: string;
   metaKeywords: string;
   ogImage: string;
-  
+
   // Social Media
   facebook: string;
   twitter: string;
   instagram: string;
   linkedin: string;
   youtube: string;
-  
+
   // Contact
   email: string;
   phone: string;
   whatsapp: string;
   address: string;
-  
+
   // Pricing
   starterPrice: number;
   starterVehicles: number;
   proPrice: number;
   proVehicles: number;
   enterprisePrice: number;
-  
+
   // Features Toggle
   showPricing: boolean;
   showReviews: boolean;
   showFaq: boolean;
   showContact: boolean;
-  
+
   // Custom CSS
   customCss: string;
-  
+
   // Scripts
   headerScripts: string;
   footerScripts: string;
 }
 
 const defaultSettings: SiteSettings = {
-  siteName: 'Fleet Guard',
+  siteName: 'Fleet Guard 360 Everywhere',
   tagline: 'Protect Your Fleet',
   logo: '',
   favicon: '',
@@ -204,7 +204,7 @@ const defaultSettings: SiteSettings = {
     featuresBadge: '✨ Powerful Features',
     featuresTitleLine1: 'Everything You Need to',
     featuresTitleLine2: 'Manage Your Fleet',
-    featuresSubtitle: 'From document tracking to expense analytics, Fleet Guard has all the tools you need',
+    featuresSubtitle: 'From document tracking to expense analytics, Fleet Guard 360 Everywhere has all the tools you need',
 
     howItWorksBadge: '🚀 Quick Setup',
     howItWorksTitle: 'Get Started in 3 Simple Steps',
@@ -228,7 +228,7 @@ const defaultSettings: SiteSettings = {
 
     ctaTitle: 'Ready to Guard Your Fleet?',
     ctaSubtitle:
-      'Join 800+ fleet operators who trust Fleet Guard to manage their vehicles. Start your free trial today!',
+      'Join 800+ fleet operators who trust Fleet Guard 360 Everywhere to manage their vehicles. Start your free trial today!',
     ctaPrimary: 'Start Free Trial →',
     ctaSecondary: 'View Pricing',
 
@@ -320,7 +320,7 @@ const defaultSettings: SiteSettings = {
         company: 'Kumar Transport Services',
         location: 'Mumbai',
         image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
-        text: 'Fleet Guard has transformed how we manage our 50+ vehicle fleet. The reminders have saved us from countless penalty situations!',
+        text: 'Fleet Guard 360 Everywhere has transformed how we manage our 50+ vehicle fleet. The reminders have saved us from countless penalty situations!',
         rating: 5,
       },
       {
@@ -329,7 +329,7 @@ const defaultSettings: SiteSettings = {
         company: 'Swift Bike Rentals',
         location: 'Bangalore',
         image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
-        text: 'Managing 30 rental bikes was a nightmare before Fleet Guard. Now everything is organized and automated. Highly recommended!',
+        text: 'Managing 30 rental bikes was a nightmare before Fleet Guard 360 Everywhere. Now everything is organized and automated. Highly recommended!',
         rating: 5,
       },
       {
@@ -347,16 +347,16 @@ const defaultSettings: SiteSettings = {
         company: 'EcoRide Rentals',
         location: 'Hyderabad',
         image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80',
-        text: 'As a startup, we needed something simple yet powerful. Fleet Guard is exactly that. The free tier is perfect for small fleets!',
+        text: 'As a startup, we needed something simple yet powerful. Fleet Guard 360 Everywhere is exactly that. The free tier is perfect for small fleets!',
         rating: 5,
       },
     ],
 
     faqs: [
       {
-        question: 'How does Fleet Guard help manage my vehicles?',
+        question: 'How does Fleet Guard 360 Everywhere help manage my vehicles?',
         answer:
-          'Fleet Guard provides a centralized dashboard to track all your vehicles, their documents, service history, and upcoming renewals. You get smart reminders before any document expires or service is due.',
+          'Fleet Guard 360 Everywhere provides a centralized dashboard to track all your vehicles, their documents, service history, and upcoming renewals. You get smart reminders before any document expires or service is due.',
       },
       {
         question: 'Is my data secure?',
@@ -371,7 +371,7 @@ const defaultSettings: SiteSettings = {
       {
         question: 'Does it work for both personal and commercial vehicles?',
         answer:
-          'Yes! Fleet Guard supports both private and commercial vehicles with different document tracking requirements for each type.',
+          'Yes! Fleet Guard 360 Everywhere supports both private and commercial vehicles with different document tracking requirements for each type.',
       },
       {
         question: 'Can I import my existing vehicle data?',
@@ -387,42 +387,42 @@ const defaultSettings: SiteSettings = {
   showcaseImage2: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop',
   showcaseImage3: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&h=300&fit=crop',
   showcaseImage4: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=400&h=500&fit=crop',
-  
+
   primaryColor: '#f59e0b',
   secondaryColor: '#1f2937',
   accentColor: '#10b981',
   backgroundColor: '#000000',
   textColor: '#ffffff',
-  
+
   googleAnalyticsId: '',
   googleSearchConsoleId: '',
-  metaTitle: 'Fleet Guard - Protect Your Fleet | Vehicle Management System',
+  metaTitle: 'Fleet Guard 360 Everywhere - Protect Your Fleet | Vehicle Management System',
   metaDescription: 'Manage your vehicle fleet with ease. Track services, documents, and maintenance for cars & bikes. Used by 800+ fleet operators in India.',
   metaKeywords: 'fleet management, vehicle tracking, service reminder, document management, car maintenance, bike maintenance',
   ogImage: '',
-  
+
   facebook: '',
   twitter: '',
   instagram: '',
   linkedin: '',
   youtube: '',
-  
+
   email: 'support@fleetguard.in',
   phone: '+91 98765 43210',
   whatsapp: '+91 98765 43210',
   address: 'Mumbai, Maharashtra, India',
-  
+
   starterPrice: 0,
   starterVehicles: 5,
   proPrice: 2000,
   proVehicles: 30,
   enterprisePrice: 3500,
-  
+
   showPricing: true,
   showReviews: true,
   showFaq: true,
   showContact: true,
-  
+
   customCss: '',
   headerScripts: '',
   footerScripts: ''
@@ -484,7 +484,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
 
   const handleExport = () => {
     const dataStr = JSON.stringify(settings, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
     const exportName = `fleetguard-settings-${new Date().toISOString().split('T')[0]}.json`;
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
@@ -587,11 +587,11 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
             <span className="text-xl">🛡️</span>
           </div>
           <div>
-            <h1 className="text-lg font-bold text-white">Fleet Guard Admin</h1>
+            <h1 className="text-lg font-bold text-white">Fleet Guard 360 Everywhere Admin</h1>
             <p className="text-xs text-gray-400">Website Settings & Configuration</p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-3">
           {saved && (
             <span className="text-green-400 text-sm flex items-center gap-1">
@@ -601,18 +601,17 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
               Saved!
             </span>
           )}
-          
+
           <button
             onClick={() => setPreviewMode(!previewMode)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-              previewMode 
-                ? 'bg-amber-500 text-black' 
-                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${previewMode
+              ? 'bg-amber-500 text-black'
+              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
           >
             {previewMode ? '👁️ Preview On' : '👁️ Preview'}
           </button>
-          
+
           <button
             onClick={handleSave}
             className="px-4 py-1.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg text-sm font-medium hover:from-green-600 hover:to-emerald-700 transition-all flex items-center gap-2"
@@ -622,7 +621,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
             </svg>
             Save Changes
           </button>
-          
+
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-700 rounded-lg transition-colors text-gray-400 hover:text-white"
@@ -642,18 +641,17 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === tab.id
-                    ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-                }`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === tab.id
+                  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                  }`}
               >
                 <span className="text-lg">{tab.icon}</span>
                 {tab.label}
               </button>
             ))}
           </nav>
-          
+
           <div className="mt-8 pt-4 border-t border-gray-800 space-y-2">
             <button
               onClick={handleExport}
@@ -664,7 +662,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
               </svg>
               Export Settings
             </button>
-            
+
             <label className="w-full flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg text-sm transition-colors cursor-pointer">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -672,7 +670,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
               Import Settings
               <input type="file" accept=".json" onChange={handleImport} className="hidden" />
             </label>
-            
+
             <button
               onClick={handleReset}
               className="w-full flex items-center gap-2 px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg text-sm transition-colors"
@@ -699,16 +697,16 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                 <h3 className="font-semibold text-white flex items-center gap-2">
                   <span className="text-amber-400">📝</span> Site Information
                 </h3>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">Site Name</label>
                     <input
                       type="text"
                       value={settings.siteName}
-                      onChange={(e) => setSettings({...settings, siteName: e.target.value})}
+                      onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                      placeholder="Fleet Guard"
+                      placeholder="Fleet Guard 360 Everywhere"
                     />
                   </div>
                   <div>
@@ -716,7 +714,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="text"
                       value={settings.tagline}
-                      onChange={(e) => setSettings({...settings, tagline: e.target.value})}
+                      onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="Protect Your Fleet"
                     />
@@ -728,7 +726,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                   <input
                     type="text"
                     value={settings.logo}
-                    onChange={(e) => setSettings({...settings, logo: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, logo: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     placeholder="https://example.com/logo.png"
                   />
@@ -755,7 +753,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="text"
                       value={settings.favicon}
-                      onChange={(e) => setSettings({...settings, favicon: e.target.value})}
+                      onChange={(e) => setSettings({ ...settings, favicon: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="https://example.com/favicon.png"
                     />
@@ -774,7 +772,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                   <input
                     type="text"
                     value={settings.heroBackgroundImage}
-                    onChange={(e) => setSettings({...settings, heroBackgroundImage: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, heroBackgroundImage: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     placeholder="https://..."
                   />
@@ -785,7 +783,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                   <input
                     type="text"
                     value={settings.ctaBackgroundImage}
-                    onChange={(e) => setSettings({...settings, ctaBackgroundImage: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, ctaBackgroundImage: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     placeholder="https://..."
                   />
@@ -797,7 +795,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="text"
                       value={settings.showcaseImage1}
-                      onChange={(e) => setSettings({...settings, showcaseImage1: e.target.value})}
+                      onChange={(e) => setSettings({ ...settings, showcaseImage1: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="https://..."
                     />
@@ -807,7 +805,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="text"
                       value={settings.showcaseImage2}
-                      onChange={(e) => setSettings({...settings, showcaseImage2: e.target.value})}
+                      onChange={(e) => setSettings({ ...settings, showcaseImage2: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="https://..."
                     />
@@ -817,7 +815,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="text"
                       value={settings.showcaseImage3}
-                      onChange={(e) => setSettings({...settings, showcaseImage3: e.target.value})}
+                      onChange={(e) => setSettings({ ...settings, showcaseImage3: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="https://..."
                     />
@@ -827,7 +825,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="text"
                       value={settings.showcaseImage4}
-                      onChange={(e) => setSettings({...settings, showcaseImage4: e.target.value})}
+                      onChange={(e) => setSettings({ ...settings, showcaseImage4: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="https://..."
                     />
@@ -841,7 +839,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                 <h3 className="font-semibold text-white flex items-center gap-2">
                   <span className="text-amber-400">🎨</span> Color Scheme
                 </h3>
-                
+
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">Primary Color</label>
@@ -849,13 +847,13 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                       <input
                         type="color"
                         value={settings.primaryColor}
-                        onChange={(e) => setSettings({...settings, primaryColor: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
                         className="w-12 h-12 rounded-lg cursor-pointer border-2 border-gray-700"
                       />
                       <input
                         type="text"
                         value={settings.primaryColor}
-                        onChange={(e) => setSettings({...settings, primaryColor: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
                         className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm font-mono"
                       />
                     </div>
@@ -866,13 +864,13 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                       <input
                         type="color"
                         value={settings.secondaryColor}
-                        onChange={(e) => setSettings({...settings, secondaryColor: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, secondaryColor: e.target.value })}
                         className="w-12 h-12 rounded-lg cursor-pointer border-2 border-gray-700"
                       />
                       <input
                         type="text"
                         value={settings.secondaryColor}
-                        onChange={(e) => setSettings({...settings, secondaryColor: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, secondaryColor: e.target.value })}
                         className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm font-mono"
                       />
                     </div>
@@ -883,13 +881,13 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                       <input
                         type="color"
                         value={settings.accentColor}
-                        onChange={(e) => setSettings({...settings, accentColor: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, accentColor: e.target.value })}
                         className="w-12 h-12 rounded-lg cursor-pointer border-2 border-gray-700"
                       />
                       <input
                         type="text"
                         value={settings.accentColor}
-                        onChange={(e) => setSettings({...settings, accentColor: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, accentColor: e.target.value })}
                         className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm font-mono"
                       />
                     </div>
@@ -903,13 +901,13 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                       <input
                         type="color"
                         value={settings.backgroundColor}
-                        onChange={(e) => setSettings({...settings, backgroundColor: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, backgroundColor: e.target.value })}
                         className="w-12 h-12 rounded-lg cursor-pointer border-2 border-gray-700"
                       />
                       <input
                         type="text"
                         value={settings.backgroundColor}
-                        onChange={(e) => setSettings({...settings, backgroundColor: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, backgroundColor: e.target.value })}
                         className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm font-mono"
                       />
                     </div>
@@ -920,13 +918,13 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                       <input
                         type="color"
                         value={settings.textColor}
-                        onChange={(e) => setSettings({...settings, textColor: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, textColor: e.target.value })}
                         className="w-12 h-12 rounded-lg cursor-pointer border-2 border-gray-700"
                       />
                       <input
                         type="text"
                         value={settings.textColor}
-                        onChange={(e) => setSettings({...settings, textColor: e.target.value})}
+                        onChange={(e) => setSettings({ ...settings, textColor: e.target.value })}
                         className="flex-1 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm font-mono"
                       />
                     </div>
@@ -1637,7 +1635,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     🔄 Refresh
                   </button>
                 </div>
-                
+
                 {users.length === 0 ? (
                   <div className="p-8 text-center">
                     <span className="text-4xl">👥</span>
@@ -1672,11 +1670,10 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                             <td className="px-4 py-3 text-gray-400 text-sm">{user.phone || '-'}</td>
                             <td className="px-4 py-3 text-gray-400 text-sm">{user.companyName || '-'}</td>
                             <td className="px-4 py-3">
-                              <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                user.plan === 'enterprise' ? 'bg-purple-500/20 text-purple-400' :
+                              <span className={`px-2 py-1 rounded text-xs font-medium ${user.plan === 'enterprise' ? 'bg-purple-500/20 text-purple-400' :
                                 user.plan === 'professional' ? 'bg-amber-500/20 text-amber-400' :
-                                'bg-gray-700 text-gray-400'
-                              }`}>
+                                  'bg-gray-700 text-gray-400'
+                                }`}>
                                 {user.plan || 'Starter'}
                               </span>
                             </td>
@@ -1847,7 +1844,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     Recommended
                   </span>
                 </div>
-                
+
                 <div className="bg-gray-800 rounded-lg p-4">
                   <h4 className="text-sm font-medium text-white mb-3">Setup Steps:</h4>
                   <ol className="text-sm text-gray-400 space-y-2 list-decimal list-inside">
@@ -1856,7 +1853,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <li>Get your API keys from Dashboard → Settings → API Keys</li>
                     <li>Add keys to Vercel Environment Variables:
                       <code className="block mt-1 bg-gray-900 px-2 py-1 rounded text-xs text-green-400">
-                        RAZORPAY_KEY_ID=rzp_live_xxxxx<br/>
+                        RAZORPAY_KEY_ID=rzp_live_xxxxx<br />
                         RAZORPAY_KEY_SECRET=xxxxx
                       </code>
                     </li>
@@ -1984,13 +1981,13 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                 <h3 className="font-semibold text-white flex items-center gap-2">
                   <span className="text-amber-400">📄</span> Meta Information
                 </h3>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Meta Title</label>
                   <input
                     type="text"
                     value={settings.metaTitle}
-                    onChange={(e) => setSettings({...settings, metaTitle: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, metaTitle: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     placeholder="Fleet Guard - Protect Your Fleet"
                   />
@@ -2001,7 +1998,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                   <label className="block text-sm font-medium text-gray-300 mb-2">Meta Description</label>
                   <textarea
                     value={settings.metaDescription}
-                    onChange={(e) => setSettings({...settings, metaDescription: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, metaDescription: e.target.value })}
                     rows={3}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
                     placeholder="Manage your vehicle fleet with ease..."
@@ -2014,7 +2011,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                   <input
                     type="text"
                     value={settings.metaKeywords}
-                    onChange={(e) => setSettings({...settings, metaKeywords: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, metaKeywords: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     placeholder="fleet management, vehicle tracking, service reminder"
                   />
@@ -2026,7 +2023,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                   <input
                     type="text"
                     value={settings.ogImage}
-                    onChange={(e) => setSettings({...settings, ogImage: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, ogImage: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     placeholder="https://example.com/og-image.png"
                   />
@@ -2039,13 +2036,13 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                 <h3 className="font-semibold text-white flex items-center gap-2">
                   <span className="text-amber-400">🔍</span> Google Search Console
                 </h3>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Verification Code</label>
                   <input
                     type="text"
                     value={settings.googleSearchConsoleId}
-                    onChange={(e) => setSettings({...settings, googleSearchConsoleId: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, googleSearchConsoleId: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent font-mono text-sm"
                     placeholder="google-site-verification=xxxxx"
                   />
@@ -2075,13 +2072,13 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     {settings.googleAnalyticsId ? '✓ Connected' : 'Not Connected'}
                   </span>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Measurement ID</label>
                   <input
                     type="text"
                     value={settings.googleAnalyticsId}
-                    onChange={(e) => setSettings({...settings, googleAnalyticsId: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, googleAnalyticsId: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent font-mono"
                     placeholder="G-XXXXXXXXXX"
                   />
@@ -2148,7 +2145,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="url"
                       value={(settings as any)[social.key]}
-                      onChange={(e) => setSettings({...settings, [social.key]: e.target.value})}
+                      onChange={(e) => setSettings({ ...settings, [social.key]: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder={social.placeholder}
                     />
@@ -2173,7 +2170,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="email"
                       value={settings.email}
-                      onChange={(e) => setSettings({...settings, email: e.target.value})}
+                      onChange={(e) => setSettings({ ...settings, email: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="support@fleetguard.in"
                     />
@@ -2183,7 +2180,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="tel"
                       value={settings.phone}
-                      onChange={(e) => setSettings({...settings, phone: e.target.value})}
+                      onChange={(e) => setSettings({ ...settings, phone: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       placeholder="+91 98765 43210"
                     />
@@ -2195,7 +2192,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                   <input
                     type="tel"
                     value={settings.whatsapp}
-                    onChange={(e) => setSettings({...settings, whatsapp: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, whatsapp: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     placeholder="+91 98765 43210"
                   />
@@ -2205,7 +2202,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                   <label className="block text-sm font-medium text-gray-300 mb-2">📍 Address</label>
                   <textarea
                     value={settings.address}
-                    onChange={(e) => setSettings({...settings, address: e.target.value})}
+                    onChange={(e) => setSettings({ ...settings, address: e.target.value })}
                     rows={3}
                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent resize-none"
                     placeholder="123 Business Street, Mumbai, Maharashtra, India"
@@ -2234,7 +2231,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="number"
                       value={settings.starterPrice}
-                      onChange={(e) => setSettings({...settings, starterPrice: parseInt(e.target.value) || 0})}
+                      onChange={(e) => setSettings({ ...settings, starterPrice: parseInt(e.target.value) || 0 })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     />
                   </div>
@@ -2243,7 +2240,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="number"
                       value={settings.starterVehicles}
-                      onChange={(e) => setSettings({...settings, starterVehicles: parseInt(e.target.value) || 0})}
+                      onChange={(e) => setSettings({ ...settings, starterVehicles: parseInt(e.target.value) || 0 })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     />
                   </div>
@@ -2262,7 +2259,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="number"
                       value={settings.proPrice}
-                      onChange={(e) => setSettings({...settings, proPrice: parseInt(e.target.value) || 0})}
+                      onChange={(e) => setSettings({ ...settings, proPrice: parseInt(e.target.value) || 0 })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     />
                   </div>
@@ -2271,7 +2268,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="number"
                       value={settings.proVehicles}
-                      onChange={(e) => setSettings({...settings, proVehicles: parseInt(e.target.value) || 0})}
+                      onChange={(e) => setSettings({ ...settings, proVehicles: parseInt(e.target.value) || 0 })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     />
                   </div>
@@ -2289,7 +2286,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                     <input
                       type="number"
                       value={settings.enterprisePrice}
-                      onChange={(e) => setSettings({...settings, enterprisePrice: parseInt(e.target.value) || 0})}
+                      onChange={(e) => setSettings({ ...settings, enterprisePrice: parseInt(e.target.value) || 0 })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                     />
                   </div>
@@ -2328,7 +2325,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                       <input
                         type="checkbox"
                         checked={(settings as any)[section.key]}
-                        onChange={(e) => setSettings({...settings, [section.key]: e.target.checked})}
+                        onChange={(e) => setSettings({ ...settings, [section.key]: e.target.checked })}
                         className="sr-only"
                       />
                       <div className={`w-12 h-6 rounded-full transition-colors ${(settings as any)[section.key] ? 'bg-amber-500' : 'bg-gray-600'}`}>
@@ -2355,7 +2352,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                 </h3>
                 <textarea
                   value={settings.headerScripts}
-                  onChange={(e) => setSettings({...settings, headerScripts: e.target.value})}
+                  onChange={(e) => setSettings({ ...settings, headerScripts: e.target.value })}
                   rows={6}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent font-mono text-sm resize-none"
                   placeholder="<!-- Add scripts here that go in the <head> section -->"
@@ -2369,7 +2366,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                 </h3>
                 <textarea
                   value={settings.footerScripts}
-                  onChange={(e) => setSettings({...settings, footerScripts: e.target.value})}
+                  onChange={(e) => setSettings({ ...settings, footerScripts: e.target.value })}
                   rows={6}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent font-mono text-sm resize-none"
                   placeholder="<!-- Add scripts here that go before </body> -->"
@@ -2383,7 +2380,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                 </h3>
                 <textarea
                   value={settings.customCss}
-                  onChange={(e) => setSettings({...settings, customCss: e.target.value})}
+                  onChange={(e) => setSettings({ ...settings, customCss: e.target.value })}
                   rows={8}
                   className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent font-mono text-sm resize-none"
                   placeholder="/* Add custom CSS styles here */"

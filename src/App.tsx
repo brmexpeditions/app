@@ -17,7 +17,7 @@ import { loadPublicSiteSettings, savePublicSiteSettings } from './lib/supabaseSi
 import { loadFleetForCurrentUser, saveFleetForCurrentUser } from './lib/supabaseFleetStore';
 
 const defaultSiteSettings: SiteSettings = {
-  siteName: 'Fleet Guard 360',
+  siteName: 'Fleet Guard 360 Everywhere',
   tagline: 'Protect Your Fleet',
   logo: '',
   favicon: '',
@@ -870,7 +870,7 @@ function App() {
           <div className="w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
             <span className="text-4xl">🛡️</span>
           </div>
-          <p className="text-xl text-amber-400 font-semibold">Fleet Guard 360</p>
+          <p className="text-xl text-amber-400 font-semibold">Fleet Guard 360 Everywhere</p>
           <p className="text-gray-400 mt-2">Loading...</p>
         </div>
       </div>

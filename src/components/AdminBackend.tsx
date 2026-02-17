@@ -6,62 +6,62 @@ interface SiteSettings {
   tagline: string;
   logo: string;
   favicon: string;
-  
+
   // Colors
   primaryColor: string;
   secondaryColor: string;
   accentColor: string;
   backgroundColor: string;
   textColor: string;
-  
+
   // Typography
   headingFont: string;
   bodyFont: string;
   fontSize: 'small' | 'medium' | 'large';
-  
+
   // Images
   heroImage: string;
   aboutImage: string;
   featureImages: string[];
-  
+
   // SEO
   metaTitle: string;
   metaDescription: string;
   metaKeywords: string;
   ogImage: string;
-  
+
   // Analytics
   googleAnalyticsId: string;
   googleSearchConsole: string;
   facebookPixel: string;
-  
+
   // Social
   facebook: string;
   twitter: string;
   instagram: string;
   linkedin: string;
   youtube: string;
-  
+
   // Contact
   email: string;
   phone: string;
   whatsapp: string;
   address: string;
-  
+
   // Pricing
   starterPrice: number;
   starterVehicles: number;
   proPrice: number;
   proVehicles: number;
   enterprisePrice: number;
-  
+
   // Sections
   showPricing: boolean;
   showReviews: boolean;
   showFaq: boolean;
   showContact: boolean;
   showBrands: boolean;
-  
+
   // Custom Code
   customCss: string;
   headerScripts: string;
@@ -75,7 +75,7 @@ interface AdminBackendProps {
 }
 
 const defaultSettings: SiteSettings = {
-  siteName: 'Fleet Guard',
+  siteName: 'Fleet Guard 360 Everywhere',
   tagline: 'Protect Your Fleet',
   logo: '',
   favicon: '',
@@ -90,8 +90,8 @@ const defaultSettings: SiteSettings = {
   heroImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920',
   aboutImage: '',
   featureImages: [],
-  metaTitle: 'Fleet Guard - Vehicle Fleet Management',
-  metaDescription: 'Manage your vehicle fleet efficiently with Fleet Guard',
+  metaTitle: 'Fleet Guard 360 Everywhere - Vehicle Fleet Management',
+  metaDescription: 'Manage your vehicle fleet efficiently with Fleet Guard 360 Everywhere',
   metaKeywords: 'fleet management, vehicle tracking, service reminders',
   ogImage: '',
   googleAnalyticsId: '',
@@ -122,7 +122,7 @@ const defaultSettings: SiteSettings = {
 };
 
 const fontOptions = [
-  'Inter', 'Poppins', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 
+  'Inter', 'Poppins', 'Roboto', 'Open Sans', 'Lato', 'Montserrat',
   'Source Sans Pro', 'Raleway', 'Nunito', 'Ubuntu', 'Playfair Display'
 ];
 
@@ -221,24 +221,23 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
             </div>
           </div>
         </div>
-        
+
         <nav className="flex-1 overflow-y-auto p-2">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-sm transition-all ${
-                activeTab === tab.id
-                  ? 'bg-amber-500/20 text-amber-400 border-l-2 border-amber-500'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
-              }`}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-sm transition-all ${activeTab === tab.id
+                ? 'bg-amber-500/20 text-amber-400 border-l-2 border-amber-500'
+                : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                }`}
             >
               <span>{tab.icon}</span>
               <span>{tab.label.replace(tab.icon + ' ', '')}</span>
             </button>
           ))}
         </nav>
-        
+
         <div className="p-4 border-t border-gray-800 space-y-2">
           <button
             onClick={handleExport}
@@ -273,13 +272,12 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
               </span>
             )}
           </div>
-          
+
           <div className="flex items-center gap-3">
             <button
               onClick={() => setPreviewMode(!previewMode)}
-              className={`px-4 py-2 rounded-lg text-sm transition-colors ${
-                previewMode ? 'bg-blue-500 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm transition-colors ${previewMode ? 'bg-blue-500 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
             >
               👁️ Preview
             </button>
@@ -305,7 +303,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
             <div className="max-w-2xl space-y-6">
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Site Identity</h3>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">Site Name</label>
@@ -314,10 +312,10 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                       value={settings.siteName}
                       onChange={(e) => updateSetting('siteName', e.target.value)}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-amber-500 focus:outline-none"
-                      placeholder="Fleet Guard"
+                      placeholder="Fleet Guard 360 Everywhere"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">Tagline</label>
                     <input
@@ -328,7 +326,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                       placeholder="Protect Your Fleet"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">Logo URL</label>
                     <input
@@ -344,7 +342,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                       </div>
                     )}
                   </div>
-                  
+
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">Favicon URL</label>
                     <input
@@ -383,7 +381,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                   ))}
                 </div>
               </div>
-              
+
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Custom Colors</h3>
                 <div className="grid grid-cols-2 gap-4">
@@ -414,15 +412,15 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                   ))}
                 </div>
               </div>
-              
+
               {/* Live Preview */}
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Live Preview</h3>
-                <div 
+                <div
                   className="p-6 rounded-xl"
                   style={{ backgroundColor: settings.backgroundColor }}
                 >
-                  <h4 
+                  <h4
                     className="text-2xl font-bold mb-2"
                     style={{ color: settings.primaryColor }}
                   >
@@ -459,7 +457,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
             <div className="max-w-2xl space-y-6">
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Fonts</h3>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">Heading Font</label>
@@ -473,7 +471,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                       ))}
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">Body Font</label>
                     <select
@@ -486,7 +484,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                       ))}
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">Base Font Size</label>
                     <select
@@ -501,7 +499,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                   </div>
                 </div>
               </div>
-              
+
               {/* Typography Preview */}
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Preview</h3>
@@ -534,16 +532,16 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                 />
                 {settings.heroImage && (
                   <div className="rounded-xl overflow-hidden">
-                    <img 
-                      src={settings.heroImage} 
-                      alt="Hero preview" 
+                    <img
+                      src={settings.heroImage}
+                      alt="Hero preview"
                       className="w-full h-48 object-cover"
                       onError={(e) => (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x400?text=Image+Not+Found'}
                     />
                   </div>
                 )}
               </div>
-              
+
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Suggested Free Image Sources</h3>
                 <div className="grid grid-cols-2 gap-3">
@@ -574,7 +572,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
             <div className="max-w-2xl space-y-6">
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Meta Tags</h3>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">Meta Title</label>
@@ -587,7 +585,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                     />
                     <p className="text-gray-500 text-xs mt-1">{settings.metaTitle.length}/60 characters</p>
                   </div>
-                  
+
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">Meta Description</label>
                     <textarea
@@ -599,7 +597,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                     />
                     <p className="text-gray-500 text-xs mt-1">{settings.metaDescription.length}/160 characters</p>
                   </div>
-                  
+
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">Keywords (comma separated)</label>
                     <input
@@ -610,7 +608,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                       placeholder="fleet management, vehicle tracking, service reminders"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">OG Image URL (for social sharing)</label>
                     <input
@@ -623,7 +621,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                   </div>
                 </div>
               </div>
-              
+
               {/* Google Search Console */}
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Google Search Console</h3>
@@ -663,7 +661,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                   </p>
                 </div>
               </div>
-              
+
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Facebook Pixel</h3>
                 <div>
@@ -688,7 +686,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
             <div className="max-w-2xl space-y-6">
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Social Media Links</h3>
-                
+
                 <div className="space-y-4">
                   {[
                     { key: 'facebook', label: 'Facebook', icon: '📘', placeholder: 'https://facebook.com/yourpage' },
@@ -718,7 +716,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
             <div className="max-w-2xl space-y-6">
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Contact Information</h3>
-                
+
                 <div className="space-y-4">
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">📧 Email</label>
@@ -730,7 +728,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                       placeholder="support@example.com"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">📞 Phone</label>
                     <input
@@ -741,7 +739,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                       placeholder="+91 98765 43210"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">💬 WhatsApp</label>
                     <input
@@ -752,7 +750,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                       placeholder="+91 98765 43210"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-gray-400 text-sm mb-2">📍 Address</label>
                     <textarea
@@ -794,7 +792,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Professional Plan</h3>
                 <div className="grid grid-cols-2 gap-4">
@@ -818,7 +816,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Enterprise Plan</h3>
                 <div className="grid grid-cols-2 gap-4">
@@ -847,7 +845,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
             <div className="max-w-2xl space-y-6">
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Toggle Sections</h3>
-                
+
                 <div className="space-y-4">
                   {[
                     { key: 'showPricing', label: 'Pricing Section' },
@@ -860,13 +858,11 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                       <span className="text-white">{label}</span>
                       <button
                         onClick={() => updateSetting(key as keyof SiteSettings, !settings[key as keyof SiteSettings])}
-                        className={`w-12 h-6 rounded-full transition-colors relative ${
-                          settings[key as keyof SiteSettings] ? 'bg-green-500' : 'bg-gray-600'
-                        }`}
+                        className={`w-12 h-6 rounded-full transition-colors relative ${settings[key as keyof SiteSettings] ? 'bg-green-500' : 'bg-gray-600'
+                          }`}
                       >
-                        <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${
-                          settings[key as keyof SiteSettings] ? 'translate-x-6' : 'translate-x-0.5'
-                        }`}></div>
+                        <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-transform ${settings[key as keyof SiteSettings] ? 'translate-x-6' : 'translate-x-0.5'
+                          }`}></div>
                       </button>
                     </div>
                   ))}
@@ -891,7 +887,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
 }"
                 />
               </div>
-              
+
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Header Scripts (before &lt;/head&gt;)</h3>
                 <textarea
@@ -902,7 +898,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                   placeholder="<!-- Google Tag Manager, etc. -->"
                 />
               </div>
-              
+
               <div className="bg-gray-900 rounded-xl p-6 border border-gray-800">
                 <h3 className="text-amber-400 font-semibold mb-4">Footer Scripts (before &lt;/body&gt;)</h3>
                 <textarea

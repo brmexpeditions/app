@@ -103,7 +103,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
   const settings = siteSettings || {};
   const content = settings.homepageContent || {};
 
-  const siteName = settings.siteName || 'Fleet Guard';
+  const siteName = settings.siteName || 'Fleet Guard 360 Everywhere';
   const tagline = settings.tagline || 'Protect Your Fleet';
   const bg = settings.backgroundColor || '#030712';
   const text = settings.textColor || '#ffffff';
@@ -229,7 +229,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
         company: 'Kumar Transport Services',
         location: 'Mumbai',
         image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
-        text: 'Fleet Guard has transformed how we manage our 50+ vehicle fleet. The reminders have saved us from countless penalty situations!',
+        text: 'Fleet Guard 360 Everywhere has transformed how we manage our 50+ vehicle fleet. The reminders have saved us from countless penalty situations!',
         rating: 5,
       },
       {
@@ -238,7 +238,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
         company: 'Swift Bike Rentals',
         location: 'Bangalore',
         image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
-        text: 'Managing 30 rental bikes was a nightmare before Fleet Guard. Now everything is organized and automated. Highly recommended!',
+        text: 'Managing 30 rental bikes was a nightmare before Fleet Guard 360 Everywhere. Now everything is organized and automated. Highly recommended!',
         rating: 5,
       },
       {
@@ -256,7 +256,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
         company: 'EcoRide Rentals',
         location: 'Hyderabad',
         image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80',
-        text: 'As a startup, we needed something simple yet powerful. Fleet Guard is exactly that. The free tier is perfect for small fleets!',
+        text: 'As a startup, we needed something simple yet powerful. Fleet Guard 360 Everywhere is exactly that. The free tier is perfect for small fleets!',
         rating: 5,
       },
     ]) as Array<{ name: string; role: string; company: string; location: string; image: string; text: string; rating: number }>;
@@ -265,8 +265,8 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
     ? content.faqs
     : [
       {
-        question: 'How does Fleet Guard help manage my vehicles?',
-        answer: 'Fleet Guard provides a centralized dashboard to track all your vehicles, their documents, service history, and upcoming renewals. You get smart reminders before any document expires or service is due.',
+        question: 'How does Fleet Guard 360 Everywhere help manage my vehicles?',
+        answer: 'Fleet Guard 360 Everywhere provides a centralized dashboard to track all your vehicles, their documents, service history, and upcoming renewals. You get smart reminders before any document expires or service is due.',
       },
       {
         question: 'Is my data secure?',
@@ -278,7 +278,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
       },
       {
         question: 'Does it work for both personal and commercial vehicles?',
-        answer: 'Yes! Fleet Guard supports both private and commercial vehicles with different document tracking requirements for each type.',
+        answer: 'Yes! Fleet Guard 360 Everywhere supports both private and commercial vehicles with different document tracking requirements for each type.',
       },
       {
         question: 'Can I import my existing vehicle data?',
@@ -701,7 +701,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
               </span>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              {content.featuresSubtitle ?? 'From document tracking to expense analytics, Fleet Guard has all the tools you need'}
+              {content.featuresSubtitle ?? 'From document tracking to expense analytics, Fleet Guard 360 Everywhere has all the tools you need'}
             </p>
           </div>
 
@@ -789,7 +789,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
                 </span>
               </h2>
               <p className="text-gray-400 text-lg mb-8">
-                Whether you manage bikes, cars, trucks, or a mixed fleet - Fleet Guard handles it all.
+                Whether you manage bikes, cars, trucks, or a mixed fleet - Fleet Guard 360 Everywhere handles it all.
                 Track each vehicle's documents, services, and expenses in one unified dashboard.
               </p>
 

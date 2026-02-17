@@ -28,16 +28,16 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   // Update mode when initialMode prop changes
   useEffect(() => {
     setIsLogin(initialMode === 'login');
   }, [initialMode]);
-  
+
   // Login form
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
-  
+
   // Signup form
   const [signupName, setSignupName] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
@@ -72,7 +72,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
       username: 'Admin',
       email: 'admin@fleetguard.com',
       password: 'admin123',
-      companyName: 'Fleet Guard',
+      companyName: 'Fleet Guard 360 Everywhere',
       phone: '',
       createdAt: new Date().toISOString()
     };
@@ -158,7 +158,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
           username: 'Admin',
           email: 'admin@fleetguard.com',
           password: 'admin123',
-          companyName: 'Fleet Guard',
+          companyName: 'Fleet Guard 360 Everywhere',
           phone: '',
           createdAt: new Date().toISOString(),
         };
@@ -304,9 +304,9 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
         {/* Logo & Company Name */}
         <div className="text-center mb-8">
           {companySettings.logo ? (
-            <img 
-              src={companySettings.logo} 
-              alt="Company Logo" 
+            <img
+              src={companySettings.logo}
+              alt="Company Logo"
               className="w-20 h-20 mx-auto mb-4 rounded-xl bg-white p-2 shadow-xl"
             />
           ) : (
@@ -315,7 +315,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
             </div>
           )}
           <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-amber-200 bg-clip-text text-transparent mb-2">
-            {companySettings.companyName || 'Fleet Guard'}
+            {companySettings.companyName || 'Fleet Guard 360 Everywhere'}
           </h1>
           <p className="text-gray-400">Vehicle Fleet Management System</p>
         </div>
@@ -326,21 +326,19 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
           <div className="flex border-b border-gray-700">
             <button
               onClick={() => { setIsLogin(true); setError(''); }}
-              className={`flex-1 py-4 font-semibold transition-colors ${
-                isLogin 
-                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black' 
-                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
-              }`}
+              className={`flex-1 py-4 font-semibold transition-colors ${isLogin
+                ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-black'
+                : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                }`}
             >
               🔐 Login
             </button>
             <button
               onClick={() => { setIsLogin(false); setError(''); setSuccess(''); }}
-              className={`flex-1 py-4 font-semibold transition-colors ${
-                !isLogin 
-                  ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' 
-                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
-              }`}
+              className={`flex-1 py-4 font-semibold transition-colors ${!isLogin
+                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
+                : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                }`}
             >
               ✨ Sign Up
             </button>
@@ -529,7 +527,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
 
         {/* Footer */}
         <p className="text-center text-gray-500 mt-6 text-sm">
-          © 2026 Fleet Guard. All rights reserved.
+          © 2026 Fleet Guard 360 Everywhere. All rights reserved.
         </p>
       </div>
     </div>
