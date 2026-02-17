@@ -37,7 +37,7 @@ interface HomePageProps {
     showcaseImage2?: string;
     showcaseImage3?: string;
     showcaseImage4?: string;
-          homepageContent?: {
+    homepageContent?: {
       navHome?: string;
 
       navFeatures?: string;
@@ -96,9 +96,10 @@ interface HomePageProps {
       faqs?: Array<{ question: string; answer: string }>;
     };
   };
+  onNavigate?: (view: string) => void;
 }
 
-export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps) {
+export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: HomePageProps) {
   const settings = siteSettings || {};
   const content = settings.homepageContent || {};
 
@@ -125,7 +126,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
   const showcase1 = settings.showcaseImage1 || 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400&h=500&fit=crop';
   const showcase2 = settings.showcaseImage2 || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop';
   const showcase3 = settings.showcaseImage3 || 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&h=300&fit=crop';
-  const showcase4 = settings.showcaseImage4 || 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=400&h=500&fit=crop';  
+  const showcase4 = settings.showcaseImage4 || 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=400&h=500&fit=crop';
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -181,109 +182,109 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
   const features = (settings.homepageContent?.features?.length
     ? settings.homepageContent.features
     : [
-        {
-          icon: '🏍️',
-          title: 'Multi-Vehicle Support',
-          description: 'Manage bikes, cars, trucks - all vehicle types in one place',
-          image: 'https://images.unsplash.com/photo-1558981285-6f0c94958bb6?w=400&q=80',
-        },
-        {
-          icon: '🔔',
-          title: 'Smart Reminders',
-          description: 'Never miss insurance, PUC, or service deadlines again',
-          image: 'https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=400&q=80',
-        },
-        {
-          icon: '📊',
-          title: 'Analytics Dashboard',
-          description: 'Track expenses, service history, and fleet health',
-          image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80',
-        },
-        {
-          icon: '📄',
-          title: 'Document Vault',
-          description: 'Store and access all vehicle documents digitally',
-          image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80',
-        },
-        {
-          icon: '🔧',
-          title: 'Service Tracking',
-          description: 'Complete maintenance history at your fingertips',
-          image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&q=80',
-        },
-        {
-          icon: '📱',
-          title: 'Works Everywhere',
-          description: 'Access from phone, tablet, or computer - anytime',
-          image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80',
-        },
-      ]) as Array<{ icon: string; title: string; description: string; image: string }>;
+      {
+        icon: '🏍️',
+        title: 'Multi-Vehicle Support',
+        description: 'Manage bikes, cars, trucks - all vehicle types in one place',
+        image: 'https://images.unsplash.com/photo-1558981285-6f0c94958bb6?w=400&q=80',
+      },
+      {
+        icon: '🔔',
+        title: 'Smart Reminders',
+        description: 'Never miss insurance, PUC, or service deadlines again',
+        image: 'https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=400&q=80',
+      },
+      {
+        icon: '📊',
+        title: 'Analytics Dashboard',
+        description: 'Track expenses, service history, and fleet health',
+        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80',
+      },
+      {
+        icon: '📄',
+        title: 'Document Vault',
+        description: 'Store and access all vehicle documents digitally',
+        image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80',
+      },
+      {
+        icon: '🔧',
+        title: 'Service Tracking',
+        description: 'Complete maintenance history at your fingertips',
+        image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&q=80',
+      },
+      {
+        icon: '📱',
+        title: 'Works Everywhere',
+        description: 'Access from phone, tablet, or computer - anytime',
+        image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&q=80',
+      },
+    ]) as Array<{ icon: string; title: string; description: string; image: string }>;
 
   const reviews = (content.reviews?.length
     ? content.reviews
     : [
-        {
-          name: 'Rajesh Kumar',
-          role: 'Fleet Owner',
-          company: 'Kumar Transport Services',
-          location: 'Mumbai',
-          image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
-          text: 'Fleet Guard has transformed how we manage our 50+ vehicle fleet. The reminders have saved us from countless penalty situations!',
-          rating: 5,
-        },
-        {
-          name: 'Priya Sharma',
-          role: 'Operations Manager',
-          company: 'Swift Bike Rentals',
-          location: 'Bangalore',
-          image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
-          text: 'Managing 30 rental bikes was a nightmare before Fleet Guard. Now everything is organized and automated. Highly recommended!',
-          rating: 5,
-        },
-        {
-          name: 'Amit Patel',
-          role: 'Business Owner',
-          company: 'Patel Logistics',
-          location: 'Delhi',
-          image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&q=80',
-          text: 'The analytics feature helps us understand our fleet costs better. We saved ₹2 lakhs in the first year by optimizing maintenance schedules.',
-          rating: 5,
-        },
-        {
-          name: 'Sneha Reddy',
-          role: 'Founder',
-          company: 'EcoRide Rentals',
-          location: 'Hyderabad',
-          image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80',
-          text: 'As a startup, we needed something simple yet powerful. Fleet Guard is exactly that. The free tier is perfect for small fleets!',
-          rating: 5,
-        },
-      ]) as Array<{ name: string; role: string; company: string; location: string; image: string; text: string; rating: number }>;
+      {
+        name: 'Rajesh Kumar',
+        role: 'Fleet Owner',
+        company: 'Kumar Transport Services',
+        location: 'Mumbai',
+        image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
+        text: 'Fleet Guard has transformed how we manage our 50+ vehicle fleet. The reminders have saved us from countless penalty situations!',
+        rating: 5,
+      },
+      {
+        name: 'Priya Sharma',
+        role: 'Operations Manager',
+        company: 'Swift Bike Rentals',
+        location: 'Bangalore',
+        image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
+        text: 'Managing 30 rental bikes was a nightmare before Fleet Guard. Now everything is organized and automated. Highly recommended!',
+        rating: 5,
+      },
+      {
+        name: 'Amit Patel',
+        role: 'Business Owner',
+        company: 'Patel Logistics',
+        location: 'Delhi',
+        image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&q=80',
+        text: 'The analytics feature helps us understand our fleet costs better. We saved ₹2 lakhs in the first year by optimizing maintenance schedules.',
+        rating: 5,
+      },
+      {
+        name: 'Sneha Reddy',
+        role: 'Founder',
+        company: 'EcoRide Rentals',
+        location: 'Hyderabad',
+        image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80',
+        text: 'As a startup, we needed something simple yet powerful. Fleet Guard is exactly that. The free tier is perfect for small fleets!',
+        rating: 5,
+      },
+    ]) as Array<{ name: string; role: string; company: string; location: string; image: string; text: string; rating: number }>;
 
   const faqs = (content.faqs?.length
     ? content.faqs
     : [
-        {
-          question: 'How does Fleet Guard help manage my vehicles?',
-          answer: 'Fleet Guard provides a centralized dashboard to track all your vehicles, their documents, service history, and upcoming renewals. You get smart reminders before any document expires or service is due.',
-        },
-        {
-          question: 'Is my data secure?',
-          answer: 'Absolutely! We use industry-standard encryption and your data is stored securely. You can also export backups anytime for extra peace of mind.',
-        },
-        {
-          question: 'Can I try before I pay?',
-          answer: 'Yes! Our Starter plan is completely free for up to 5 vehicles. No credit card required. You can upgrade anytime as your fleet grows.',
-        },
-        {
-          question: 'Does it work for both personal and commercial vehicles?',
-          answer: 'Yes! Fleet Guard supports both private and commercial vehicles with different document tracking requirements for each type.',
-        },
-        {
-          question: 'Can I import my existing vehicle data?',
-          answer: 'Absolutely! We provide an Excel template that you can fill with your vehicle data and import in bulk. No need to enter everything manually.',
-        },
-      ]) as Array<{ question: string; answer: string }>;
+      {
+        question: 'How does Fleet Guard help manage my vehicles?',
+        answer: 'Fleet Guard provides a centralized dashboard to track all your vehicles, their documents, service history, and upcoming renewals. You get smart reminders before any document expires or service is due.',
+      },
+      {
+        question: 'Is my data secure?',
+        answer: 'Absolutely! We use industry-standard encryption and your data is stored securely. You can also export backups anytime for extra peace of mind.',
+      },
+      {
+        question: 'Can I try before I pay?',
+        answer: 'Yes! Our Starter plan is completely free for up to 5 vehicles. No credit card required. You can upgrade anytime as your fleet grows.',
+      },
+      {
+        question: 'Does it work for both personal and commercial vehicles?',
+        answer: 'Yes! Fleet Guard supports both private and commercial vehicles with different document tracking requirements for each type.',
+      },
+      {
+        question: 'Can I import my existing vehicle data?',
+        answer: 'Absolutely! We provide an Excel template that you can fill with your vehicle data and import in bulk. No need to enter everything manually.',
+      },
+    ]) as Array<{ question: string; answer: string }>;
 
   const fontMap: Record<string, string> = {
     System: "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'",
@@ -299,11 +300,10 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
       style={{ backgroundColor: bg, color: text, fontFamily: chosenFont }}
     >
       {/* Sticky Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled 
-          ? 'bg-gray-900/95 backdrop-blur-xl shadow-2xl shadow-amber-500/10 border-b border-amber-500/20' 
-          : 'bg-transparent'
-      }`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
+        ? 'bg-gray-900/95 backdrop-blur-xl shadow-2xl shadow-amber-500/10 border-b border-amber-500/20'
+        : 'bg-transparent'
+        }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Logo */}
@@ -329,11 +329,10 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                 <button
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                    activeSection === link.id
-                      ? 'text-amber-400 bg-amber-500/10'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${activeSection === link.id
+                    ? 'text-amber-400 bg-amber-500/10'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    }`}
                 >
                   {link.label}
                 </button>
@@ -380,11 +379,10 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                 <button
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
-                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                    activeSection === link.id
-                      ? 'text-amber-400 bg-amber-500/10'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
-                  }`}
+                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeSection === link.id
+                    ? 'text-amber-400 bg-amber-500/10'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    }`}
                 >
                   {link.label}
                 </button>
@@ -406,7 +404,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
       <section id="home" className="relative min-h-screen flex items-center justify-center">
         {/* Full Screen Background Image */}
         <div className="absolute inset-0">
-          <img 
+          <img
             src={heroImg}
             alt="Professional fleet management"
             className="w-full h-full object-cover"
@@ -470,11 +468,11 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
               {(content.stats?.length
                 ? content.stats
                 : [
-                    { value: '15,000+', label: 'Vehicles Managed', icon: '🚗' },
-                    { value: '800+', label: 'Happy Customers', icon: '😊' },
-                    { value: '₹2 Crore+', label: 'Penalties Saved', icon: '💰' },
-                    { value: '99.9%', label: 'Uptime Guarantee', icon: '⚡' },
-                  ]
+                  { value: '15,000+', label: 'Vehicles Managed', icon: '🚗' },
+                  { value: '800+', label: 'Happy Customers', icon: '😊' },
+                  { value: '₹2 Crore+', label: 'Penalties Saved', icon: '💰' },
+                  { value: '99.9%', label: 'Uptime Guarantee', icon: '⚡' },
+                ]
               ).map((stat, i) => (
                 <div key={i} className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:border-amber-500/50 transition-all hover:scale-105 hover:bg-white/15">
                   <div className="text-3xl mb-2">{stat.icon}</div>
@@ -506,9 +504,9 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-all group">
-                    <img 
+                    <img
                       src={showcase1}
-                      alt="Motorcycle" 
+                      alt="Motorcycle"
                       className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
@@ -518,9 +516,9 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                     </div>
                   </div>
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-all group">
-                    <img 
+                    <img
                       src={showcase2}
-                      alt="Luxury car" 
+                      alt="Luxury car"
                       className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
@@ -532,9 +530,9 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                 </div>
                 <div className="space-y-4 pt-8">
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-all group">
-                    <img 
+                    <img
                       src={showcase3}
-                      alt="SUV" 
+                      alt="SUV"
                       className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
@@ -544,9 +542,9 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                     </div>
                   </div>
                   <div className="relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-all group">
-                    <img 
+                    <img
                       src={showcase4}
-                      alt="Commercial vehicle" 
+                      alt="Commercial vehicle"
                       className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
@@ -557,7 +555,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                   </div>
                 </div>
               </div>
-              
+
               {/* Floating Badge */}
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold px-8 py-4 rounded-full shadow-2xl shadow-amber-500/50 text-lg">
                 🛡️ All Vehicle Types
@@ -574,10 +572,10 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                 <span className="block text-amber-400">All Your Vehicles</span>
               </h2>
               <p className="text-gray-400 text-lg mb-8 leading-relaxed">
-                Whether you have a single bike or a fleet of 100+ vehicles, Fleet Guard handles everything. 
+                Whether you have a single bike or a fleet of 100+ vehicles, Fleet Guard handles everything.
                 From motorcycles to luxury cars, from personal vehicles to commercial fleets.
               </p>
-              
+
               <div className="grid grid-cols-2 gap-4 mb-8">
                 {[
                   { icon: '🏍️', label: 'Motorcycles' },
@@ -620,42 +618,42 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
               content.brandLogos && content.brandLogos.length
                 ? content.brandLogos
                 : [
-                    {
-                      name: 'Triumph',
-                      logoUrl:
-                        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Triumph_Motorcycles_logo.svg/256px-Triumph_Motorcycles_logo.svg.png',
-                    },
-                    {
-                      name: 'Harley-Davidson',
-                      logoUrl:
-                        'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Harley-Davidson_logo.svg/256px-Harley-Davidson_logo.svg.png',
-                    },
-                    {
-                      name: 'Royal Enfield',
-                      logoUrl:
-                        'https://upload.wikimedia.org/wikipedia/en/thumb/d/d7/Royal_Enfield_logo.svg/256px-Royal_Enfield_logo.svg.png',
-                    },
-                    {
-                      name: 'KTM',
-                      logoUrl:
-                        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/KTM-Logo.svg/256px-KTM-Logo.svg.png',
-                    },
-                    {
-                      name: 'Toyota',
-                      logoUrl:
-                        'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Toyota_carlogo.svg/256px-Toyota_carlogo.svg.png',
-                    },
-                    {
-                      name: 'Mahindra',
-                      logoUrl:
-                        'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Mahindra_%26_Mahindra_Logo.svg/256px-Mahindra_%26_Mahindra_Logo.svg.png',
-                    },
-                    {
-                      name: 'Volvo',
-                      logoUrl:
-                        'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Volvo_iron_mark.svg/256px-Volvo_iron_mark.svg.png',
-                    },
-                  ];
+                  {
+                    name: 'Triumph',
+                    logoUrl:
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Triumph_Motorcycles_logo.svg/256px-Triumph_Motorcycles_logo.svg.png',
+                  },
+                  {
+                    name: 'Harley-Davidson',
+                    logoUrl:
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Harley-Davidson_logo.svg/256px-Harley-Davidson_logo.svg.png',
+                  },
+                  {
+                    name: 'Royal Enfield',
+                    logoUrl:
+                      'https://upload.wikimedia.org/wikipedia/en/thumb/d/d7/Royal_Enfield_logo.svg/256px-Royal_Enfield_logo.svg.png',
+                  },
+                  {
+                    name: 'KTM',
+                    logoUrl:
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/KTM-Logo.svg/256px-KTM-Logo.svg.png',
+                  },
+                  {
+                    name: 'Toyota',
+                    logoUrl:
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Toyota_carlogo.svg/256px-Toyota_carlogo.svg.png',
+                  },
+                  {
+                    name: 'Mahindra',
+                    logoUrl:
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Mahindra_%26_Mahindra_Logo.svg/256px-Mahindra_%26_Mahindra_Logo.svg.png',
+                  },
+                  {
+                    name: 'Volvo',
+                    logoUrl:
+                      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Volvo_iron_mark.svg/256px-Volvo_iron_mark.svg.png',
+                  },
+                ];
 
             return (
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-6 items-center justify-items-center">
@@ -716,8 +714,8 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
               >
                 {/* Feature Image */}
                 <div className="relative h-40 overflow-hidden">
-                  <img 
-                    src={feature.image} 
+                  <img
+                    src={feature.image}
                     alt={feature.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
@@ -726,7 +724,7 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                     {feature.icon}
                   </div>
                 </div>
-                
+
                 {/* Content */}
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
@@ -749,25 +747,25 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
             <div className="relative">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <img 
-                    src="https://images.unsplash.com/photo-1558981285-6f0c94958bb6?w=400&q=80" 
+                  <img
+                    src="https://images.unsplash.com/photo-1558981285-6f0c94958bb6?w=400&q=80"
                     alt="Motorcycle fleet"
                     className="w-full h-48 object-cover rounded-2xl border border-gray-700"
                   />
-                  <img 
-                    src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&q=80" 
+                  <img
+                    src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&q=80"
                     alt="Luxury car"
                     className="w-full h-64 object-cover rounded-2xl border border-gray-700"
                   />
                 </div>
                 <div className="space-y-4 pt-8">
-                  <img 
-                    src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&q=80" 
+                  <img
+                    src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400&q=80"
                     alt="Car fleet"
                     className="w-full h-64 object-cover rounded-2xl border border-gray-700"
                   />
-                  <img 
-                    src="https://images.unsplash.com/photo-1568772585407-9361bd6f0c4c?w=400&q=80" 
+                  <img
+                    src="https://images.unsplash.com/photo-1568772585407-9361bd6f0c4c?w=400&q=80"
                     alt="Scooter"
                     className="w-full h-48 object-cover rounded-2xl border border-gray-700"
                   />
@@ -791,10 +789,10 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
                 </span>
               </h2>
               <p className="text-gray-400 text-lg mb-8">
-                Whether you manage bikes, cars, trucks, or a mixed fleet - Fleet Guard handles it all. 
+                Whether you manage bikes, cars, trucks, or a mixed fleet - Fleet Guard handles it all.
                 Track each vehicle's documents, services, and expenses in one unified dashboard.
               </p>
-              
+
               <div className="space-y-4">
                 {[
                   { icon: '🏍️', text: 'Motorcycles & Scooters' },
@@ -861,18 +859,18 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
               <div key={index} className="relative group">
                 {/* Image Card */}
                 <div className="relative rounded-2xl overflow-hidden mb-6 border border-gray-700/50">
-                  <img 
-                    src={item.image} 
+                  <img
+                    src={item.image}
                     alt={item.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
-                  
+
                   {/* Step Circle */}
                   <div className={`absolute bottom-4 left-4 w-14 h-14 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center text-2xl shadow-lg`}>
                     {item.icon}
                   </div>
-                  
+
                   {/* Step Number */}
                   <div className={`absolute top-4 right-4 text-sm font-bold bg-gradient-to-r ${item.color} bg-clip-text text-transparent`}>
                     Step {item.step}
@@ -889,297 +887,297 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
 
       {/* Pricing Section */}
       {showPricing && (
-      <section id="pricing" className="relative z-10 py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 text-sm font-semibold rounded-full mb-4">
-              {content.pricingBadge ?? '💰 Simple Pricing'}
-            </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-              {content.pricingTitle ?? 'Choose Your Plan'}
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              {content.pricingSubtitle ?? 'Start free, upgrade when you need more'}
-            </p>
+        <section id="pricing" className="relative z-10 py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 text-sm font-semibold rounded-full mb-4">
+                {content.pricingBadge ?? '💰 Simple Pricing'}
+              </span>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+                {content.pricingTitle ?? 'Choose Your Plan'}
+              </h2>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                {content.pricingSubtitle ?? 'Start free, upgrade when you need more'}
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+              {/* Starter */}
+              <div className="relative bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-3xl p-8 hover:border-gray-600 transition-all duration-300">
+                <h3 className="text-xl font-bold text-white mb-2">Starter</h3>
+                <p className="text-gray-400 text-sm mb-6">Perfect for personal use</p>
+
+                <div className="mb-6">
+                  <span className="text-5xl font-black text-white">{starterPrice === 0 ? 'FREE' : `₹${starterPrice.toLocaleString()}`}</span>
+                  <span className="text-gray-500 ml-2">{starterPrice === 0 ? 'forever' : '/year'}</span>
+                </div>
+
+                <ul className="space-y-4 mb-8">
+                  {[`Up to ${starterVehicles} vehicles`, 'Basic reminders', 'Document tracking', 'Mobile access', 'Email support'].map((feature, i) => (
+                    <li key={i} className="flex items-center gap-3 text-gray-300">
+                      <span className="text-emerald-400">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  onClick={onGetStarted}
+                  className="w-full py-3 border-2 border-gray-600 text-white font-semibold rounded-xl hover:bg-gray-700 transition-all duration-300"
+                >
+                  Get Started
+                </button>
+              </div>
+
+              {/* Professional */}
+              <div className="relative bg-gradient-to-b from-amber-500/10 to-gray-800/50 backdrop-blur-sm border-2 border-amber-500/50 rounded-3xl p-8 transform md:-translate-y-4">
+                {/* Popular Badge */}
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-gray-900 text-sm font-bold rounded-full shadow-lg shadow-amber-500/30">
+                  Most Popular ⭐
+                </div>
+
+                <h3 className="text-xl font-bold text-white mb-2 mt-2">Professional</h3>
+                <p className="text-gray-400 text-sm mb-6">For small fleet owners</p>
+
+                <div className="mb-6">
+                  <span className="text-5xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">₹{proPrice.toLocaleString()}</span>
+                  <span className="text-gray-500 ml-2">/year</span>
+                </div>
+
+                <ul className="space-y-4 mb-8">
+                  {[`Up to ${proVehicles} vehicles`, 'Smart reminders', 'Advanced analytics', 'Excel import/export', 'Priority support', 'Custom branding'].map((feature, i) => (
+                    <li key={i} className="flex items-center gap-3 text-gray-300">
+                      <span className="text-amber-400">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  onClick={onGetStarted}
+                  className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-gray-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 hover:scale-105 transition-all duration-300"
+                >
+                  Start Free Trial
+                </button>
+              </div>
+
+              {/* Enterprise */}
+              <div className="relative bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-3xl p-8 hover:border-gray-600 transition-all duration-300">
+                <h3 className="text-xl font-bold text-white mb-2">Enterprise</h3>
+                <p className="text-gray-400 text-sm mb-6">For large fleets</p>
+
+                <div className="mb-6">
+                  <span className="text-5xl font-black text-white">₹{enterprisePrice.toLocaleString()}</span>
+                  <span className="text-gray-500 ml-2">/year</span>
+                </div>
+
+                <ul className="space-y-4 mb-8">
+                  {['Unlimited vehicles', 'All Pro features', 'Multi-user access', 'API access', 'Dedicated support', 'Custom integrations'].map((feature, i) => (
+                    <li key={i} className="flex items-center gap-3 text-gray-300">
+                      <span className="text-cyan-400">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  onClick={onGetStarted}
+                  className="w-full py-3 border-2 border-gray-600 text-white font-semibold rounded-xl hover:bg-gray-700 transition-all duration-300"
+                >
+                  Contact Sales
+                </button>
+              </div>
+            </div>
+
+            {/* Money Back Guarantee */}
+            <div className="text-center mt-12">
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
+                <span className="text-2xl">🛡️</span>
+                <span className="text-emerald-400 font-medium">30-Day Money-Back Guarantee</span>
+              </div>
+            </div>
           </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Starter */}
-            <div className="relative bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-3xl p-8 hover:border-gray-600 transition-all duration-300">
-              <h3 className="text-xl font-bold text-white mb-2">Starter</h3>
-              <p className="text-gray-400 text-sm mb-6">Perfect for personal use</p>
-              
-              <div className="mb-6">
-                <span className="text-5xl font-black text-white">{starterPrice === 0 ? 'FREE' : `₹${starterPrice.toLocaleString()}`}</span>
-                <span className="text-gray-500 ml-2">{starterPrice === 0 ? 'forever' : '/year'}</span>
-              </div>
-
-              <ul className="space-y-4 mb-8">
-                {[`Up to ${starterVehicles} vehicles`, 'Basic reminders', 'Document tracking', 'Mobile access', 'Email support'].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-gray-300">
-                    <span className="text-emerald-400">✓</span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={onGetStarted}
-                className="w-full py-3 border-2 border-gray-600 text-white font-semibold rounded-xl hover:bg-gray-700 transition-all duration-300"
-              >
-                Get Started
-              </button>
-            </div>
-
-            {/* Professional */}
-            <div className="relative bg-gradient-to-b from-amber-500/10 to-gray-800/50 backdrop-blur-sm border-2 border-amber-500/50 rounded-3xl p-8 transform md:-translate-y-4">
-              {/* Popular Badge */}
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-gray-900 text-sm font-bold rounded-full shadow-lg shadow-amber-500/30">
-                Most Popular ⭐
-              </div>
-
-              <h3 className="text-xl font-bold text-white mb-2 mt-2">Professional</h3>
-              <p className="text-gray-400 text-sm mb-6">For small fleet owners</p>
-              
-              <div className="mb-6">
-                <span className="text-5xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">₹{proPrice.toLocaleString()}</span>
-                <span className="text-gray-500 ml-2">/year</span>
-              </div>
-
-              <ul className="space-y-4 mb-8">
-                {[`Up to ${proVehicles} vehicles`, 'Smart reminders', 'Advanced analytics', 'Excel import/export', 'Priority support', 'Custom branding'].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-gray-300">
-                    <span className="text-amber-400">✓</span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={onGetStarted}
-                className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-gray-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 hover:scale-105 transition-all duration-300"
-              >
-                Start Free Trial
-              </button>
-            </div>
-
-            {/* Enterprise */}
-            <div className="relative bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-3xl p-8 hover:border-gray-600 transition-all duration-300">
-              <h3 className="text-xl font-bold text-white mb-2">Enterprise</h3>
-              <p className="text-gray-400 text-sm mb-6">For large fleets</p>
-              
-              <div className="mb-6">
-                <span className="text-5xl font-black text-white">₹{enterprisePrice.toLocaleString()}</span>
-                <span className="text-gray-500 ml-2">/year</span>
-              </div>
-
-              <ul className="space-y-4 mb-8">
-                {['Unlimited vehicles', 'All Pro features', 'Multi-user access', 'API access', 'Dedicated support', 'Custom integrations'].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-gray-300">
-                    <span className="text-cyan-400">✓</span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={onGetStarted}
-                className="w-full py-3 border-2 border-gray-600 text-white font-semibold rounded-xl hover:bg-gray-700 transition-all duration-300"
-              >
-                Contact Sales
-              </button>
-            </div>
-          </div>
-
-          {/* Money Back Guarantee */}
-          <div className="text-center mt-12">
-            <div className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500/10 border border-emerald-500/30 rounded-full">
-              <span className="text-2xl">🛡️</span>
-              <span className="text-emerald-400 font-medium">30-Day Money-Back Guarantee</span>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
       )}
 
       {/* Reviews Section */}
       {showReviews && (
-      <section id="reviews" className="relative z-10 py-24 bg-gradient-to-b from-gray-900/50 to-transparent">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 text-sm font-semibold rounded-full mb-4">
-              {content.reviewsBadge ?? '💬 Customer Love'}
-            </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-              {content.reviewsTitle ?? 'What Our Customers Say'}
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              {content.reviewsSubtitle ?? 'Join 800+ happy fleet operators across India'}
-            </p>
-          </div>
+        <section id="reviews" className="relative z-10 py-24 bg-gradient-to-b from-gray-900/50 to-transparent">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 text-sm font-semibold rounded-full mb-4">
+                {content.reviewsBadge ?? '💬 Customer Love'}
+              </span>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+                {content.reviewsTitle ?? 'What Our Customers Say'}
+              </h2>
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                {content.reviewsSubtitle ?? 'Join 800+ happy fleet operators across India'}
+              </p>
+            </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {reviews.map((review, index) => (
-              <div
-                key={index}
-                className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-amber-500/30 transition-all duration-300 hover:-translate-y-2"
-              >
-                {/* Stars */}
-                <div className="flex gap-1 mb-4">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <span key={i} className="text-amber-400">★</span>
-                  ))}
-                </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {reviews.map((review, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-amber-500/30 transition-all duration-300 hover:-translate-y-2"
+                >
+                  {/* Stars */}
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <span key={i} className="text-amber-400">★</span>
+                    ))}
+                  </div>
 
-                {/* Quote */}
-                <p className="text-gray-300 text-sm mb-6 leading-relaxed">"{review.text}"</p>
+                  {/* Quote */}
+                  <p className="text-gray-300 text-sm mb-6 leading-relaxed">"{review.text}"</p>
 
-                {/* Author */}
-                <div className="flex items-center gap-3">
-                  <img
-                    src={review.image}
-                    alt={review.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-amber-500/30"
-                  />
-                  <div>
-                    <div className="font-semibold text-white">{review.name}</div>
-                    <div className="text-xs text-gray-500">{review.role}, {review.location}</div>
+                  {/* Author */}
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={review.image}
+                      alt={review.name}
+                      className="w-12 h-12 rounded-full object-cover border-2 border-amber-500/30"
+                    />
+                    <div>
+                      <div className="font-semibold text-white">{review.name}</div>
+                      <div className="text-xs text-gray-500">{review.role}, {review.location}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
       )}
 
       {/* FAQ Section */}
       {showFaq && (
-      <section id="faq" className="relative z-10 py-24">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <span className="inline-block px-4 py-2 bg-cyan-500/10 text-cyan-400 text-sm font-semibold rounded-full mb-4">
-              {content.faqBadge ?? '❓ FAQ'}
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              {content.faqTitle ?? 'Frequently Asked Questions'}
-            </h2>
-          </div>
+        <section id="faq" className="relative z-10 py-24">
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <span className="inline-block px-4 py-2 bg-cyan-500/10 text-cyan-400 text-sm font-semibold rounded-full mb-4">
+                {content.faqBadge ?? '❓ FAQ'}
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                {content.faqTitle ?? 'Frequently Asked Questions'}
+              </h2>
+            </div>
 
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
-              <div
-                key={index}
-                className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl overflow-hidden"
-              >
-                <button
-                  onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
-                  className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-700/30 transition-all"
+            <div className="space-y-4">
+              {faqs.map((faq, index) => (
+                <div
+                  key={index}
+                  className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-2xl overflow-hidden"
                 >
-                  <span className="font-semibold text-white pr-4">{faq.question}</span>
-                  <span className={`text-amber-400 text-xl transition-transform duration-300 ${expandedFaq === index ? 'rotate-45' : ''}`}>
-                    +
-                  </span>
-                </button>
-                {expandedFaq === index && (
-                  <div className="px-6 pb-6 text-gray-400 leading-relaxed">
-                    {faq.answer}
-                  </div>
-                )}
-              </div>
-            ))}
+                  <button
+                    onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                    className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-700/30 transition-all"
+                  >
+                    <span className="font-semibold text-white pr-4">{faq.question}</span>
+                    <span className={`text-amber-400 text-xl transition-transform duration-300 ${expandedFaq === index ? 'rotate-45' : ''}`}>
+                      +
+                    </span>
+                  </button>
+                  {expandedFaq === index && (
+                    <div className="px-6 pb-6 text-gray-400 leading-relaxed">
+                      {faq.answer}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
       )}
 
       {/* Contact Section */}
       {showContact && (
-      <section id="contact" className="relative z-10 py-24 bg-gradient-to-b from-gray-900/50 to-transparent">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12">
-            {/* Contact Info */}
-            <div>
-              <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 text-sm font-semibold rounded-full mb-4">
-                {content.contactBadge ?? '📞 Get In Touch'}
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                {content.contactTitle ?? "Let's Talk About Your Fleet"}
-              </h2>
-              <p className="text-gray-400 mb-8">
-                {content.contactSubtitle ?? "Have questions? We'd love to hear from you. Send us a message and we'll respond within 24 hours."}
-              </p>
+        <section id="contact" className="relative z-10 py-24 bg-gradient-to-b from-gray-900/50 to-transparent">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-12">
+              {/* Contact Info */}
+              <div>
+                <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 text-sm font-semibold rounded-full mb-4">
+                  {content.contactBadge ?? '📞 Get In Touch'}
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                  {content.contactTitle ?? "Let's Talk About Your Fleet"}
+                </h2>
+                <p className="text-gray-400 mb-8">
+                  {content.contactSubtitle ?? "Have questions? We'd love to hear from you. Send us a message and we'll respond within 24 hours."}
+                </p>
 
-              <div className="space-y-6">
-                {[
-                  { icon: '📧', label: 'Email', value: contactEmail },
-                  { icon: '📱', label: 'Phone', value: contactPhone },
-                  { icon: '💬', label: 'WhatsApp', value: contactWhatsapp },
-                  { icon: '📍', label: 'Office', value: contactAddress },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center text-2xl border border-gray-700">
-                      {item.icon}
+                <div className="space-y-6">
+                  {[
+                    { icon: '📧', label: 'Email', value: contactEmail },
+                    { icon: '📱', label: 'Phone', value: contactPhone },
+                    { icon: '💬', label: 'WhatsApp', value: contactWhatsapp },
+                    { icon: '📍', label: 'Office', value: contactAddress },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gray-800 rounded-xl flex items-center justify-center text-2xl border border-gray-700">
+                        {item.icon}
+                      </div>
+                      <div>
+                        <div className="text-sm text-gray-500">{item.label}</div>
+                        <div className="text-white font-medium">{item.value}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contact Form */}
+              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-3xl p-8">
+                <form className="space-y-6">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">Name</label>
+                      <input
+                        type="text"
+                        className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-amber-500 transition-colors"
+                        placeholder="Your name"
+                      />
                     </div>
                     <div>
-                      <div className="text-sm text-gray-500">{item.label}</div>
-                      <div className="text-white font-medium">{item.value}</div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">Email</label>
+                      <input
+                        type="email"
+                        className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-amber-500 transition-colors"
+                        placeholder="you@email.com"
+                      />
                     </div>
                   </div>
-                ))}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">Fleet Size</label>
+                    <select className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-amber-500 transition-colors">
+                      <option value="">Select fleet size</option>
+                      <option value="1-5">1-5 vehicles</option>
+                      <option value="6-30">6-30 vehicles</option>
+                      <option value="31-100">31-100 vehicles</option>
+                      <option value="100+">100+ vehicles</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">Message</label>
+                    <textarea
+                      rows={4}
+                      className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-amber-500 transition-colors resize-none"
+                      placeholder="Tell us about your requirements..."
+                    ></textarea>
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-gray-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 hover:scale-105 transition-all duration-300"
+                  >
+                    Send Message →
+                  </button>
+                </form>
               </div>
             </div>
-
-            {/* Contact Form */}
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-3xl p-8">
-              <form className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Name</label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-amber-500 transition-colors"
-                      placeholder="Your name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Email</label>
-                    <input
-                      type="email"
-                      className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-amber-500 transition-colors"
-                      placeholder="you@email.com"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Fleet Size</label>
-                  <select className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-amber-500 transition-colors">
-                    <option value="">Select fleet size</option>
-                    <option value="1-5">1-5 vehicles</option>
-                    <option value="6-30">6-30 vehicles</option>
-                    <option value="31-100">31-100 vehicles</option>
-                    <option value="100+">100+ vehicles</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">Message</label>
-                  <textarea
-                    rows={4}
-                    className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-amber-500 transition-colors resize-none"
-                    placeholder="Tell us about your requirements..."
-                  ></textarea>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-gray-900 font-bold rounded-xl hover:shadow-lg hover:shadow-amber-500/30 hover:scale-105 transition-all duration-300"
-                >
-                  Send Message →
-                </button>
-              </form>
-            </div>
           </div>
-        </div>
-      </section>
+        </section>
       )}
 
       {/* CTA Section */}
@@ -1187,13 +1185,13 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="relative overflow-hidden rounded-3xl">
             {/* Background Image */}
-            <img 
+            <img
               src={ctaImg}
               alt="Fleet Guard"
               className="absolute inset-0 w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 via-gray-900/90 to-gray-900/95"></div>
-            
+
             <div className="relative z-10 p-12">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
                 {content.ctaTitle ?? 'Ready to Guard Your Fleet?'}
@@ -1293,11 +1291,19 @@ export function HomePage({ onGetStarted, onLogin, siteSettings }: HomePageProps)
             <div>
               <h4 className="font-semibold text-white mb-4">Legal</h4>
               <ul className="space-y-2">
-                {['Privacy Policy', 'Terms of Service', 'Refund Policy', 'Cookie Policy'].map((link, i) => (
+                {[
+                  { label: 'Privacy Policy', value: 'privacy' },
+                  { label: 'Terms of Service', value: 'terms' },
+                  { label: 'Refund Policy', value: 'refund' },
+                  { label: 'Cookie Policy', value: 'cookie' }
+                ].map((link, i) => (
                   <li key={i}>
-                    <a href="#" className="text-gray-500 hover:text-amber-400 transition-colors text-sm">
-                      {link}
-                    </a>
+                    <button
+                      onClick={() => onNavigate?.(link.value)}
+                      className="text-gray-500 hover:text-amber-400 transition-colors text-sm text-left"
+                    >
+                      {link.label}
+                    </button>
                   </li>
                 ))}
               </ul>

@@ -8,7 +8,12 @@ import { HomePage } from './components/HomePage';
 import { AdminPanel, SiteSettings } from './components/AdminPanel';
 import { Motorcycle, ServiceRecord, CompanySettings as CompanySettingsType } from './types';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
+import { PrivacyPolicy } from './components/legal/PrivacyPolicy';
+import { TermsOfService } from './components/legal/TermsOfService';
+import { RefundPolicy } from './components/legal/RefundPolicy';
+import { CookiePolicy } from './components/legal/CookiePolicy';
 import { loadPublicSiteSettings, savePublicSiteSettings } from './lib/supabaseSiteSettings';
+
 import { loadFleetForCurrentUser, saveFleetForCurrentUser } from './lib/supabaseFleetStore';
 
 const defaultSiteSettings: SiteSettings = {
@@ -310,7 +315,7 @@ const defaultData: AppData = {
   }
 };
 
-type AppView = 'home' | 'auth' | 'dashboard' | 'admin';
+type AppView = 'home' | 'auth' | 'dashboard' | 'admin' | 'privacy' | 'terms' | 'refund' | 'cookie';
 
 function App() {
   const [currentView, setCurrentView] = useState<AppView>('home');
@@ -450,6 +455,25 @@ function App() {
 
     const applyRoute = (user: User | null) => {
       const path = window.location.pathname;
+
+      // Check for legal pages
+      if (path === '/privacy') {
+        setCurrentView('privacy');
+        return;
+      }
+      if (path === '/terms') {
+        setCurrentView('terms');
+        return;
+      }
+      if (path === '/refund') {
+        setCurrentView('refund');
+        return;
+      }
+      if (path === '/cookie') {
+        setCurrentView('cookie');
+        return;
+      }
+
       const wantsAdmin = path === '/admin' || path.startsWith('/admin/');
 
       if (!wantsAdmin) return;
@@ -779,6 +803,12 @@ function App() {
     });
   };
 
+  const handleBackToHome = () => {
+    setCurrentView('home');
+    window.history.pushState({ view: 'home' }, '', '/');
+    window.scrollTo(0, 0);
+  };
+
   // Show loading screen
   if (isLoading) {
     return (
@@ -792,6 +822,22 @@ function App() {
         </div>
       </div>
     );
+  }
+
+  if (currentView === 'privacy') {
+    return <PrivacyPolicy onBack={handleBackToHome} />;
+  }
+
+  if (currentView === 'terms') {
+    return <TermsOfService onBack={handleBackToHome} />;
+  }
+
+  if (currentView === 'refund') {
+    return <RefundPolicy onBack={handleBackToHome} />;
+  }
+
+  if (currentView === 'cookie') {
+    return <CookiePolicy onBack={handleBackToHome} />;
   }
 
   // Show Admin Panel
@@ -808,10 +854,11 @@ function App() {
   // Show Homepage
   if (currentView === 'home') {
     return (
-      <HomePage 
+      <HomePage
         onGetStarted={handleGetStarted}
         onLogin={handleGoToLogin}
         siteSettings={siteSettings}
+        onNavigate={(view) => handleNavigate(view as AppView)}
       />
     );
   }
@@ -819,7 +866,7 @@ function App() {
   // Show Auth Screen
   if (currentView === 'auth') {
     return (
-      <AuthScreen 
+      <AuthScreen
         onLogin={handleLogin}
         companySettings={data.companySettings}
         initialMode={authMode}
@@ -848,9 +895,9 @@ function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {data.companySettings.logo ? (
-                <img 
-                  src={data.companySettings.logo} 
-                  alt="Logo" 
+                <img
+                  src={data.companySettings.logo}
+                  alt="Logo"
                   className="w-10 h-10 rounded-xl bg-white p-1"
                 />
               ) : (
@@ -909,11 +956,10 @@ function App() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`px-4 py-3 font-medium transition-colors whitespace-nowrap flex items-center gap-2 border-b-2 ${
-                  activeTab === tab.id
-                    ? 'border-amber-500 text-amber-500 bg-amber-500/10'
-                    : 'border-transparent text-gray-400 hover:text-amber-400 hover:bg-gray-800'
-                }`}
+                className={`px-4 py-3 font-medium transition-colors whitespace-nowrap flex items-center gap-2 border-b-2 ${activeTab === tab.id
+                  ? 'border-amber-500 text-amber-500 bg-amber-500/10'
+                  : 'border-transparent text-gray-400 hover:text-amber-400 hover:bg-gray-800'
+                  }`}
               >
                 <span>{tab.icon}</span>
                 <span className="hidden sm:inline">{tab.label}</span>
@@ -1079,7 +1125,7 @@ function App() {
               <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                 👤 Account Information
               </h2>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center gap-3 p-3 bg-gray-800 rounded-lg border border-gray-700">
                   <span className="text-2xl">👤</span>
