@@ -423,7 +423,11 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
-              <span className="text-white font-medium">{content.trustBadge ?? 'Trusted by 800+ Fleet Operators Across India'}</span>
+              <span className="text-white font-medium">
+                <Editable id="hero-trust-badge" as="span">
+                  {content.trustBadge ?? 'Trusted by 800+ Fleet Operators Across India'}
+                </Editable>
+              </span>
             </div>
 
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-8">
@@ -452,7 +456,9 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-amber-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <span className="relative z-10 flex items-center justify-center gap-3">
-                  {content.heroPrimaryCta ?? '🚀 Start Free Trial'}
+                  <Editable id="hero-cta-primary" as="span">
+                    {content.heroPrimaryCta ?? '🚀 Start Free Trial'}
+                  </Editable>
                   <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
@@ -465,7 +471,9 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
-                {content.heroSecondaryCta ?? 'Login to Dashboard'}
+                <Editable id="hero-cta-secondary" as="span">
+                  {content.heroSecondaryCta ?? 'Login to Dashboard'}
+                </Editable>
               </button>
             </div>
 
@@ -482,8 +490,16 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
               ).map((stat, i) => (
                 <div key={i} className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/10 hover:border-amber-500/50 transition-all hover:scale-105 hover:bg-white/15">
                   <div className="text-3xl mb-2">{stat.icon}</div>
-                  <div className="text-3xl font-black text-amber-400">{stat.value}</div>
-                  <div className="text-sm text-gray-300 mt-1">{stat.label}</div>
+                  <div className="text-3xl font-black text-amber-400">
+                    <Editable id={`stat-${i + 1}-value`} as="span">
+                      {stat.value}
+                    </Editable>
+                  </div>
+                  <div className="text-sm text-gray-300 mt-1">
+                    <Editable id={`stat-${i + 1}-label`} as="span">
+                      {stat.label}
+                    </Editable>
+                  </div>
                 </div>
               ))}
             </div>
@@ -493,7 +509,11 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
         {/* Scroll Indicator */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
           <div className="flex flex-col items-center gap-2 animate-bounce">
-            <span className="text-white/60 text-sm font-medium">{content.heroScrollHint ?? 'Scroll to explore'}</span>
+            <span className="text-white/60 text-sm font-medium">
+              <Editable id="hero-scroll-hint" as="span">
+                {content.heroScrollHint ?? 'Scroll to explore'}
+              </Editable>
+            </span>
             <div className="w-8 h-12 border-2 border-amber-500/50 rounded-full flex justify-center">
               <div className="w-1.5 h-3 bg-amber-400 rounded-full mt-2 animate-pulse" />
             </div>
@@ -698,16 +718,24 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
           {/* Section Header */}
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-2 bg-amber-500/10 text-amber-400 text-sm font-semibold rounded-full mb-4">
-              {content.featuresBadge ?? '✨ Powerful Features'}
+              <Editable id="features-badge" as="span">
+                {content.featuresBadge ?? '✨ Powerful Features'}
+              </Editable>
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-              {content.featuresTitleLine1 ?? 'Everything You Need to'}
+              <Editable id="features-title-1" as="span">
+                {content.featuresTitleLine1 ?? 'Everything You Need to'}
+              </Editable>
               <span className="block bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-                {content.featuresTitleLine2 ?? 'Manage Your Fleet'}
+                <Editable id="features-title-2" as="span">
+                  {content.featuresTitleLine2 ?? 'Manage Your Fleet'}
+                </Editable>
               </span>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              {content.featuresSubtitle ?? 'From document tracking to expense analytics, Fleet Guard 360 has all the tools you need'}
+              <Editable id="features-subtitle" as="span">
+                {content.featuresSubtitle ?? 'From document tracking to expense analytics, Fleet Guard 360 has all the tools you need'}
+              </Editable>
             </p>
           </div>
 
@@ -733,8 +761,16 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
 
                 {/* Content */}
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
-                  <p className="text-gray-400">{feature.description}</p>
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    <Editable id={`feature-${index + 1}-title`} as="span">
+                      {feature.title}
+                    </Editable>
+                  </h3>
+                  <p className="text-gray-400">
+                    <Editable id={`feature-${index + 1}-description`} as="span">
+                      {feature.description}
+                    </Editable>
+                  </p>
                 </div>
 
                 {/* Hover Glow */}
@@ -822,13 +858,19 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-2 bg-emerald-500/10 text-emerald-400 text-sm font-semibold rounded-full mb-4">
-              {content.howItWorksBadge ?? '🚀 Quick Setup'}
+              <Editable id="how-it-works-badge" as="span">
+                {content.howItWorksBadge ?? '🚀 Quick Setup'}
+              </Editable>
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-              {content.howItWorksTitle ?? 'Get Started in 3 Simple Steps'}
+              <Editable id="how-it-works-title" as="span">
+                {content.howItWorksTitle ?? 'Get Started in 3 Simple Steps'}
+              </Editable>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              {content.howItWorksSubtitle ?? 'Start managing your fleet in under 5 minutes'}
+              <Editable id="how-it-works-subtitle" as="span">
+                {content.howItWorksSubtitle ?? 'Start managing your fleet in under 5 minutes'}
+              </Editable>
             </p>
           </div>
 
@@ -883,8 +925,16 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
                   </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-2 text-center">{item.title}</h3>
-                <p className="text-gray-400 text-center">{item.description}</p>
+                <h3 className="text-xl font-bold text-white mb-2 text-center">
+                  <Editable id={`step-${index + 1}-title`} as="span">
+                    {item.title}
+                  </Editable>
+                </h3>
+                <p className="text-gray-400 text-center">
+                  <Editable id={`step-${index + 1}-description`} as="span">
+                    {item.description}
+                  </Editable>
+                </p>
               </div>
             ))}
           </div>
