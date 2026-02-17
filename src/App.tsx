@@ -449,6 +449,62 @@ function App() {
     );
   })();
 
+  // Handle URL routing on load and popstate
+  useEffect(() => {
+    const handleLocationChange = () => {
+      const path = window.location.pathname;
+      const search = window.location.search;
+
+      console.log('Location changed:', path);
+
+      // Admin routes
+      if (path === '/admin') {
+        setShowAdminPanel(true);
+        return;
+      }
+
+      // Legal pages
+      if (path === '/privacy') {
+        setCurrentView('privacy');
+        return;
+      }
+      if (path === '/terms') {
+        setCurrentView('terms');
+        return;
+      }
+      if (path === '/refund') {
+        setCurrentView('refund');
+        return;
+      }
+      if (path === '/cookie' || path === '/cookies') {
+        setCurrentView('cookie');
+        return;
+      }
+
+      // Default to home if no other route matches
+      if (path === '/') {
+        setCurrentView('home');
+      }
+    };
+
+    window.addEventListener('popstate', handleLocationChange);
+
+    // Check initial route
+    handleLocationChange();
+
+    return () => window.removeEventListener('popstate', handleLocationChange);
+  }, []);
+
+  const handleNavigate = (view: AppView) => {
+    console.log('Navigating to:', view);
+    setCurrentView(view);
+    window.scrollTo(0, 0);
+
+    // Update URL history
+    const path = view === 'home' ? '/' : `/${view}`;
+    window.history.pushState({ view }, '', path);
+  };
+
   // Check for existing session + route (supports hidden /admin backend entry)
   useEffect(() => {
     let unsub: { data?: { subscription?: { unsubscribe?: () => void } } } | null = null;

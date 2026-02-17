@@ -1299,7 +1299,10 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
                 ].map((link, i) => (
                   <li key={i}>
                     <button
-                      onClick={() => onNavigate?.(link.value)}
+                      onClick={() => {
+                        console.log('Footer link clicked:', link.value);
+                        onNavigate?.(link.value);
+                      }}
                       className="text-gray-500 hover:text-amber-400 transition-colors text-sm text-left"
                     >
                       {link.label}
