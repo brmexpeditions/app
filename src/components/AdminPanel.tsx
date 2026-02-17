@@ -175,7 +175,7 @@ interface SiteSettings {
 }
 
 const defaultSettings: SiteSettings = {
-  siteName: 'Fleet Guard 360 Everywhere',
+  siteName: 'Fleet Guard 360',
   tagline: 'Protect Your Fleet',
   logo: '',
   favicon: '',
@@ -204,7 +204,7 @@ const defaultSettings: SiteSettings = {
     featuresBadge: '✨ Powerful Features',
     featuresTitleLine1: 'Everything You Need to',
     featuresTitleLine2: 'Manage Your Fleet',
-    featuresSubtitle: 'From document tracking to expense analytics, Fleet Guard 360 Everywhere has all the tools you need',
+    featuresSubtitle: 'From document tracking to expense analytics, Fleet Guard 360 has all the tools you need',
 
     howItWorksBadge: '🚀 Quick Setup',
     howItWorksTitle: 'Get Started in 3 Simple Steps',
@@ -228,7 +228,7 @@ const defaultSettings: SiteSettings = {
 
     ctaTitle: 'Ready to Guard Your Fleet?',
     ctaSubtitle:
-      'Join 800+ fleet operators who trust Fleet Guard 360 Everywhere to manage their vehicles. Start your free trial today!',
+      'Join 800+ fleet operators who trust Fleet Guard 360 to manage their vehicles. Start your free trial today!',
     ctaPrimary: 'Start Free Trial →',
     ctaSecondary: 'View Pricing',
 
@@ -320,7 +320,7 @@ const defaultSettings: SiteSettings = {
         company: 'Kumar Transport Services',
         location: 'Mumbai',
         image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80',
-        text: 'Fleet Guard 360 Everywhere has transformed how we manage our 50+ vehicle fleet. The reminders have saved us from countless penalty situations!',
+        text: 'Fleet Guard 360 has transformed how we manage our 50+ vehicle fleet. The reminders have saved us from countless penalty situations!',
         rating: 5,
       },
       {
@@ -329,7 +329,7 @@ const defaultSettings: SiteSettings = {
         company: 'Swift Bike Rentals',
         location: 'Bangalore',
         image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&q=80',
-        text: 'Managing 30 rental bikes was a nightmare before Fleet Guard 360 Everywhere. Now everything is organized and automated. Highly recommended!',
+        text: 'Managing 30 rental bikes was a nightmare before Fleet Guard 360. Now everything is organized and automated. Highly recommended!',
         rating: 5,
       },
       {
@@ -347,16 +347,16 @@ const defaultSettings: SiteSettings = {
         company: 'EcoRide Rentals',
         location: 'Hyderabad',
         image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&q=80',
-        text: 'As a startup, we needed something simple yet powerful. Fleet Guard 360 Everywhere is exactly that. The free tier is perfect for small fleets!',
+        text: 'As a startup, we needed something simple yet powerful. Fleet Guard 360 is exactly that. The free tier is perfect for small fleets!',
         rating: 5,
       },
     ],
 
     faqs: [
       {
-        question: 'How does Fleet Guard 360 Everywhere help manage my vehicles?',
+        question: 'How does Fleet Guard 360 help manage my vehicles?',
         answer:
-          'Fleet Guard 360 Everywhere provides a centralized dashboard to track all your vehicles, their documents, service history, and upcoming renewals. You get smart reminders before any document expires or service is due.',
+          'Fleet Guard 360 provides a centralized dashboard to track all your vehicles, their documents, service history, and upcoming renewals. You get smart reminders before any document expires or service is due.',
       },
       {
         question: 'Is my data secure?',
@@ -371,7 +371,7 @@ const defaultSettings: SiteSettings = {
       {
         question: 'Does it work for both personal and commercial vehicles?',
         answer:
-          'Yes! Fleet Guard 360 Everywhere supports both private and commercial vehicles with different document tracking requirements for each type.',
+          'Yes! Fleet Guard 360 supports both private and commercial vehicles with different document tracking requirements for each type.',
       },
       {
         question: 'Can I import my existing vehicle data?',
@@ -396,7 +396,7 @@ const defaultSettings: SiteSettings = {
 
   googleAnalyticsId: '',
   googleSearchConsoleId: '',
-  metaTitle: 'Fleet Guard 360 Everywhere - Protect Your Fleet | Vehicle Management System',
+  metaTitle: 'Fleet Guard 360 - Protect Your Fleet | Vehicle Management System',
   metaDescription: 'Manage your vehicle fleet with ease. Track services, documents, and maintenance for cars & bikes. Used by 800+ fleet operators in India.',
   metaKeywords: 'fleet management, vehicle tracking, service reminder, document management, car maintenance, bike maintenance',
   ogImage: '',
@@ -587,7 +587,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
             <span className="text-xl">🛡️</span>
           </div>
           <div>
-            <h1 className="text-lg font-bold text-white">Fleet Guard 360 Everywhere Admin</h1>
+            <h1 className="text-lg font-bold text-white">Fleet Guard 360 Admin</h1>
             <p className="text-xs text-gray-400">Website Settings & Configuration</p>
           </div>
         </div>
@@ -706,7 +706,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                       value={settings.siteName}
                       onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                      placeholder="Fleet Guard 360 Everywhere"
+                      placeholder="Fleet Guard 360"
                     />
                   </div>
                   <div>

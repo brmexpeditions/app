@@ -16,7 +16,9 @@ export function LegalLayout({ children, title, onBack }: LegalLayoutProps) {
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-lg flex items-center justify-center shadow-lg shadow-amber-500/20">
               <span className="text-lg">🛡️</span>
             </div>
-            <span className="text-lg sm:text-xl font-bold text-white">Fleet Guard 360 Everywhere</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-amber-400 to-amber-200 bg-clip-text text-transparent">
+              Fleet Guard 360
+            </span>
           </div>
           <button
             onClick={onBack}
@@ -40,7 +42,7 @@ export function LegalLayout({ children, title, onBack }: LegalLayoutProps) {
       {/* Footer */}
       <footer className="border-t border-gray-800 bg-gray-900/50 py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
-          <p>© {new Date().getFullYear()} Fleet Guard 360 Everywhere. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Fleet Guard 360. All rights reserved.</p>
         </div>
       </footer>
     </div>

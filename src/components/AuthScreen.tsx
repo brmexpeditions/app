@@ -72,7 +72,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
       username: 'Admin',
       email: 'admin@fleetguard.com',
       password: 'admin123',
-      companyName: 'Fleet Guard 360 Everywhere',
+      companyName: 'Fleet Guard 360',
       phone: '',
       createdAt: new Date().toISOString()
     };
@@ -158,7 +158,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
           username: 'Admin',
           email: 'admin@fleetguard.com',
           password: 'admin123',
-          companyName: 'Fleet Guard 360 Everywhere',
+          companyName: 'Fleet Guard 360',
           phone: '',
           createdAt: new Date().toISOString(),
         };
@@ -315,7 +315,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
             </div>
           )}
           <h1 className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-amber-200 bg-clip-text text-transparent mb-2">
-            {companySettings.companyName || 'Fleet Guard 360 Everywhere'}
+            {companySettings.companyName || 'Fleet Guard 360'}
           </h1>
           <p className="text-gray-400">Vehicle Fleet Management System</p>
         </div>
@@ -527,7 +527,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
 
         {/* Footer */}
         <p className="text-center text-gray-500 mt-6 text-sm">
-          © 2026 Fleet Guard 360 Everywhere. All rights reserved.
+          © 2026 Fleet Guard 360. All rights reserved.
         </p>
       </div>
     </div>

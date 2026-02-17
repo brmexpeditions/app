@@ -11,7 +11,7 @@ export function TermsOfService({ onBack }: TermsOfServiceProps) {
                 <section>
                     <h2 className="text-2xl font-bold text-white mb-4">1. Agreement to Terms</h2>
                     <p>
-                        These Terms of Service constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you") and Fleet Guard 360 Everywhere ("we," "us" or "our"), concerning your access to and use of the fleetguard.in website as well as any other media form, media channel, mobile website or mobile application related, linked, or otherwise connected thereto (collectively, the "Site").
+                        These Terms of Service constitute a legally binding agreement made between you, whether personally or on behalf of an entity ("you") and Fleet Guard 360 ("we," "us" or "our"), concerning your access to and use of the fleetguard.in website as well as any other media form, media channel, mobile website or mobile application related, linked, or otherwise connected thereto (collectively, the "Site").
                     </p>
                 </section>
 
@@ -25,7 +25,8 @@ export function TermsOfService({ onBack }: TermsOfServiceProps) {
                 <section>
                     <h2 className="text-2xl font-bold text-white mb-4">3. User Representations</h2>
                     <p className="mb-4">
-                        By using the Site, you represent and warrant that:
+                        These Terms of Service ("Terms") govern your access to and use of the Fleet Guard 360 website and services.
+                        By accessing or using our services, you agree to be bound by these Terms.
                     </p>
                     <ul className="list-disc pl-6 space-y-2">
                         <li>All registration information you submit will be true, accurate, current, and complete.</li>
@@ -52,7 +53,7 @@ export function TermsOfService({ onBack }: TermsOfServiceProps) {
                 <section>
                     <h2 className="text-2xl font-bold text-white mb-4">6. Governing Law</h2>
                     <p>
-                        These Terms shall be governed by and defined following the laws of India. Fleet Guard 360 Everywhere and yourself irrevocably consent that the courts of India shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these terms.
+                        These Terms shall be governed by and defined following the laws of India. Fleet Guard 360 and yourself irrevocably consent that the courts of India shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these terms.
                     </p>
                 </section>
             </div>

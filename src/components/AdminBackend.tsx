@@ -75,7 +75,7 @@ interface AdminBackendProps {
 }
 
 const defaultSettings: SiteSettings = {
-  siteName: 'Fleet Guard 360 Everywhere',
+  siteName: 'Fleet Guard 360',
   tagline: 'Protect Your Fleet',
   logo: '',
   favicon: '',
@@ -90,8 +90,8 @@ const defaultSettings: SiteSettings = {
   heroImage: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920',
   aboutImage: '',
   featureImages: [],
-  metaTitle: 'Fleet Guard 360 Everywhere - Vehicle Fleet Management',
-  metaDescription: 'Manage your vehicle fleet efficiently with Fleet Guard 360 Everywhere',
+  metaTitle: 'Fleet Guard 360 - Vehicle Fleet Management',
+  metaDescription: 'Manage your vehicle fleet efficiently with Fleet Guard 360',
   metaKeywords: 'fleet management, vehicle tracking, service reminders',
   ogImage: '',
   googleAnalyticsId: '',
@@ -312,7 +312,7 @@ export function AdminBackend({ settings: initialSettings, onSave, onClose }: Adm
                       value={settings.siteName}
                       onChange={(e) => updateSetting('siteName', e.target.value)}
                       className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:border-amber-500 focus:outline-none"
-                      placeholder="Fleet Guard 360 Everywhere"
+                      placeholder="Fleet Guard 360"
                     />
                   </div>
 

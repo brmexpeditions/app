@@ -10,8 +10,9 @@ export function RefundPolicy({ onBack }: RefundPolicyProps) {
             <div className="space-y-8 text-gray-300">
                 <section>
                     <h2 className="text-2xl font-bold text-white mb-4">1. Overview</h2>
-                    <p>
-                        At Fleet Guard 360 Everywhere, we strive to ensure our customers are satisfied with our services. This Refund Policy outlines the terms and conditions under which refunds may be issued for our subscription services.
+                    <p className="mb-4">
+                        At Fleet Guard 360, we strive to ensure our customers are satisfied with our services.
+                        This Refund Policy outlines the terms and conditions for refunds for our subscription services.
                     </p>
                 </section>
 
