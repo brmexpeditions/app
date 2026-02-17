@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Editable } from './visual-editor/Editable';
 
 interface HomePageProps {
   onGetStarted: () => void;
@@ -425,17 +426,22 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
               <span className="text-white font-medium">{content.trustBadge ?? 'Trusted by 800+ Fleet Operators Across India'}</span>
             </div>
 
-            {/* Main Headline */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight mb-8">
-              {content.heroTitleLine1 ?? 'Protect Your'}
+              <Editable id="hero-title-1" as="span">
+                {content.heroTitleLine1 ?? 'Protect Your'}
+              </Editable>
               <span className="block bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent mt-2">
-                {content.heroTitleLine2 ?? 'Fleet Like Never Before'}
+                <Editable id="hero-title-2" as="span">
+                  {content.heroTitleLine2 ?? 'Fleet Like Never Before'}
+                </Editable>
               </span>
             </h1>
 
             {/* Subtitle */}
             <p className="text-xl sm:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto leading-relaxed">
-              {content.heroSubtitle ?? 'The smartest way to manage vehicles. Track services, documents, and never miss a deadline. Built for Indian fleet operators.'}
+              <Editable id="hero-subtitle" as="span">
+                {content.heroSubtitle ?? 'The smartest way to manage vehicles. Track services, documents, and never miss a deadline. Built for Indian fleet operators.'}
+              </Editable>
             </p>
 
             {/* CTA Buttons */}

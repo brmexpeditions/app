@@ -156,8 +156,8 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
         const adminUser: User = {
           id: 'admin',
           username: 'Admin',
-          email: 'admin@fleetguard.com',
-          password: 'admin123',
+          email: 'avikaabeira@fleetguard360.in',
+          password: 'admin123$',
           companyName: 'Fleet Guard 360',
           phone: '',
           createdAt: new Date().toISOString(),

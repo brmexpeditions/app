@@ -1,178 +1,13 @@
 import { useState, useEffect } from 'react';
 
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  phone?: string;
-  companyName?: string;
-  createdAt: string;
-  plan?: 'starter' | 'professional' | 'enterprise';
-  vehicleCount?: number;
+import { SiteSettings, User } from '../types';
+
+interface AdminPanelProps {
+  onClose: () => void;
+  onSave: (settings: SiteSettings) => void;
+  currentSettings: SiteSettings;
 }
 
-interface HomepageStat {
-  icon: string;
-  value: string;
-  label: string;
-}
-
-interface HomepageFeature {
-  icon: string;
-  title: string;
-  description: string;
-  image: string;
-}
-
-interface HomepageReview {
-  name: string;
-  role: string;
-  company: string;
-  location: string;
-  image: string;
-  text: string;
-  rating: number;
-}
-
-interface HomepageFaq {
-  question: string;
-  answer: string;
-}
-
-export interface BrandLogo {
-  name: string;
-  logoUrl: string;
-}
-
-export interface HomepageContent {
-  // Nav labels
-  navHome: string;
-  navFeatures: string;
-  navHowItWorks: string;
-  navPricing: string;
-  navReviews: string;
-  navFaq: string;
-  navContact: string;
-  navLoginCta: string;
-  navStartCta: string;
-
-  // Hero
-  trustBadge: string;
-  heroTitleLine1: string;
-  heroTitleLine2: string;
-  heroSubtitle: string;
-  heroPrimaryCta: string;
-  heroSecondaryCta: string;
-  heroScrollHint: string;
-
-  // Section headers
-  featuresBadge: string;
-  featuresTitleLine1: string;
-  featuresTitleLine2: string;
-  featuresSubtitle: string;
-
-  howItWorksBadge: string;
-  howItWorksTitle: string;
-  howItWorksSubtitle: string;
-
-  pricingBadge: string;
-  pricingTitle: string;
-  pricingSubtitle: string;
-
-  reviewsBadge: string;
-  reviewsTitle: string;
-  reviewsSubtitle: string;
-
-  faqBadge: string;
-  faqTitle: string;
-
-  contactBadge: string;
-  contactTitle: string;
-  contactSubtitle: string;
-
-  ctaTitle: string;
-  ctaSubtitle: string;
-  ctaPrimary: string;
-  ctaSecondary: string;
-
-  footerDescription: string;
-  footerMadeIn: string;
-
-  // Collections
-  stats: HomepageStat[];
-  features: HomepageFeature[];
-  brandLogos: BrandLogo[];
-  reviews: HomepageReview[];
-  faqs: HomepageFaq[];
-}
-
-interface SiteSettings {
-  // Branding
-  siteName: string;
-  tagline: string;
-  logo: string;
-  favicon: string;
-  fontFamily: 'System' | 'Inter' | 'Poppins' | 'Montserrat';
-
-  // Homepage content
-  homepageContent: HomepageContent;
-
-  // Homepage Images
-  heroBackgroundImage: string;
-  ctaBackgroundImage: string;
-  showcaseImage1: string;
-  showcaseImage2: string;
-  showcaseImage3: string;
-  showcaseImage4: string;
-
-  // Colors
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
-  backgroundColor: string;
-  textColor: string;
-
-  // SEO
-  googleAnalyticsId: string;
-  googleSearchConsoleId: string;
-  metaTitle: string;
-  metaDescription: string;
-  metaKeywords: string;
-  ogImage: string;
-
-  // Social Media
-  facebook: string;
-  twitter: string;
-  instagram: string;
-  linkedin: string;
-  youtube: string;
-
-  // Contact
-  email: string;
-  phone: string;
-  whatsapp: string;
-  address: string;
-
-  // Pricing
-  starterPrice: number;
-  starterVehicles: number;
-  proPrice: number;
-  proVehicles: number;
-  enterprisePrice: number;
-
-  // Features Toggle
-  showPricing: boolean;
-  showReviews: boolean;
-  showFaq: boolean;
-  showContact: boolean;
-
-  // Custom CSS
-  customCss: string;
-
-  // Scripts
-  headerScripts: string;
-  footerScripts: string;
-}
 
 const defaultSettings: SiteSettings = {
   siteName: 'Fleet Guard 360',
@@ -390,9 +225,11 @@ const defaultSettings: SiteSettings = {
 
   primaryColor: '#f59e0b',
   secondaryColor: '#1f2937',
-  accentColor: '#10b981',
-  backgroundColor: '#000000',
-  textColor: '#ffffff',
+  accentColor: '#F59E0B',
+  backgroundColor: '#111827',
+  textColor: '#F3F4F6',
+  borderRadius: '0.5rem',
+  spacingScale: 1,
 
   googleAnalyticsId: '',
   googleSearchConsoleId: '',
@@ -428,12 +265,6 @@ const defaultSettings: SiteSettings = {
   footerScripts: ''
 };
 
-interface AdminPanelProps {
-  onClose: () => void;
-  onSave: (settings: SiteSettings) => void;
-  currentSettings: SiteSettings;
-}
-
 export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps) {
   const mergedInitial = {
     ...defaultSettings,
@@ -460,7 +291,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
   } as SiteSettings;
 
   const [settings, setSettings] = useState<SiteSettings>(mergedInitial);
-  const [activeTab, setActiveTab] = useState<'branding' | 'content' | 'users' | 'payments' | 'seo' | 'analytics' | 'social' | 'contact' | 'pricing' | 'sections' | 'advanced'>('branding');
+  const [activeTab, setActiveTab] = useState<'branding' | 'appearance' | 'content' | 'users' | 'payments' | 'seo' | 'analytics' | 'social' | 'contact' | 'pricing' | 'sections' | 'advanced'>('branding');
   const [saved, setSaved] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
 
@@ -566,6 +397,7 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
 
   const tabs = [
     { id: 'branding', label: 'Branding', icon: '🎨' },
+    { id: 'appearance', label: 'Appearance', icon: '💅' },
     { id: 'content', label: 'Homepage Text', icon: '✍️' },
     { id: 'users', label: 'Users', icon: '👥' },
     { id: 'payments', label: 'Payments', icon: '💳' },
@@ -945,6 +777,186 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
           )}
 
           {/* Homepage Text Tab */}
+          {activeTab === 'appearance' && (
+            <div className="space-y-6">
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                  <span className="text-2xl">💅</span> Design & Appearance
+                </h2>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-3">Colors</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Primary Color</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settings.primaryColor}
+                            onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
+                            className="h-10 w-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={settings.primaryColor}
+                            onChange={(e) => setSettings({ ...settings, primaryColor: e.target.value })}
+                            className="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Secondary Color</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settings.secondaryColor}
+                            onChange={(e) => setSettings({ ...settings, secondaryColor: e.target.value })}
+                            className="h-10 w-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={settings.secondaryColor}
+                            onChange={(e) => setSettings({ ...settings, secondaryColor: e.target.value })}
+                            className="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Accent Color</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settings.accentColor}
+                            onChange={(e) => setSettings({ ...settings, accentColor: e.target.value })}
+                            className="h-10 w-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={settings.accentColor}
+                            onChange={(e) => setSettings({ ...settings, accentColor: e.target.value })}
+                            className="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Background Color</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settings.backgroundColor}
+                            onChange={(e) => setSettings({ ...settings, backgroundColor: e.target.value })}
+                            className="h-10 w-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={settings.backgroundColor}
+                            onChange={(e) => setSettings({ ...settings, backgroundColor: e.target.value })}
+                            className="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Text Color</label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settings.textColor}
+                            onChange={(e) => setSettings({ ...settings, textColor: e.target.value })}
+                            className="h-10 w-10 rounded border border-gray-600 bg-transparent cursor-pointer"
+                          />
+                          <input
+                            type="text"
+                            value={settings.textColor}
+                            onChange={(e) => setSettings({ ...settings, textColor: e.target.value })}
+                            className="flex-1 bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white text-sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold text-white mb-3">Typography & Layout</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Font Family</label>
+                        <select
+                          value={settings.fontFamily}
+                          onChange={(e) => setSettings({ ...settings, fontFamily: e.target.value as any })}
+                          className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:ring-2 focus:ring-amber-500"
+                        >
+                          <option value="System">System Default</option>
+                          <option value="Inter">Inter (Sans-serif)</option>
+                          <option value="Poppins">Poppins (Modern)</option>
+                          <option value="Montserrat">Montserrat (Geometric)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Border Radius</label>
+                        <div className="flex items-center gap-4">
+                          <input
+                            type="range"
+                            min="0"
+                            max="20"
+                            step="1"
+                            value={parseInt(settings.borderRadius) || 8}
+                            onChange={(e) => setSettings({ ...settings, borderRadius: `${e.target.value}px` })}
+                            className="flex-1"
+                          />
+                          <span className="text-white text-sm w-16 text-right">{settings.borderRadius}</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Spacing Scale</label>
+                        <div className="flex items-center gap-4">
+                          <input
+                            type="range"
+                            min="0.5"
+                            max="2"
+                            step="0.1"
+                            value={settings.spacingScale}
+                            onChange={(e) => setSettings({ ...settings, spacingScale: parseFloat(e.target.value) })}
+                            className="flex-1"
+                          />
+                          <span className="text-white text-sm w-16 text-right">{settings.spacingScale}x</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 p-4 bg-gray-900 rounded-lg border border-gray-700">
+                      <h4 className="text-sm font-medium text-gray-400 mb-2">Live Preview</h4>
+                      <div
+                        className="p-4 rounded border transition-all duration-300"
+                        style={{
+                          backgroundColor: settings.backgroundColor,
+                          borderColor: settings.accentColor,
+                          borderRadius: settings.borderRadius,
+                          color: settings.textColor,
+                          fontFamily: settings.fontFamily === 'System' ? 'system-ui' : settings.fontFamily
+                        }}
+                      >
+                        <h5 className="font-bold text-lg mb-2" style={{ color: settings.primaryColor }}>Sample Heading</h5>
+                        <p className="text-sm opacity-90 mb-3">This is how your content will look with the selected settings.</p>
+                        <button
+                          className="px-4 py-2 rounded text-white font-medium text-sm"
+                          style={{
+                            backgroundColor: settings.primaryColor,
+                            borderRadius: settings.borderRadius
+                          }}
+                        >
+                          Primary Button
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'content' && (
             <div className="max-w-4xl space-y-6">
               <div>

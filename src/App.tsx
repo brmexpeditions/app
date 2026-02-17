@@ -16,12 +16,24 @@ import { loadPublicSiteSettings, savePublicSiteSettings } from './lib/supabaseSi
 
 import { loadFleetForCurrentUser, saveFleetForCurrentUser } from './lib/supabaseFleetStore';
 
+// Helper to check if user is admin
+const isAdminUser = (user: User | null) => {
+  return user?.email === 'avikaabeira@fleetguard360.in' || user?.email === 'admin@fleetguard.com';
+};
+
 const defaultSiteSettings: SiteSettings = {
   siteName: 'Fleet Guard 360',
   tagline: 'Protect Your Fleet',
   logo: '',
   favicon: '',
   fontFamily: 'System',
+  primaryColor: '#f59e0b',
+  secondaryColor: '#1f2937',
+  accentColor: '#F59E0B',
+  backgroundColor: '#111827',
+  textColor: '#F3F4F6',
+  borderRadius: '0.5rem',
+  spacingScale: 1,
 
   homepageContent: {
     navHome: 'Home',
@@ -58,7 +70,7 @@ const defaultSiteSettings: SiteSettings = {
 
     reviewsBadge: '💬 Customer Love',
     reviewsTitle: 'What Our Customers Say',
-    reviewsSubtitle: 'Join 800+ happy fleet operators across India',
+    reviewsSubtitle: 'Trusted by fleet owners across the country',
 
     faqBadge: '❓ FAQ',
     faqTitle: 'Frequently Asked Questions',
@@ -230,11 +242,6 @@ const defaultSiteSettings: SiteSettings = {
   showcaseImage3: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&h=300&fit=crop',
   showcaseImage4: 'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=400&h=500&fit=crop',
 
-  primaryColor: '#f59e0b',
-  secondaryColor: '#1f2937',
-  accentColor: '#10b981',
-  backgroundColor: '#000000',
-  textColor: '#ffffff',
   googleAnalyticsId: '',
   googleSearchConsoleId: '',
   metaTitle: 'Fleet Guard 360 - Protect Your Fleet | Vehicle Management System',
@@ -263,6 +270,10 @@ const defaultSiteSettings: SiteSettings = {
   headerScripts: '',
   footerScripts: ''
 };
+
+import { VisualEditorProvider } from './components/visual-editor/VisualEditorContext';
+import { VisualEditorToolbar } from './components/visual-editor/VisualEditorToolbar';
+
 
 interface User {
   id: string;
@@ -618,6 +629,7 @@ function App() {
             companyName: String(meta.companyName || ''),
             phone: String(meta.phone || ''),
           };
+
           localStorage.setItem('fleet_current_user', JSON.stringify(nextUser));
           setCurrentUser(nextUser);
           setCurrentView('dashboard');
@@ -641,28 +653,22 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Load data (local first, then Supabase per-user if configured and logged in)
+  // Apply theme & Load Remote Data
   useEffect(() => {
-    const load = async () => {
-      // Local cache first
-      try {
-        const saved = localStorage.getItem('motorcycle_fleet_data');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          setData({
-            ...defaultData,
-            ...parsed,
-            motorcycles: Array.isArray(parsed.motorcycles) ? parsed.motorcycles : [],
-            serviceRecords: Array.isArray(parsed.serviceRecords) ? parsed.serviceRecords : [],
-            savedMakes: Array.isArray(parsed.savedMakes) ? parsed.savedMakes : defaultData.savedMakes,
-            savedModels: parsed.savedModels || defaultData.savedModels,
-            companySettings: { ...defaultData.companySettings, ...parsed.companySettings }
-          });
-        }
-      } catch (e) {
-        console.error('Error loading data (local):', e);
-      }
+    // Theme
+    if (siteSettings) {
+      const root = document.documentElement;
+      root.style.setProperty('--primary-color', siteSettings.primaryColor || '#f59e0b');
+      root.style.setProperty('--secondary-color', siteSettings.secondaryColor || '#1f2937');
+      root.style.setProperty('--accent-color', siteSettings.accentColor || '#F59E0B');
+      root.style.setProperty('--background-color', siteSettings.backgroundColor || '#111827');
+      root.style.setProperty('--text-color', siteSettings.textColor || '#F3F4F6');
+      root.style.setProperty('--border-radius', siteSettings.borderRadius || '0.5rem');
+      root.style.setProperty('--font-family', siteSettings.fontFamily === 'System' ? 'system-ui, sans-serif' : siteSettings.fontFamily);
+    }
 
+    // Remote Data
+    const loadRemote = async () => {
       if (isSupabaseConfigured && currentUser) {
         try {
           const remote = await loadFleetForCurrentUser();
@@ -686,8 +692,8 @@ function App() {
       }
     };
 
-    load();
-  }, [currentUser]);
+    loadRemote();
+  }, [currentUser, isSupabaseConfigured, siteSettings]);
 
   // Save data (local + Supabase per-user when configured)
   const saveData = (updater: AppData | ((prev: AppData) => AppData)) => {
@@ -700,7 +706,6 @@ function App() {
       }
 
       // Fire-and-forget cloud save
-      // IMPORTANT: only attempt cloud save if we have a Supabase session-backed user.
       if (isSupabaseConfigured && supabase && currentUser) {
         saveFleetForCurrentUser(next).catch((e) => {
           console.warn('Failed saving fleet data to Supabase. Saved locally only.', e);
@@ -711,7 +716,7 @@ function App() {
     });
   };
 
-  const isAdminUser = (user: User | null) => {
+  const isAdminUserCheck = (user: User | null) => {
     if (!user) return false;
     const email = (user.email || '').toLowerCase().trim();
     const username = (user.username || '').toLowerCase().trim();
@@ -728,12 +733,35 @@ function App() {
     setCurrentUser(user);
     setCurrentView('dashboard');
 
-    // If user requested admin access from the homepage, open backend right after login
-    if (pendingAdminOpen && isAdminUser(user)) {
+    if (pendingAdminOpen && isAdminUserCheck(user)) {
       setShowAdminPanel(true);
+      setPendingAdminOpen(false);
     }
-    setPendingAdminOpen(false);
   };
+
+  // Load local data on mount
+  useEffect(() => {
+    const loadLocal = async () => {
+      try {
+        const saved = localStorage.getItem('motorcycle_fleet_data');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setData({
+            ...defaultData,
+            ...parsed,
+            motorcycles: Array.isArray(parsed.motorcycles) ? parsed.motorcycles : [],
+            serviceRecords: Array.isArray(parsed.serviceRecords) ? parsed.serviceRecords : [],
+            savedMakes: Array.isArray(parsed.savedMakes) ? parsed.savedMakes : defaultData.savedMakes,
+            savedModels: parsed.savedModels || defaultData.savedModels,
+            companySettings: { ...defaultData.companySettings, ...parsed.companySettings }
+          });
+        }
+      } catch (e) {
+        console.error('Error loading data (local):', e);
+      }
+    };
+    loadLocal();
+  }, []);
 
   const handleLogout = async () => {
     localStorage.removeItem('fleet_current_user');
@@ -907,12 +935,19 @@ function App() {
   // Show Homepage
   if (currentView === 'home') {
     return (
-      <HomePage
-        onGetStarted={handleGetStarted}
-        onLogin={handleGoToLogin}
-        siteSettings={siteSettings}
-        onNavigate={(view) => handleNavigate(view as AppView)}
-      />
+      <VisualEditorProvider
+        initialSettings={siteSettings}
+        onSave={handleSaveSiteSettings}
+        isAdmin={isAdmin}
+      >
+        <VisualEditorToolbar />
+        <HomePage
+          onGetStarted={handleGetStarted}
+          onLogin={handleGoToLogin}
+          siteSettings={siteSettings}
+          onNavigate={(view) => handleNavigate(view as AppView)}
+        />
+      </VisualEditorProvider>
     );
   }
 
