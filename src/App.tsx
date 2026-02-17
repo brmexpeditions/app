@@ -968,7 +968,7 @@ function App() {
     <div className="min-h-screen bg-gray-950">
       {/* Sticky Back to Home Button - Always Visible */}
       <button
-        onClick={handleLogout}
+        onClick={() => handleNavigate('home')}
         className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 rounded-full text-white font-medium shadow-lg shadow-amber-500/30 transition-all duration-300 hover:scale-105 group"
       >
         <svg className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -981,7 +981,10 @@ function App() {
       <header className="bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-lg sticky top-0 z-40 border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div
+              className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => handleNavigate('home')}
+            >
               {data.companySettings.logo ? (
                 <img
                   src={data.companySettings.logo}
