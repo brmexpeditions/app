@@ -1298,15 +1298,16 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
                   { label: 'Cookie Policy', value: 'cookie' }
                 ].map((link, i) => (
                   <li key={i}>
-                    <button
-                      onClick={() => {
-                        console.log('Footer link clicked:', link.value);
+                    <a
+                      href={`/${link.value === 'home' ? '' : link.value}`}
+                      onClick={(e) => {
+                        e.preventDefault();
                         onNavigate?.(link.value);
                       }}
-                      className="text-gray-500 hover:text-amber-400 transition-colors text-sm text-left"
+                      className="text-gray-500 hover:text-amber-400 transition-colors text-sm text-left block"
                     >
                       {link.label}
-                    </button>
+                    </a>
                   </li>
                 ))}
               </ul>

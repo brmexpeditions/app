@@ -455,8 +455,6 @@ function App() {
       const path = window.location.pathname;
       const search = window.location.search;
 
-      console.log('Location changed:', path);
-
       // Admin routes
       if (path === '/admin') {
         setShowAdminPanel(true);
@@ -496,7 +494,6 @@ function App() {
   }, []);
 
   const handleNavigate = (view: AppView) => {
-    console.log('Navigating to:', view);
     setCurrentView(view);
     window.scrollTo(0, 0);
 
