@@ -9,10 +9,13 @@ export function VisualEditorToolbar() {
         updateStyle,
         saveChanges,
         resetElement,
-        hasUnsavedChanges
+        hasUnsavedChanges,
+        isAdmin
     } = useVisualEditor();
 
     if (!isEditing) {
+        if (!isAdmin) return null;
+
         return (
             <div className="fixed bottom-4 right-4 z-[9999]">
                 <button
@@ -108,8 +111,8 @@ export function VisualEditorToolbar() {
                         onClick={saveChanges}
                         disabled={!hasUnsavedChanges}
                         className={`px-5 py-2.5 rounded-lg font-bold text-sm transition-all ${hasUnsavedChanges
-                                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-black hover:shadow-lg hover:shadow-amber-500/20'
-                                : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-black hover:shadow-lg hover:shadow-amber-500/20'
+                            : 'bg-gray-800 text-gray-500 cursor-not-allowed'
                             }`}
                     >
                         Save Changes

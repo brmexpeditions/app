@@ -11,6 +11,7 @@ interface VisualEditorContextType {
     saveChanges: () => void;
     resetElement: (elementId: string) => void;
     hasUnsavedChanges: boolean;
+    isAdmin: boolean;
 }
 
 const VisualEditorContext = createContext<VisualEditorContextType | undefined>(undefined);
@@ -84,6 +85,7 @@ export function VisualEditorProvider({ children, initialSettings, onSave, isAdmi
                 saveChanges,
                 resetElement,
                 hasUnsavedChanges,
+                isAdmin,
             }}
         >
             {children}
