@@ -464,7 +464,6 @@ function App() {
   useEffect(() => {
     const handleLocationChange = () => {
       const path = window.location.pathname;
-      const search = window.location.search;
 
       // Admin routes
       if (path === '/admin') {

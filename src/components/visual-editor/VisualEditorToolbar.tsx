@@ -50,7 +50,7 @@ export function VisualEditorToolbar() {
                     <div className="h-8 w-px bg-gray-800"></div>
 
                     {selectedElementId ? (
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 overflow-x-auto">
                             {/* Font Size Control */}
                             <div className="flex flex-col gap-1">
                                 <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Font Size</label>
@@ -80,6 +80,114 @@ export function VisualEditorToolbar() {
                                         value={selectedStyle?.color || ''}
                                         onChange={(e) => updateStyle(selectedElementId, { color: e.target.value })}
                                         placeholder="#ffffff"
+                                        className="bg-gray-800 border-gray-700 text-white text-sm rounded px-2 py-1 w-24 focus:ring-1 focus:ring-amber-500 outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="h-8 w-px bg-gray-800 mx-2"></div>
+
+                            {/* Horizontal Padding Control */}
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Padding X</label>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        value={selectedStyle?.paddingX || ''}
+                                        onChange={(e) => updateStyle(selectedElementId, { paddingX: e.target.value })}
+                                        placeholder="e.g. 2rem"
+                                        className="bg-gray-800 border-gray-700 text-white text-sm rounded px-2 py-1 w-24 focus:ring-1 focus:ring-amber-500 outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Vertical Padding Control */}
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Padding Y</label>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        value={selectedStyle?.paddingY || ''}
+                                        onChange={(e) => updateStyle(selectedElementId, { paddingY: e.target.value })}
+                                        placeholder="e.g. 1rem"
+                                        className="bg-gray-800 border-gray-700 text-white text-sm rounded px-2 py-1 w-24 focus:ring-1 focus:ring-amber-500 outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Horizontal Margin Control */}
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Margin X</label>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        value={selectedStyle?.marginX || ''}
+                                        onChange={(e) => updateStyle(selectedElementId, { marginX: e.target.value })}
+                                        placeholder="e.g. 1rem"
+                                        className="bg-gray-800 border-gray-700 text-white text-sm rounded px-2 py-1 w-24 focus:ring-1 focus:ring-amber-500 outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Vertical Margin Control */}
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Margin Y</label>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        value={selectedStyle?.marginY || ''}
+                                        onChange={(e) => updateStyle(selectedElementId, { marginY: e.target.value })}
+                                        placeholder="e.g. 0.5rem"
+                                        className="bg-gray-800 border-gray-700 text-white text-sm rounded px-2 py-1 w-24 focus:ring-1 focus:ring-amber-500 outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="h-8 w-px bg-gray-800 mx-2"></div>
+
+                            {/* Border Width Control */}
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Border Width</label>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        value={selectedStyle?.borderWidth || ''}
+                                        onChange={(e) => updateStyle(selectedElementId, { borderWidth: e.target.value })}
+                                        placeholder="e.g. 2px"
+                                        className="bg-gray-800 border-gray-700 text-white text-sm rounded px-2 py-1 w-24 focus:ring-1 focus:ring-amber-500 outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Border Color Control */}
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Border Color</label>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="color"
+                                        value={selectedStyle?.borderColor || '#ffffff'}
+                                        onChange={(e) => updateStyle(selectedElementId, { borderColor: e.target.value })}
+                                        className="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={selectedStyle?.borderColor || ''}
+                                        onChange={(e) => updateStyle(selectedElementId, { borderColor: e.target.value })}
+                                        placeholder="#ffffff"
+                                        className="bg-gray-800 border-gray-700 text-white text-sm rounded px-2 py-1 w-24 focus:ring-1 focus:ring-amber-500 outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Border Radius Control */}
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Border Radius</label>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="text"
+                                        value={selectedStyle?.borderRadius || ''}
+                                        onChange={(e) => updateStyle(selectedElementId, { borderRadius: e.target.value })}
+                                        placeholder="e.g. 0.5rem"
                                         className="bg-gray-800 border-gray-700 text-white text-sm rounded px-2 py-1 w-24 focus:ring-1 focus:ring-amber-500 outline-none"
                                     />
                                 </div>

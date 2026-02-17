@@ -1,4 +1,4 @@
-import { ReactNode, CSSProperties } from 'react';
+import React, { ReactNode, CSSProperties } from 'react';
 import { useVisualEditor } from './VisualEditorContext';
 
 interface EditableProps {
@@ -6,7 +6,7 @@ interface EditableProps {
     children: ReactNode;
     className?: string;
     style?: CSSProperties;
-    as?: keyof JSX.IntrinsicElements;
+    as?: keyof React.JSX.IntrinsicElements;
     onClick?: (e: React.MouseEvent) => void;
 }
 
@@ -29,6 +29,13 @@ export function Editable({ id, children, className = '', style = {}, as: Tag = '
         ...style,
         ...(elementStyle?.fontSize ? { fontSize: elementStyle.fontSize } : {}),
         ...(elementStyle?.color ? { color: elementStyle.color } : {}),
+        ...(elementStyle?.paddingX ? { paddingLeft: elementStyle.paddingX, paddingRight: elementStyle.paddingX } : {}),
+        ...(elementStyle?.paddingY ? { paddingTop: elementStyle.paddingY, paddingBottom: elementStyle.paddingY } : {}),
+        ...(elementStyle?.marginX ? { marginLeft: elementStyle.marginX, marginRight: elementStyle.marginX } : {}),
+        ...(elementStyle?.marginY ? { marginTop: elementStyle.marginY, marginBottom: elementStyle.marginY } : {}),
+        ...(elementStyle?.borderWidth ? { borderWidth: elementStyle.borderWidth, borderStyle: 'solid' } : {}),
+        ...(elementStyle?.borderColor ? { borderColor: elementStyle.borderColor } : {}),
+        ...(elementStyle?.borderRadius ? { borderRadius: elementStyle.borderRadius } : {}),
         ...(isEditing && isSelected ? { outline: '2px solid #ef4444', outlineOffset: '2px', cursor: 'default' } : {}),
         ...(isEditing && !isSelected ? { cursor: 'pointer', outline: '1px dashed rgba(255, 255, 255, 0.2)' } : {}),
     };

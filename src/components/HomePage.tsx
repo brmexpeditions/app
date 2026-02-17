@@ -450,31 +450,21 @@ export function HomePage({ onGetStarted, onLogin, siteSettings, onNavigate }: Ho
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-              <button
-                onClick={onGetStarted}
-                className="group relative px-10 py-5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 rounded-2xl font-bold text-black text-xl overflow-hidden transition-all hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/40"
-              >
+              <Editable id="hero-cta-primary-button" as="button" onClick={onGetStarted} className="group relative px-8 py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 rounded-2xl font-bold text-black text-lg overflow-hidden transition-all hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/40">
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-amber-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <span className="relative z-10 flex items-center justify-center gap-3">
-                  <Editable id="hero-cta-primary" as="span">
-                    {content.heroPrimaryCta ?? '🚀 Start Free Trial'}
-                  </Editable>
+                  {content.heroPrimaryCta ?? '🚀 Start Free Trial'}
                   <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </span>
-              </button>
-              <button
-                onClick={onLogin}
-                className="px-10 py-5 bg-white/10 backdrop-blur-md border-2 border-white/30 rounded-2xl font-bold text-white text-xl hover:bg-white/20 hover:border-amber-400 transition-all flex items-center justify-center gap-3"
-              >
+              </Editable>
+              <Editable id="hero-cta-secondary-button" as="button" onClick={onLogin} className="px-8 py-4 bg-white/10 backdrop-blur-md border-2 border-white/30 rounded-2xl font-bold text-white text-lg hover:bg-white/20 hover:border-amber-400 transition-all flex items-center justify-center gap-3">
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
-                <Editable id="hero-cta-secondary" as="span">
-                  {content.heroSecondaryCta ?? 'Login to Dashboard'}
-                </Editable>
-              </button>
+                {content.heroSecondaryCta ?? 'Login to Dashboard'}
+              </Editable>
             </div>
 
             {/* Stats Grid */}

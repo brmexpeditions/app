@@ -188,6 +188,13 @@ export interface HomepageContent {
 export interface VisualElementStyle {
   fontSize?: string;
   color?: string;
+  paddingX?: string;
+  paddingY?: string;
+  marginX?: string;
+  marginY?: string;
+  borderWidth?: string;
+  borderColor?: string;
+  borderRadius?: string;
 }
 
 export interface SiteSettings {
