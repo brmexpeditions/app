@@ -6,6 +6,7 @@ export type UserProfile = {
   name: string;
   phone?: string;
   company_name?: string;
+  plan?: 'starter' | 'professional' | 'enterprise';
   created_at?: string;
 };
 
@@ -17,6 +18,7 @@ export async function upsertMyProfile(profile: {
   name: string;
   phone?: string;
   company_name?: string;
+  plan?: 'starter' | 'professional' | 'enterprise';
 }) {
   if (!isSupabaseConfigured) return;
   const supabase = assertSupabase();
@@ -29,6 +31,7 @@ export async function upsertMyProfile(profile: {
       name: profile.name,
       phone: profile.phone || null,
       company_name: profile.company_name || null,
+      plan: profile.plan || 'starter',
     },
     { onConflict: 'user_id' }
   );

@@ -477,16 +477,25 @@ export function Dashboard({
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         <div className="bg-gray-800 rounded-xl border border-gray-700 p-4 md:p-5">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between mb-2">
             <div className="p-2 md:p-3 bg-amber-900/50 rounded-lg">
               <span className="text-xl">🚗</span>
             </div>
-            <div>
-              <p className="text-xs md:text-sm text-gray-400">Total Fleet</p>
-              <p className="text-xl md:text-2xl font-bold text-white">
-                {motorcycles.length} <span className="text-gray-500 text-sm font-normal">/ {vehicleLimit === Number.POSITIVE_INFINITY ? '∞' : vehicleLimit}</span>
-              </p>
-            </div>
+            {billing.plan !== 'enterprise' && (
+              <button
+                onClick={() => onLimitReached('Upgrade to add more vehicles to your fleet')}
+                className="text-xs font-bold text-amber-500 hover:text-amber-400 flex items-center gap-1 group"
+              >
+                <span>Upgrade</span>
+                <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+              </button>
+            )}
+          </div>
+          <div>
+            <p className="text-xs md:text-sm text-gray-400">Total Fleet</p>
+            <p className="text-xl md:text-2xl font-bold text-white">
+              {motorcycles.length} <span className="text-gray-500 text-sm font-normal">/ {vehicleLimit === Number.POSITIVE_INFINITY ? '∞' : vehicleLimit}</span>
+            </p>
           </div>
         </div>
 

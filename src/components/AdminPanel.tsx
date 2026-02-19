@@ -388,6 +388,33 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
     setUsersLoading(false);
   };
 
+  const handleUpdateUserPlan = async (userId: string, plan: 'starter' | 'professional' | 'enterprise') => {
+    if (!confirm(`Are you sure you want to change this user's plan to ${plan}?`)) return;
+
+    try {
+      const resp = await fetch('/api/admin/update-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          plan,
+          adminEmail: localStorage.getItem('fleet_current_user') ? (JSON.parse(localStorage.getItem('fleet_current_user') as string).email || '') : ''
+        })
+      });
+
+      if (!resp.ok) {
+        const error = await resp.json();
+        throw new Error(error.error || 'Failed to update user plan');
+      }
+
+      // Refresh list
+      loadUsers();
+      alert('User plan updated successfully!');
+    } catch (e: any) {
+      alert(`Error: ${e.message}`);
+    }
+  };
+
   useEffect(() => {
     if (activeTab === 'users') {
       loadUsers();
@@ -1682,12 +1709,18 @@ export function AdminPanel({ onClose, onSave, currentSettings }: AdminPanelProps
                             <td className="px-4 py-3 text-gray-400 text-sm">{user.phone || '-'}</td>
                             <td className="px-4 py-3 text-gray-400 text-sm">{user.companyName || '-'}</td>
                             <td className="px-4 py-3">
-                              <span className={`px-2 py-1 rounded text-xs font-medium ${user.plan === 'enterprise' ? 'bg-purple-500/20 text-purple-400' :
-                                user.plan === 'professional' ? 'bg-amber-500/20 text-amber-400' :
-                                  'bg-gray-700 text-gray-400'
-                                }`}>
-                                {user.plan || 'Starter'}
-                              </span>
+                              <select
+                                value={user.plan || 'starter'}
+                                onChange={(e) => handleUpdateUserPlan(user.id, e.target.value as any)}
+                                className={`px-2 py-1 rounded text-xs font-medium cursor-pointer transition-all border-none focus:ring-2 focus:ring-amber-500 ${user.plan === 'enterprise' ? 'bg-purple-500/20 text-purple-400' :
+                                    user.plan === 'professional' ? 'bg-amber-500/20 text-amber-400' :
+                                      'bg-gray-700 text-gray-400'
+                                  }`}
+                              >
+                                <option value="starter" className="bg-gray-800 text-gray-400 uppercase font-bold text-[10px]">Starter</option>
+                                <option value="professional" className="bg-gray-800 text-amber-400 uppercase font-bold text-[10px]">Professional</option>
+                                <option value="enterprise" className="bg-gray-800 text-purple-400 uppercase font-bold text-[10px]">Enterprise</option>
+                              </select>
                             </td>
                             <td className="px-4 py-3 text-gray-500 text-sm">
                               {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN') : '-'}

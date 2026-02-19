@@ -9,6 +9,7 @@ interface User {
   password: string;
   companyName: string;
   phone: string;
+  plan?: 'starter' | 'professional' | 'enterprise';
   createdAt: string;
 }
 
@@ -45,6 +46,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
   const [signupCompany, setSignupCompany] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
+  const [signupPlan, setSignupPlan] = useState<'starter' | 'professional' | 'enterprise'>('starter');
 
   const getUsers = (): User[] => {
     try {
@@ -200,6 +202,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
               name: signupName,
               phone: signupPhone,
               companyName: signupCompany,
+              plan: signupPlan,
             },
           },
         });
@@ -219,6 +222,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
               name: signupName,
               phone: signupPhone,
               company_name: signupCompany,
+              plan: signupPlan,
             });
           } catch {
             // ignore
@@ -254,6 +258,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
         password: signupPassword,
         companyName: signupCompany || signupName,
         phone: signupPhone,
+        plan: signupPlan,
         createdAt: new Date().toISOString(),
       };
 
@@ -507,6 +512,27 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onLogin, companySettings, initi
                     placeholder="Confirm your password"
                     required
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    🚀 Choose Plan
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(['starter', 'professional', 'enterprise'] as const).map((p) => (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => setSignupPlan(p)}
+                        className={`py-2 px-1 rounded-lg text-xs font-semibold border-2 transition-all ${signupPlan === p
+                            ? 'bg-green-500/20 border-green-500 text-green-400'
+                            : 'bg-gray-700 border-gray-600 text-gray-400 hover:border-gray-500'
+                          }`}
+                      >
+                        {p.charAt(0).toUpperCase() + p.slice(1)}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <button

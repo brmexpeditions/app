@@ -1036,9 +1036,22 @@ function App() {
                   <span>⚙️</span>
                 </button>
               )}
-              <div className="hidden sm:block text-right">
-                <p className="text-sm font-medium text-white">{currentUser?.username}</p>
-                <p className="text-xs text-gray-400">{currentUser?.email}</p>
+              <div className="flex items-center gap-2">
+                {data.billing.plan !== 'enterprise' && (
+                  <button
+                    onClick={() => {
+                      setUpgradeReason('Upgrade to unlock more vehicle capacity and premium features');
+                      setShowUpgradeModal(true);
+                    }}
+                    className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-black text-sm font-bold rounded-lg hover:from-amber-400 hover:to-orange-500 transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2"
+                  >
+                    <span>✨</span> Upgrade
+                  </button>
+                )}
+                <div className="text-right hidden sm:block">
+                  <p className="text-sm font-medium text-white">{currentUser?.username}</p>
+                  <p className="text-xs text-slate-400">{currentUser?.email}</p>
+                </div>
               </div>
               <button
                 onClick={handleLogout}
