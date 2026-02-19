@@ -2,18 +2,22 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Motorcycle } from '../types';
 import { cn } from '../utils/cn';
 import { formatDate, getServiceStatus, getValidityStatus, SERVICE_INTERVAL_OPTIONS } from '../utils/helpers';
+import { BillingInfo } from '../lib/plans';
 import { BikeForm } from './BikeForm';
-import { ExcelImport } from './ExcelImport';
+import ExcelImport from './ExcelImport';
 
 export interface DashboardProps {
   motorcycles: Motorcycle[];
   makes: string[];
   models: Record<string, string[]>;
+  billing: BillingInfo;
+  vehicleLimit: number;
   onUpdateBike: (bike: Motorcycle) => void;
   onAddBike: (bike: Motorcycle) => void;
   onDeleteBike: (bikeId: string) => void;
   onAddMake: (make: string) => void;
   onAddModel: (make: string, model: string) => void;
+  onLimitReached: (message: string) => void;
 
   // Optional: allow other tabs (e.g., Analytics) to request opening a vehicle profile
   openVehicleId?: string | null;
@@ -24,11 +28,14 @@ export function Dashboard({
   motorcycles,
   makes,
   models,
+  billing,
+  vehicleLimit,
   onUpdateBike,
   onAddBike,
   onDeleteBike,
   onAddMake,
   onAddModel,
+  onLimitReached,
   openVehicleId,
   onOpenVehicleHandled,
 }: DashboardProps) {
@@ -69,11 +76,22 @@ export function Dashboard({
     if (existingBike) {
       onUpdateBike(bike);
     } else {
+      // Limit check already done in handleAddVehicleClick for UI, 
+      // but App.tsx also handles it in onAddBike.
       onAddBike(bike);
     }
     setSelectedBikeId(bike.id);
     setShowBikeForm(false);
     setEditingBike(null);
+  };
+
+  const handleAddVehicleClick = () => {
+    if (motorcycles.length >= vehicleLimit) {
+      onLimitReached(`You've reached your ${billing.plan} plan limit of ${vehicleLimit} vehicles. Please upgrade to add more.`);
+      return;
+    }
+    setEditingBike(null);
+    setShowBikeForm(true);
   };
 
   const handleEditBike = (bike: Motorcycle, e?: React.MouseEvent) => {
@@ -430,7 +448,13 @@ export function Dashboard({
         </div>
         <div className="flex gap-3">
           <button
-            onClick={() => setShowExcelImport(true)}
+            onClick={() => {
+              if (motorcycles.length >= vehicleLimit) {
+                onLimitReached(`You've reached your ${billing.plan} plan limit of ${vehicleLimit} vehicles. Please upgrade to add more.`);
+                return;
+              }
+              setShowExcelImport(true);
+            }}
             className="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-sm font-medium"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -439,10 +463,7 @@ export function Dashboard({
             Import Excel
           </button>
           <button
-            onClick={() => {
-              setEditingBike(null);
-              setShowBikeForm(true);
-            }}
+            onClick={handleAddVehicleClick}
             className="flex items-center gap-2 px-5 py-2.5 bg-amber-500 text-black rounded-lg hover:bg-amber-600 transition-colors shadow-sm font-semibold"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -462,7 +483,9 @@ export function Dashboard({
             </div>
             <div>
               <p className="text-xs md:text-sm text-gray-400">Total Fleet</p>
-              <p className="text-xl md:text-2xl font-bold text-white">{motorcycles.length}</p>
+              <p className="text-xl md:text-2xl font-bold text-white">
+                {motorcycles.length} <span className="text-gray-500 text-sm font-normal">/ {vehicleLimit === Number.POSITIVE_INFINITY ? '∞' : vehicleLimit}</span>
+              </p>
             </div>
           </div>
         </div>
@@ -673,7 +696,7 @@ export function Dashboard({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
-                {filteredMotorcycles.map((bike) => {
+                {filteredMotorcycles.map((bike: Motorcycle) => {
                   const serviceStatus = getServiceStatus(bike);
                   const insuranceStatus = getValidityStatus(bike.insuranceValidity);
                   const kmReadings = Array.isArray(bike.kmReadings) ? bike.kmReadings : [];
@@ -807,6 +830,8 @@ export function Dashboard({
           onAddMake={onAddMake}
           onAddModel={onAddModel}
           onClose={() => setShowExcelImport(false)}
+          vehicleLimit={vehicleLimit}
+          currentVehicleCount={motorcycles.length}
         />
       )}
 

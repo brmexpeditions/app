@@ -13,6 +13,8 @@ import { TermsOfService } from './components/legal/TermsOfService';
 import { RefundPolicy } from './components/legal/RefundPolicy';
 import { CookiePolicy } from './components/legal/CookiePolicy';
 import { loadPublicSiteSettings, savePublicSiteSettings } from './lib/supabaseSiteSettings';
+import { UpgradeModal } from './components/UpgradeModal';
+import { BillingInfo, getPlanLimit } from './lib/plans';
 
 import { loadFleetForCurrentUser, saveFleetForCurrentUser } from './lib/supabaseFleetStore';
 
@@ -289,6 +291,7 @@ interface AppData {
   savedMakes: string[];
   savedModels: { [make: string]: string[] };
   companySettings: CompanySettingsType;
+  billing: BillingInfo;
   lastBackup?: string;
 }
 
@@ -323,6 +326,9 @@ const defaultData: AppData = {
     businessRegNumber: '',
     primaryColor: '#F59E0B',
     secondaryColor: '#D97706'
+  },
+  billing: {
+    plan: 'starter'
   }
 };
 
@@ -339,6 +345,8 @@ function App() {
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(defaultSiteSettings);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [pendingAdminOpen, setPendingAdminOpen] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState('');
 
   // Helper: hidden admin backend URL
   // Visit /admin in the browser to request backend access (admin-only).
@@ -793,6 +801,17 @@ function App() {
 
   // Motorcycle handlers
   const handleAddBike = (bike: Motorcycle) => {
+    const currentLimit = getPlanLimit(data.billing.plan, {
+      starterVehicles: siteSettings.starterVehicles,
+      proVehicles: siteSettings.proVehicles
+    });
+
+    if (data.motorcycles.length >= currentLimit) {
+      setUpgradeReason(`You have reached the limit of ${currentLimit} vehicles for the ${data.billing.plan} plan.`);
+      setShowUpgradeModal(true);
+      return;
+    }
+
     saveData(prev => ({
       ...prev,
       motorcycles: [...(Array.isArray(prev.motorcycles) ? prev.motorcycles : []), bike],
@@ -1066,11 +1085,20 @@ function App() {
             motorcycles={data.motorcycles}
             makes={data.savedMakes}
             models={data.savedModels}
+            billing={data.billing}
+            vehicleLimit={getPlanLimit(data.billing.plan, {
+              starterVehicles: siteSettings.starterVehicles,
+              proVehicles: siteSettings.proVehicles
+            })}
             onAddBike={handleAddBike}
             onUpdateBike={handleUpdateBike}
             onDeleteBike={handleDeleteBike}
             onAddMake={handleAddMake}
             onAddModel={handleAddModel}
+            onLimitReached={(msg: string) => {
+              setUpgradeReason(msg);
+              setShowUpgradeModal(true);
+            }}
             openVehicleId={openVehicleId}
             onOpenVehicleHandled={() => setOpenVehicleId(null)}
           />
@@ -1250,6 +1278,23 @@ function App() {
           <p>© 2026 {data.companySettings.companyName || 'Fleet Guard 360'}. All rights reserved.</p>
         </div>
       </footer>
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        open={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        reason={upgradeReason}
+        billing={data.billing}
+        vehicleCount={data.motorcycles.length}
+        starterVehicles={siteSettings.starterVehicles}
+        proVehicles={siteSettings.proVehicles}
+        proPrice={siteSettings.proPrice}
+        enterprisePrice={siteSettings.enterprisePrice}
+        currentUserId={currentUser?.id}
+        currentUserEmail={currentUser?.email}
+        onBillingUpdated={(nextBilling) => {
+          saveData(prev => ({ ...prev, billing: nextBilling }));
+        }}
+      />
     </div>
   );
 }

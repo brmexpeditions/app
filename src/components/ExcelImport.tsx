@@ -9,6 +9,8 @@ interface ExcelImportProps {
   onAddMake: (make: string) => void;
   onAddModel: (make: string, model: string) => void;
   onClose: () => void;
+  vehicleLimit: number;
+  currentVehicleCount: number;
 }
 
 type PreviewRow = {
@@ -141,6 +143,8 @@ export function ExcelImport({
   onAddMake,
   onAddModel,
   onClose,
+  vehicleLimit,
+  currentVehicleCount,
 }: ExcelImportProps) {
   const [file, setFile] = useState<File | null>(null);
   const [previewRows, setPreviewRows] = useState<PreviewRow[]>([]);
@@ -376,6 +380,11 @@ export function ExcelImport({
     try {
       if (!previewRows.length) {
         setError('No preview data to import. Please upload a file first.');
+        return;
+      }
+
+      if (currentVehicleCount + previewRows.length > vehicleLimit) {
+        setError(`Importing ${previewRows.length} vehicles would exceed your plan limit of ${vehicleLimit} vehicles. You already have ${currentVehicleCount}. Please upgrade or import fewer vehicles.`);
         return;
       }
 
